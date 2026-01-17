@@ -1,0 +1,3293 @@
+[
+  {
+    "_id": 1,
+    "firstName": "Каллистрат",
+    "lastName": "Капустина",
+    "email": "student1@university.edu",
+    "age": 24,
+    "faculty": "Физика",
+    "year": 2,
+    "gpa": 3.1,
+    "enrollmentDate": "2023-12-27",
+    "courses": [
+      "Оптика",
+      "Квантовая механика",
+      "Термодинамика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 (773) 616-35-37",
+    "birthDate": "2007-07-12",
+    "country": "Казахстан",
+    "skills": [
+      "React"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-10-25T18:33:55",
+    "lastLogin": "2026-01-04T17:58:42",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 2,
+    "firstName": "Лука",
+    "lastName": "Трофимов",
+    "email": "student2@university.edu",
+    "age": 21,
+    "faculty": "Медицина",
+    "year": 1,
+    "gpa": 4.5,
+    "enrollmentDate": "2024-12-09",
+    "courses": [
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 115 345 5479",
+    "birthDate": "2005-09-17",
+    "country": "Туркменистан",
+    "skills": [
+      "Linux",
+      "MongoDB"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-10-20T01:23:21",
+    "lastLogin": "2025-01-15T06:28:43",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 3,
+    "firstName": "Ювеналий",
+    "lastName": "Максимов",
+    "email": "student3@university.edu",
+    "age": 21,
+    "faculty": "История",
+    "year": 1,
+    "gpa": 4.6,
+    "enrollmentDate": "2024-11-20",
+    "courses": [
+      "Математика",
+      "Физика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": "116A",
+    "phone": "8 (392) 189-7761",
+    "birthDate": "2006-03-13",
+    "country": "Беларусь",
+    "skills": [
+      "Немецкий"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-10-05T00:40:51",
+    "lastLogin": "2025-04-05T22:18:36",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id1065373",
+      "telegram": "@ivanna_1996",
+      "github": "github.com/lavr2010"
+    }
+  },
+  {
+    "_id": 4,
+    "firstName": "Агап",
+    "lastName": "Гаврилов",
+    "email": "student4@university.edu",
+    "age": 25,
+    "faculty": "Информационные технологии",
+    "year": 5,
+    "gpa": 3.0,
+    "enrollmentDate": "2020-11-09",
+    "courses": [
+      "ИИ",
+      "Программирование",
+      "Сети"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": "301B",
+    "phone": "8 389 120 6428",
+    "birthDate": "2007-06-21",
+    "country": "Туркменистан",
+    "skills": [
+      "React",
+      "Английский",
+      "Python"
+    ],
+    "internshipCompany": "Филиппова Инкорпорэйтед",
+    "status": "active",
+    "registrationDate": "2025-12-06T15:01:14",
+    "lastLogin": "2025-10-26T10:18:53",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 5,
+    "firstName": "Феоктист",
+    "lastName": "Кондратьев",
+    "email": "student5@university.edu",
+    "age": 18,
+    "faculty": "Социология",
+    "year": 3,
+    "gpa": 4.5,
+    "enrollmentDate": "2022-10-06",
+    "courses": [
+      "Математика",
+      "Физика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": "326C",
+    "phone": "+7 920 986 9266",
+    "birthDate": "2002-12-01",
+    "country": "Украина",
+    "skills": [
+      "Kubernetes"
+    ],
+    "internshipCompany": "ООО «Федорова»",
+    "status": "graduated",
+    "registrationDate": "2024-07-06T01:36:47",
+    "lastLogin": "2025-11-13T21:47:27",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id4129427",
+      "telegram": "@georgikirillov",
+      "github": "github.com/solomon_53"
+    }
+  },
+  {
+    "_id": 6,
+    "firstName": "Ферапонт",
+    "lastName": "Семенова",
+    "email": "student6@university.edu",
+    "age": 20,
+    "faculty": "Физика",
+    "year": 3,
+    "gpa": 3.1,
+    "enrollmentDate": "2022-09-01",
+    "courses": [
+      "Электродинамика",
+      "Ядерная физика",
+      "Квантовая механика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "123B",
+    "phone": "+7 041 101 3804",
+    "birthDate": "2000-05-05",
+    "country": "Беларусь",
+    "skills": [
+      "C++",
+      "Немецкий",
+      "Анализ данных",
+      "Excel",
+      "Node.js"
+    ],
+    "internshipCompany": "НПО «Харитонова Артемьева»",
+    "status": "active",
+    "registrationDate": "2024-05-13T19:06:00",
+    "lastLogin": "2025-08-19T18:46:03",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id4646773",
+      "telegram": "@fadeevaregina",
+      "github": "github.com/dementevavksenti"
+    }
+  },
+  {
+    "_id": 7,
+    "firstName": "Октябрина",
+    "lastName": "Евсеев",
+    "email": "student7@university.edu",
+    "age": 25,
+    "faculty": "Юриспруденция",
+    "year": 3,
+    "gpa": 4.7,
+    "enrollmentDate": "2022-10-09",
+    "courses": [
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "86812764473",
+    "birthDate": "2007-10-01",
+    "country": "Украина",
+    "skills": [
+      "AutoCAD",
+      "Java"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-08-04T07:28:35",
+    "lastLogin": "2025-09-04T22:09:44",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id8277152",
+      "telegram": "@ernst_48",
+      "github": "github.com/emeljanovasofija"
+    }
+  },
+  {
+    "_id": 8,
+    "firstName": "Софрон",
+    "lastName": "Сергеев",
+    "email": "student8@university.edu",
+    "age": 23,
+    "faculty": "Математика",
+    "year": 4,
+    "gpa": 4.3,
+    "enrollmentDate": "2021-11-17",
+    "courses": [
+      "Физика",
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "146A",
+    "phone": "+7 (684) 861-7404",
+    "birthDate": "2007-06-17",
+    "country": "Азербайджан",
+    "skills": [
+      "Java",
+      "Node.js",
+      "Английский",
+      "Git"
+    ],
+    "internshipCompany": "UCL Holding",
+    "status": "active",
+    "registrationDate": "2025-02-12T22:30:54",
+    "lastLogin": "2025-02-16T00:59:12",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id3336483",
+      "telegram": "@suvorovmili",
+      "github": "github.com/denisovgalaktion"
+    }
+  },
+  {
+    "_id": 9,
+    "firstName": "Аникей",
+    "lastName": "Симонов",
+    "email": "student9@university.edu",
+    "age": 21,
+    "faculty": "Лингвистика",
+    "year": 1,
+    "gpa": 3.4,
+    "enrollmentDate": "2024-12-10",
+    "courses": [
+      "Фонетика",
+      "Английский язык"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 (451) 732-30-18",
+    "birthDate": "2004-01-10",
+    "country": "Кыргызстан",
+    "skills": [
+      "MATLAB",
+      "MongoDB",
+      "AutoCAD",
+      "Excel"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-11-03T01:59:37",
+    "lastLogin": "2025-07-26T07:05:44",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id7356187",
+      "telegram": "@kasjan_2015",
+      "github": "github.com/bogdanovlukjan"
+    }
+  },
+  {
+    "_id": 10,
+    "firstName": "Синклитикия",
+    "lastName": "Фролов",
+    "email": "student10@university.edu",
+    "age": 23,
+    "faculty": "Экономика",
+    "year": 1,
+    "gpa": 3.5,
+    "enrollmentDate": "2024-10-28",
+    "courses": [
+      "Микроэкономика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 758 022 85 08",
+    "birthDate": "2000-11-09",
+    "country": "Беларусь",
+    "skills": [
+      "Kubernetes",
+      "Java"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-03-11T00:13:07",
+    "lastLogin": "2025-04-10T03:44:48",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 11,
+    "firstName": "Дементий",
+    "lastName": "Трофимов",
+    "email": "student11@university.edu",
+    "age": 18,
+    "faculty": "Лингвистика",
+    "year": 4,
+    "gpa": 4.4,
+    "enrollmentDate": "2021-09-26",
+    "courses": [
+      "Культурология",
+      "Теория перевода"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+7 (604) 746-8506",
+    "birthDate": "2000-03-10",
+    "country": "Туркменистан",
+    "skills": [
+      "Python",
+      "Excel"
+    ],
+    "internshipCompany": null,
+    "status": "graduated",
+    "registrationDate": "2024-04-04T11:06:02",
+    "lastLogin": "2025-06-28T12:26:23",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id3668325",
+      "telegram": "@parfen_1988",
+      "github": "github.com/hristoforkulagin"
+    }
+  },
+  {
+    "_id": 12,
+    "firstName": "Матвей",
+    "lastName": "Зимин",
+    "email": "student12@university.edu",
+    "age": 21,
+    "faculty": "Физика",
+    "year": 3,
+    "gpa": 3.1,
+    "enrollmentDate": "2022-10-08",
+    "courses": [
+      "Электродинамика",
+      "Ядерная физика",
+      "Квантовая механика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 (006) 218-26-69",
+    "birthDate": "2002-03-04",
+    "country": "Украина",
+    "skills": [
+      "Docker",
+      "Статистика"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-06-26T15:42:33",
+    "lastLogin": "2025-03-11T02:02:10",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 13,
+    "firstName": "Тарас",
+    "lastName": "Лукина",
+    "email": "student13@university.edu",
+    "age": 22,
+    "faculty": "Экономика",
+    "year": 5,
+    "gpa": 4.2,
+    "enrollmentDate": "2020-12-15",
+    "courses": [
+      "Менеджмент",
+      "Микроэкономика",
+      "Статистика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": "352C",
+    "phone": "+79712171717",
+    "birthDate": "2002-01-21",
+    "country": "Азербайджан",
+    "skills": [
+      "AutoCAD",
+      "Docker",
+      "Английский"
+    ],
+    "internshipCompany": null,
+    "status": "graduated",
+    "registrationDate": "2025-12-21T17:38:36",
+    "lastLogin": "2025-06-30T22:39:05",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 14,
+    "firstName": "Любомир",
+    "lastName": "Кузнецова",
+    "email": "student14@university.edu",
+    "age": 19,
+    "faculty": "Экономика",
+    "year": 2,
+    "gpa": 4.3,
+    "enrollmentDate": "2023-10-08",
+    "courses": [
+      "Менеджмент"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "8 328 402 32 60",
+    "birthDate": "2006-01-22",
+    "country": "Узбекистан",
+    "skills": [
+      "Kubernetes",
+      "SQL",
+      "React",
+      "Java",
+      "MongoDB"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-02-24T12:03:22",
+    "lastLogin": "2026-01-01T08:42:21",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 15,
+    "firstName": "Бажен",
+    "lastName": "Власова",
+    "email": "student15@university.edu",
+    "age": 25,
+    "faculty": "Химия",
+    "year": 5,
+    "gpa": 3.4,
+    "enrollmentDate": "2020-09-25",
+    "courses": [
+      "Физика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "8 (143) 447-63-92",
+    "birthDate": "2006-10-02",
+    "country": "Кыргызстан",
+    "skills": [
+      "Git",
+      "Linux",
+      "Node.js",
+      "Excel",
+      "PostgreSQL"
+    ],
+    "internshipCompany": "ЗАО «Гаврилова»",
+    "status": "active",
+    "registrationDate": "2024-12-09T12:03:22",
+    "lastLogin": "2025-07-24T06:50:37",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id6200845",
+      "telegram": "@shcherbakovavtonom",
+      "github": "github.com/ustinovdementi"
+    }
+  },
+  {
+    "_id": 16,
+    "firstName": "Мария",
+    "lastName": "Дроздова",
+    "email": "student16@university.edu",
+    "age": 25,
+    "faculty": "Механика",
+    "year": 5,
+    "gpa": 3.9,
+    "enrollmentDate": "2020-10-09",
+    "courses": [
+      "Математика",
+      "Химия"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+7 748 904 75 19",
+    "birthDate": "2007-10-03",
+    "country": "Кыргызстан",
+    "skills": [
+      "Excel",
+      "MATLAB",
+      "MongoDB"
+    ],
+    "internshipCompany": "ИП «Воробьев Григорьева»",
+    "status": "active",
+    "registrationDate": "2025-07-23T01:48:20",
+    "lastLogin": "2025-08-30T20:06:34",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id5609493",
+      "telegram": "@timur_94",
+      "github": "github.com/galaktion86"
+    }
+  },
+  {
+    "_id": 17,
+    "firstName": "Анисим",
+    "lastName": "Мартынов",
+    "email": "student17@university.edu",
+    "age": 18,
+    "faculty": "Социология",
+    "year": 4,
+    "gpa": 4.9,
+    "enrollmentDate": "2021-09-24",
+    "courses": [
+      "Физика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "449B",
+    "phone": "+79253540408",
+    "birthDate": "2003-02-05",
+    "country": "Узбекистан",
+    "skills": [
+      "Node.js",
+      "MongoDB",
+      "Английский"
+    ],
+    "internshipCompany": "АО «Соколов Зимина»",
+    "status": "suspended",
+    "registrationDate": "2025-07-15T19:08:19",
+    "lastLogin": "2025-10-31T21:49:41",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 18,
+    "firstName": "Якуб",
+    "lastName": "Комаров",
+    "email": "student18@university.edu",
+    "age": 21,
+    "faculty": "Психология",
+    "year": 3,
+    "gpa": 3.8,
+    "enrollmentDate": "2022-10-12",
+    "courses": [
+      "Физика",
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "141A",
+    "phone": "+7 (443) 040-34-09",
+    "birthDate": "2007-05-10",
+    "country": "Беларусь",
+    "skills": [
+      "Анализ данных",
+      "Python"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-06-13T01:33:21",
+    "lastLogin": "2025-06-02T11:00:04",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id6575850",
+      "telegram": "@miroslav00",
+      "github": "github.com/demid_40"
+    }
+  },
+  {
+    "_id": 19,
+    "firstName": "Никодим",
+    "lastName": "Кудрявцев",
+    "email": "student19@university.edu",
+    "age": 19,
+    "faculty": "Физика",
+    "year": 4,
+    "gpa": 4.0,
+    "enrollmentDate": "2021-09-19",
+    "courses": [
+      "Квантовая механика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 508 739 05 96",
+    "birthDate": "2005-09-20",
+    "country": "Казахстан",
+    "skills": [
+      "Kubernetes",
+      "Linux",
+      "Java"
+    ],
+    "internshipCompany": "Неофарм",
+    "status": "active",
+    "registrationDate": "2024-03-08T20:11:08",
+    "lastLogin": "2025-01-26T23:11:48",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id9336511",
+      "telegram": "@mechislav2005",
+      "github": "github.com/aleksandrknjazev"
+    }
+  },
+  {
+    "_id": 20,
+    "firstName": "Феликс",
+    "lastName": "Цветкова",
+    "email": "student20@university.edu",
+    "age": 23,
+    "faculty": "Физика",
+    "year": 2,
+    "gpa": 4.3,
+    "enrollmentDate": "2023-09-12",
+    "courses": [
+      "Квантовая механика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 574 023 8172",
+    "birthDate": "2001-11-28",
+    "country": "Казахстан",
+    "skills": [
+      "Node.js",
+      "Excel",
+      "MATLAB",
+      "AutoCAD"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-02-28T16:11:47",
+    "lastLogin": "2025-06-05T19:48:16",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id5738956",
+      "telegram": "@tihongordeev",
+      "github": "github.com/egorovaivanna"
+    }
+  },
+  {
+    "_id": 21,
+    "firstName": "Фёкла",
+    "lastName": "Бирюков",
+    "email": "student21@university.edu",
+    "age": 19,
+    "faculty": "История",
+    "year": 1,
+    "gpa": 4.9,
+    "enrollmentDate": "2024-10-25",
+    "courses": [
+      "Математика",
+      "Физика",
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 (017) 251-4650",
+    "birthDate": "2005-03-12",
+    "country": "Казахстан",
+    "skills": [
+      "Статистика"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-05-18T21:55:30",
+    "lastLogin": "2025-08-13T08:35:51",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 22,
+    "firstName": "Савелий",
+    "lastName": "Брагина",
+    "email": "student22@university.edu",
+    "age": 21,
+    "faculty": "Физика",
+    "year": 4,
+    "gpa": 3.7,
+    "enrollmentDate": "2021-12-07",
+    "courses": [
+      "Ядерная физика",
+      "Электродинамика",
+      "Термодинамика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "145A",
+    "phone": "+7 452 671 6878",
+    "birthDate": "2003-09-25",
+    "country": "Россия",
+    "skills": [
+      "Linux"
+    ],
+    "internshipCompany": "ООО «Калинина Савина»",
+    "status": "active",
+    "registrationDate": "2025-12-15T14:47:19",
+    "lastLogin": "2025-11-06T08:14:02",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 23,
+    "firstName": "Ангелина",
+    "lastName": "Сергеева",
+    "email": "student23@university.edu",
+    "age": 20,
+    "faculty": "Механика",
+    "year": 3,
+    "gpa": 3.4,
+    "enrollmentDate": "2022-11-13",
+    "courses": [
+      "Химия",
+      "Математика",
+      "Физика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 (023) 035-45-71",
+    "birthDate": "2006-04-20",
+    "country": "Беларусь",
+    "skills": [
+      "Docker"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-01-14T14:41:18",
+    "lastLogin": "2025-08-29T15:24:45",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 24,
+    "firstName": "Сила",
+    "lastName": "Моисеев",
+    "email": "student24@university.edu",
+    "age": 24,
+    "faculty": "Социология",
+    "year": 3,
+    "gpa": 4.8,
+    "enrollmentDate": "2022-11-08",
+    "courses": [
+      "Физика",
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 186 660 1401",
+    "birthDate": "2004-11-16",
+    "country": "Таджикистан",
+    "skills": [
+      "SQL"
+    ],
+    "internshipCompany": "ЗАО «Уваров, Козлова и Григорьева»",
+    "status": "graduated",
+    "registrationDate": "2024-09-09T08:54:19",
+    "lastLogin": "2025-04-27T01:57:43",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 25,
+    "firstName": "Ираида",
+    "lastName": "Беспалова",
+    "email": "student25@university.edu",
+    "age": 20,
+    "faculty": "История",
+    "year": 1,
+    "gpa": 3.2,
+    "enrollmentDate": "2024-11-05",
+    "courses": [
+      "Химия",
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "216C",
+    "phone": "+7 070 505 39 51",
+    "birthDate": "2006-02-22",
+    "country": "Армения",
+    "skills": [
+      "Linux"
+    ],
+    "internshipCompany": "АО «Буров»",
+    "status": "active",
+    "registrationDate": "2025-04-06T00:14:52",
+    "lastLogin": "2025-08-20T13:40:38",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 26,
+    "firstName": "Евгений",
+    "lastName": "Крюкова",
+    "email": "student26@university.edu",
+    "age": 24,
+    "faculty": "Медицина",
+    "year": 2,
+    "gpa": 4.2,
+    "enrollmentDate": "2023-11-23",
+    "courses": [
+      "Хирургия",
+      "Фармакология",
+      "Физиология"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 188 231 89 35",
+    "birthDate": "2007-11-20",
+    "country": "Россия",
+    "skills": [
+      "Excel",
+      "AutoCAD",
+      "React",
+      "Анализ данных",
+      "Linux"
+    ],
+    "internshipCompany": "АО «Семенова, Харитонов и Калинина»",
+    "status": "active",
+    "registrationDate": "2025-05-08T00:36:06",
+    "lastLogin": "2025-02-08T12:47:19",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 27,
+    "firstName": "Максимильян",
+    "lastName": "Горшкова",
+    "email": "student27@university.edu",
+    "age": 22,
+    "faculty": "История",
+    "year": 2,
+    "gpa": 3.2,
+    "enrollmentDate": "2023-11-03",
+    "courses": [
+      "Математика",
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 733 018 73 54",
+    "birthDate": "2005-03-26",
+    "country": "Узбекистан",
+    "skills": [
+      "Немецкий",
+      "AutoCAD"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-06-03T21:20:56",
+    "lastLogin": "2025-12-20T09:05:36",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id9700698",
+      "telegram": "@braginvseslav",
+      "github": "github.com/demid_76"
+    }
+  },
+  {
+    "_id": 28,
+    "firstName": "Мстислав",
+    "lastName": "Шашков",
+    "email": "student28@university.edu",
+    "age": 19,
+    "faculty": "Медицина",
+    "year": 1,
+    "gpa": 3.2,
+    "enrollmentDate": "2024-09-28",
+    "courses": [
+      "Анатомия",
+      "Фармакология",
+      "Физиология"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": "485A",
+    "phone": "8 (098) 736-07-37",
+    "birthDate": "2004-04-20",
+    "country": "Казахстан",
+    "skills": [
+      "React",
+      "Немецкий"
+    ],
+    "internshipCompany": "АО «Петухов»",
+    "status": "active",
+    "registrationDate": "2025-01-25T06:05:44",
+    "lastLogin": "2025-08-05T05:59:26",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 29,
+    "firstName": "Борислав",
+    "lastName": "Юдина",
+    "email": "student29@university.edu",
+    "age": 24,
+    "faculty": "Химия",
+    "year": 2,
+    "gpa": 3.7,
+    "enrollmentDate": "2023-11-26",
+    "courses": [
+      "Химия",
+      "Физика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "375C",
+    "phone": "8 (110) 080-0773",
+    "birthDate": "2001-12-05",
+    "country": "Армения",
+    "skills": [
+      "Docker"
+    ],
+    "internshipCompany": "Пестова Инкорпорэйтед",
+    "status": "active",
+    "registrationDate": "2024-11-07T23:52:15",
+    "lastLogin": "2025-09-23T00:01:12",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 30,
+    "firstName": "Радим",
+    "lastName": "Цветков",
+    "email": "student30@university.edu",
+    "age": 21,
+    "faculty": "Физика",
+    "year": 3,
+    "gpa": 4.9,
+    "enrollmentDate": "2022-10-09",
+    "courses": [
+      "Оптика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+7 (525) 379-19-52",
+    "birthDate": "2006-04-04",
+    "country": "Таджикистан",
+    "skills": [
+      "Немецкий",
+      "React"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-06-13T22:51:59",
+    "lastLogin": "2025-03-08T01:20:36",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 31,
+    "firstName": "Харлампий",
+    "lastName": "Игнатьев",
+    "email": "student31@university.edu",
+    "age": 21,
+    "faculty": "История",
+    "year": 4,
+    "gpa": 3.3,
+    "enrollmentDate": "2021-09-20",
+    "courses": [
+      "Химия",
+      "Физика",
+      "Математика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+7 (600) 308-4495",
+    "birthDate": "2005-01-29",
+    "country": "Армения",
+    "skills": [
+      "C++",
+      "Docker",
+      "Kubernetes",
+      "Java",
+      "Английский"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-01-12T12:53:17",
+    "lastLogin": "2025-06-28T23:21:08",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 32,
+    "firstName": "Филипп",
+    "lastName": "Савельев",
+    "email": "student32@university.edu",
+    "age": 19,
+    "faculty": "Экономика",
+    "year": 2,
+    "gpa": 5.0,
+    "enrollmentDate": "2023-10-10",
+    "courses": [
+      "Статистика",
+      "Макроэкономика",
+      "Менеджмент"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "8 (474) 361-3391",
+    "birthDate": "2004-01-12",
+    "country": "Армения",
+    "skills": [
+      "React",
+      "Анализ данных",
+      "Linux",
+      "Английский"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-12-01T18:05:06",
+    "lastLogin": "2025-04-06T12:46:42",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id7265987",
+      "telegram": "@kornilovboleslav",
+      "github": "github.com/jakovkonstantinov"
+    }
+  },
+  {
+    "_id": 33,
+    "firstName": "Нифонт",
+    "lastName": "Лебедев",
+    "email": "student33@university.edu",
+    "age": 22,
+    "faculty": "Математика",
+    "year": 2,
+    "gpa": 3.1,
+    "enrollmentDate": "2023-09-16",
+    "courses": [
+      "Математика",
+      "Физика",
+      "Химия"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "8 062 093 24 92",
+    "birthDate": "2004-11-08",
+    "country": "Россия",
+    "skills": [
+      "Linux",
+      "Docker",
+      "PostgreSQL",
+      "SQL",
+      "C++"
+    ],
+    "internshipCompany": "РАО «Белоусова»",
+    "status": "active",
+    "registrationDate": "2025-07-17T23:53:07",
+    "lastLogin": "2025-05-05T23:33:47",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id2816933",
+      "telegram": "@marina2014",
+      "github": "github.com/svjatopolk57"
+    }
+  },
+  {
+    "_id": 34,
+    "firstName": "Алевтина",
+    "lastName": "Ларионова",
+    "email": "student34@university.edu",
+    "age": 18,
+    "faculty": "Психология",
+    "year": 5,
+    "gpa": 3.3,
+    "enrollmentDate": "2020-09-16",
+    "courses": [
+      "Математика",
+      "Химия",
+      "Физика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": "216A",
+    "phone": "8 (844) 993-3676",
+    "birthDate": "2004-01-20",
+    "country": "Украина",
+    "skills": [
+      "C++",
+      "React",
+      "MATLAB",
+      "Python",
+      "AutoCAD"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-05-11T20:17:34",
+    "lastLogin": "2025-01-12T18:07:10",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 35,
+    "firstName": "Остромир",
+    "lastName": "Фролова",
+    "email": "student35@university.edu",
+    "age": 25,
+    "faculty": "Медицина",
+    "year": 2,
+    "gpa": 3.1,
+    "enrollmentDate": "2023-12-11",
+    "courses": [
+      "Химия"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "8 (025) 274-3055",
+    "birthDate": "2000-12-03",
+    "country": "Туркменистан",
+    "skills": [
+      "Excel"
+    ],
+    "internshipCompany": "ОАО «Елисеева»",
+    "status": "active",
+    "registrationDate": "2025-02-15T01:25:22",
+    "lastLogin": "2025-06-04T15:45:47",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id9807540",
+      "telegram": "@radislav1981",
+      "github": "github.com/zoja_56"
+    }
+  },
+  {
+    "_id": 36,
+    "firstName": "Ян",
+    "lastName": "Давыдова",
+    "email": "student36@university.edu",
+    "age": 23,
+    "faculty": "Биология",
+    "year": 4,
+    "gpa": 4.0,
+    "enrollmentDate": "2021-10-28",
+    "courses": [
+      "Физика",
+      "Химия",
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 (854) 867-0082",
+    "birthDate": "2007-01-07",
+    "country": "Армения",
+    "skills": [
+      "MATLAB",
+      "Docker",
+      "Английский"
+    ],
+    "internshipCompany": "Петухов Лимитед",
+    "status": "active",
+    "registrationDate": "2024-10-24T03:21:22",
+    "lastLogin": "2025-07-05T19:26:55",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id7840635",
+      "telegram": "@hohlovfilimon",
+      "github": "github.com/beljakovamarina"
+    }
+  },
+  {
+    "_id": 37,
+    "firstName": "Евдоким",
+    "lastName": "Тимофеев",
+    "email": "student37@university.edu",
+    "age": 21,
+    "faculty": "Математика",
+    "year": 3,
+    "gpa": 4.9,
+    "enrollmentDate": "2022-12-22",
+    "courses": [
+      "Математика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+7 (926) 779-0432",
+    "birthDate": "2004-10-26",
+    "country": "Казахстан",
+    "skills": [
+      "Статистика",
+      "Git",
+      "Excel",
+      "Английский",
+      "Java"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-03-10T23:06:10",
+    "lastLogin": "2025-10-08T10:24:37",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id9309465",
+      "telegram": "@tnazarova",
+      "github": "github.com/maksimiljan2015"
+    }
+  },
+  {
+    "_id": 38,
+    "firstName": "Григорий",
+    "lastName": "Суворова",
+    "email": "student38@university.edu",
+    "age": 24,
+    "faculty": "Лингвистика",
+    "year": 3,
+    "gpa": 3.4,
+    "enrollmentDate": "2022-09-07",
+    "courses": [
+      "Теория перевода",
+      "Фонетика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "8 586 627 7222",
+    "birthDate": "2007-11-14",
+    "country": "Армения",
+    "skills": [
+      "Немецкий",
+      "Статистика",
+      "Node.js",
+      "MATLAB"
+    ],
+    "internshipCompany": "Касторама Рус (Castorama)",
+    "status": "active",
+    "registrationDate": "2024-03-26T19:43:12",
+    "lastLogin": "2025-08-01T08:15:58",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 39,
+    "firstName": "Лукьян",
+    "lastName": "Котов",
+    "email": "student39@university.edu",
+    "age": 24,
+    "faculty": "Физика",
+    "year": 1,
+    "gpa": 4.4,
+    "enrollmentDate": "2024-09-24",
+    "courses": [
+      "Термодинамика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+70355499910",
+    "birthDate": "2004-07-29",
+    "country": "Россия",
+    "skills": [
+      "Python",
+      "Статистика"
+    ],
+    "internshipCompany": "Азур Эйр",
+    "status": "active",
+    "registrationDate": "2025-06-10T05:30:00",
+    "lastLogin": "2026-01-04T00:16:19",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 40,
+    "firstName": "Агафья",
+    "lastName": "Крюкова",
+    "email": "student40@university.edu",
+    "age": 19,
+    "faculty": "Математика",
+    "year": 3,
+    "gpa": 3.5,
+    "enrollmentDate": "2022-12-14",
+    "courses": [
+      "Математика",
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 (484) 275-0853",
+    "birthDate": "2002-05-15",
+    "country": "Россия",
+    "skills": [
+      "Анализ данных",
+      "MongoDB"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-05-26T16:40:15",
+    "lastLogin": "2025-07-25T12:12:49",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id8347912",
+      "telegram": "@pavelmjasnikov",
+      "github": "github.com/ignatevisa"
+    }
+  },
+  {
+    "_id": 41,
+    "firstName": "Арсений",
+    "lastName": "Фадеев",
+    "email": "student41@university.edu",
+    "age": 25,
+    "faculty": "Философия",
+    "year": 1,
+    "gpa": 4.5,
+    "enrollmentDate": "2024-09-07",
+    "courses": [
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 (205) 853-08-85",
+    "birthDate": "2001-11-30",
+    "country": "Азербайджан",
+    "skills": [
+      "MATLAB",
+      "C++",
+      "Немецкий"
+    ],
+    "internshipCompany": "Независимая энергосбытовая компания Краснодарского края",
+    "status": "active",
+    "registrationDate": "2025-07-07T07:10:35",
+    "lastLogin": "2025-02-27T03:41:55",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 42,
+    "firstName": "Агафья",
+    "lastName": "Кононова",
+    "email": "student42@university.edu",
+    "age": 21,
+    "faculty": "Психология",
+    "year": 5,
+    "gpa": 3.0,
+    "enrollmentDate": "2020-09-26",
+    "courses": [
+      "Математика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "8 020 147 4842",
+    "birthDate": "2000-05-09",
+    "country": "Туркменистан",
+    "skills": [
+      "Node.js",
+      "Linux",
+      "MATLAB"
+    ],
+    "internshipCompany": "Миронова Лимитед",
+    "status": "active",
+    "registrationDate": "2025-03-27T07:35:55",
+    "lastLogin": "2025-03-05T17:57:16",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id6047130",
+      "telegram": "@lribakova",
+      "github": "github.com/ermilagafonov"
+    }
+  },
+  {
+    "_id": 43,
+    "firstName": "Тихон",
+    "lastName": "Пономарев",
+    "email": "student43@university.edu",
+    "age": 19,
+    "faculty": "Социология",
+    "year": 1,
+    "gpa": 3.2,
+    "enrollmentDate": "2024-10-07",
+    "courses": [
+      "Физика",
+      "Математика",
+      "Химия"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+7 002 156 95 55",
+    "birthDate": "2002-10-14",
+    "country": "Кыргызстан",
+    "skills": [
+      "AutoCAD",
+      "React"
+    ],
+    "internshipCompany": "ООО «Гаврилова-Наумова»",
+    "status": "suspended",
+    "registrationDate": "2025-08-14T06:32:03",
+    "lastLogin": "2025-02-20T01:43:13",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id9258188",
+      "telegram": "@jan1986",
+      "github": "github.com/timofe68"
+    }
+  },
+  {
+    "_id": 44,
+    "firstName": "Ефим",
+    "lastName": "Шубина",
+    "email": "student44@university.edu",
+    "age": 21,
+    "faculty": "Информационные технологии",
+    "year": 3,
+    "gpa": 3.4,
+    "enrollmentDate": "2022-11-25",
+    "courses": [
+      "Математика",
+      "Программирование"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 (672) 080-1123",
+    "birthDate": "2001-07-12",
+    "country": "Туркменистан",
+    "skills": [
+      "MongoDB"
+    ],
+    "internshipCompany": "Тарасов Групп",
+    "status": "active",
+    "registrationDate": "2025-12-15T02:45:24",
+    "lastLogin": "2025-06-25T19:02:32",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id8048016",
+      "telegram": "@nekrasovatamara",
+      "github": "github.com/amvrosimatveev"
+    }
+  },
+  {
+    "_id": 45,
+    "firstName": "Фока",
+    "lastName": "Морозова",
+    "email": "student45@university.edu",
+    "age": 19,
+    "faculty": "Социология",
+    "year": 4,
+    "gpa": 3.4,
+    "enrollmentDate": "2021-09-24",
+    "courses": [
+      "Физика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "84613808443",
+    "birthDate": "2004-12-24",
+    "country": "Украина",
+    "skills": [
+      "MATLAB",
+      "Java",
+      "Linux",
+      "Анализ данных"
+    ],
+    "internshipCompany": "НПО «Мельников Мельников»",
+    "status": "active",
+    "registrationDate": "2024-12-02T21:53:47",
+    "lastLogin": "2025-07-16T17:33:46",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id4052423",
+      "telegram": "@filatovmartjan",
+      "github": "github.com/modest_47"
+    }
+  },
+  {
+    "_id": 46,
+    "firstName": "Аристарх",
+    "lastName": "Орехова",
+    "email": "student46@university.edu",
+    "age": 20,
+    "faculty": "Химия",
+    "year": 3,
+    "gpa": 3.1,
+    "enrollmentDate": "2022-12-23",
+    "courses": [
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 (196) 248-5516",
+    "birthDate": "2007-11-12",
+    "country": "Армения",
+    "skills": [
+      "Java",
+      "Docker",
+      "Linux"
+    ],
+    "internshipCompany": "Овчинников Групп",
+    "status": "active",
+    "registrationDate": "2025-01-11T10:22:44",
+    "lastLogin": "2025-06-09T22:36:55",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id7023638",
+      "telegram": "@vladislav_1983",
+      "github": "github.com/denisovafevronija"
+    }
+  },
+  {
+    "_id": 47,
+    "firstName": "Василиса",
+    "lastName": "Павлов",
+    "email": "student47@university.edu",
+    "age": 20,
+    "faculty": "Биология",
+    "year": 5,
+    "gpa": 3.8,
+    "enrollmentDate": "2020-09-19",
+    "courses": [
+      "Химия",
+      "Физика",
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+76918812164",
+    "birthDate": "2004-12-30",
+    "country": "Узбекистан",
+    "skills": [
+      "Статистика",
+      "Docker",
+      "Python"
+    ],
+    "internshipCompany": "РАО «Владимирова Гуляева»",
+    "status": "active",
+    "registrationDate": "2024-04-03T09:48:53",
+    "lastLogin": "2025-03-29T10:01:38",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id5257292",
+      "telegram": "@denis1981",
+      "github": "github.com/gostomislagafonov"
+    }
+  },
+  {
+    "_id": 48,
+    "firstName": "Сила",
+    "lastName": "Карпов",
+    "email": "student48@university.edu",
+    "age": 22,
+    "faculty": "История",
+    "year": 4,
+    "gpa": 4.7,
+    "enrollmentDate": "2021-12-22",
+    "courses": [
+      "Физика",
+      "Математика",
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "122A",
+    "phone": "+7 (563) 351-5428",
+    "birthDate": "2002-04-03",
+    "country": "Узбекистан",
+    "skills": [
+      "SQL",
+      "Excel",
+      "PostgreSQL",
+      "Python",
+      "Git"
+    ],
+    "internshipCompany": "ОАО «Федоров, Самойлов и Мельникова»",
+    "status": "active",
+    "registrationDate": "2025-06-25T23:34:21",
+    "lastLogin": "2025-02-08T04:10:43",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id6358501",
+      "telegram": "@kulakovmina",
+      "github": "github.com/vissarion_2019"
+    }
+  },
+  {
+    "_id": 49,
+    "firstName": "Гедеон",
+    "lastName": "Третьяков",
+    "email": "student49@university.edu",
+    "age": 21,
+    "faculty": "Биология",
+    "year": 2,
+    "gpa": 4.1,
+    "enrollmentDate": "2023-11-08",
+    "courses": [
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "202B",
+    "phone": "8 186 958 6363",
+    "birthDate": "2000-04-29",
+    "country": "Узбекистан",
+    "skills": [
+      "AutoCAD",
+      "Linux",
+      "MongoDB",
+      "C++",
+      "Статистика"
+    ],
+    "internshipCompany": null,
+    "status": "suspended",
+    "registrationDate": "2024-03-22T11:55:24",
+    "lastLogin": "2025-07-21T10:29:15",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 50,
+    "firstName": "Мстислав",
+    "lastName": "Осипов",
+    "email": "student50@university.edu",
+    "age": 19,
+    "faculty": "Философия",
+    "year": 5,
+    "gpa": 4.9,
+    "enrollmentDate": "2020-12-10",
+    "courses": [
+      "Физика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+7 (342) 360-6661",
+    "birthDate": "2007-09-02",
+    "country": "Россия",
+    "skills": [
+      "React",
+      "Немецкий",
+      "Linux",
+      "Git",
+      "Docker"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-11-17T01:23:08",
+    "lastLogin": "2025-07-03T16:26:45",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id1051404",
+      "telegram": "@samsonisakov",
+      "github": "github.com/nazarbirjukov"
+    }
+  },
+  {
+    "_id": 51,
+    "firstName": "Владимир",
+    "lastName": "Гурьева",
+    "email": "student51@university.edu",
+    "age": 20,
+    "faculty": "Информационные технологии",
+    "year": 1,
+    "gpa": 4.6,
+    "enrollmentDate": "2024-10-22",
+    "courses": [
+      "Сети"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": "322A",
+    "phone": "84176964226",
+    "birthDate": "2002-10-25",
+    "country": "Армения",
+    "skills": [
+      "MongoDB",
+      "Git",
+      "Java"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-02-01T12:09:13",
+    "lastLogin": "2025-10-05T00:42:52",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 52,
+    "firstName": "Климент",
+    "lastName": "Орлов",
+    "email": "student52@university.edu",
+    "age": 24,
+    "faculty": "История",
+    "year": 1,
+    "gpa": 3.5,
+    "enrollmentDate": "2024-11-03",
+    "courses": [
+      "Физика",
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 (291) 050-4368",
+    "birthDate": "2001-04-22",
+    "country": "Кыргызстан",
+    "skills": [
+      "MongoDB",
+      "C++",
+      "Английский",
+      "SQL",
+      "React"
+    ],
+    "internshipCompany": "АО «Нестерова»",
+    "status": "active",
+    "registrationDate": "2024-03-09T05:35:03",
+    "lastLogin": "2025-11-13T22:30:31",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 53,
+    "firstName": "Тимур",
+    "lastName": "Беляков",
+    "email": "student53@university.edu",
+    "age": 25,
+    "faculty": "Психология",
+    "year": 1,
+    "gpa": 4.1,
+    "enrollmentDate": "2024-09-10",
+    "courses": [
+      "Химия"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "8 (290) 522-6040",
+    "birthDate": "2000-06-17",
+    "country": "Азербайджан",
+    "skills": [
+      "Excel",
+      "C++",
+      "PostgreSQL",
+      "Python"
+    ],
+    "internshipCompany": "ОАО «Соловьев Воробьева»",
+    "status": "active",
+    "registrationDate": "2024-07-03T01:53:05",
+    "lastLogin": "2025-11-22T22:13:18",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 54,
+    "firstName": "Ульяна",
+    "lastName": "Журавлева",
+    "email": "student54@university.edu",
+    "age": 19,
+    "faculty": "Психология",
+    "year": 1,
+    "gpa": 4.1,
+    "enrollmentDate": "2024-12-09",
+    "courses": [
+      "Химия",
+      "Математика",
+      "Физика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": "408B",
+    "phone": "+7 (183) 975-1747",
+    "birthDate": "2001-07-15",
+    "country": "Украина",
+    "skills": [
+      "AutoCAD",
+      "Linux",
+      "Статистика",
+      "React"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-02-23T12:14:56",
+    "lastLogin": "2025-10-18T10:31:10",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id8848517",
+      "telegram": "@kudrjashovbronislav",
+      "github": "github.com/orestkalinin"
+    }
+  },
+  {
+    "_id": 55,
+    "firstName": "Федот",
+    "lastName": "Устинов",
+    "email": "student55@university.edu",
+    "age": 25,
+    "faculty": "Математика",
+    "year": 3,
+    "gpa": 3.3,
+    "enrollmentDate": "2022-09-25",
+    "courses": [
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 180 231 3663",
+    "birthDate": "2006-09-07",
+    "country": "Казахстан",
+    "skills": [
+      "MongoDB",
+      "AutoCAD",
+      "Node.js",
+      "Linux",
+      "Kubernetes"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-03-23T10:55:30",
+    "lastLogin": "2025-04-05T03:53:48",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 56,
+    "firstName": "Конон",
+    "lastName": "Ершов",
+    "email": "student56@university.edu",
+    "age": 25,
+    "faculty": "Философия",
+    "year": 3,
+    "gpa": 4.2,
+    "enrollmentDate": "2022-12-14",
+    "courses": [
+      "Математика",
+      "Физика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 (796) 610-44-25",
+    "birthDate": "2004-11-22",
+    "country": "Азербайджан",
+    "skills": [
+      "Docker",
+      "React"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-05-07T06:58:28",
+    "lastLogin": "2025-10-06T01:14:26",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 57,
+    "firstName": "Акулина",
+    "lastName": "Суханов",
+    "email": "student57@university.edu",
+    "age": 20,
+    "faculty": "Юриспруденция",
+    "year": 3,
+    "gpa": 3.8,
+    "enrollmentDate": "2022-11-28",
+    "courses": [
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "354A",
+    "phone": "+7 069 580 3079",
+    "birthDate": "2004-02-19",
+    "country": "Армения",
+    "skills": [
+      "Анализ данных",
+      "React",
+      "AutoCAD",
+      "Kubernetes",
+      "MATLAB"
+    ],
+    "internshipCompany": "Белгранкорм-холдинг",
+    "status": "active",
+    "registrationDate": "2024-03-16T07:18:48",
+    "lastLogin": "2025-04-09T01:59:31",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 58,
+    "firstName": "Василий",
+    "lastName": "Овчинникова",
+    "email": "student58@university.edu",
+    "age": 18,
+    "faculty": "Информационные технологии",
+    "year": 4,
+    "gpa": 4.6,
+    "enrollmentDate": "2021-12-18",
+    "courses": [
+      "Программирование",
+      "ОС"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "8 649 649 54 78",
+    "birthDate": "2006-01-19",
+    "country": "Армения",
+    "skills": [
+      "Git",
+      "Python",
+      "Node.js"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-11-23T13:34:23",
+    "lastLogin": "2025-09-15T05:28:03",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 59,
+    "firstName": "Ростислав",
+    "lastName": "Беспалов",
+    "email": "student59@university.edu",
+    "age": 21,
+    "faculty": "Социология",
+    "year": 1,
+    "gpa": 4.7,
+    "enrollmentDate": "2024-10-22",
+    "courses": [
+      "Физика",
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 732 406 3019",
+    "birthDate": "2005-12-07",
+    "country": "Казахстан",
+    "skills": [
+      "AutoCAD",
+      "Немецкий"
+    ],
+    "internshipCompany": "ООО «Лаврентьев-Носов»",
+    "status": "active",
+    "registrationDate": "2024-04-09T03:45:17",
+    "lastLogin": "2025-09-15T17:44:01",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id7059383",
+      "telegram": "@krjukovaoktjabrina",
+      "github": "github.com/iosifmelnikov"
+    }
+  },
+  {
+    "_id": 60,
+    "firstName": "Арсений",
+    "lastName": "Гущин",
+    "email": "student60@university.edu",
+    "age": 25,
+    "faculty": "Лингвистика",
+    "year": 2,
+    "gpa": 4.8,
+    "enrollmentDate": "2023-11-23",
+    "courses": [
+      "Фонетика",
+      "Теория перевода",
+      "Культурология"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 (444) 548-58-71",
+    "birthDate": "2007-09-08",
+    "country": "Туркменистан",
+    "skills": [
+      "AutoCAD",
+      "PostgreSQL",
+      "SQL"
+    ],
+    "internshipCompany": "Комиссарова Инкорпорэйтед",
+    "status": "graduated",
+    "registrationDate": "2024-05-08T22:46:23",
+    "lastLogin": "2025-03-24T05:10:53",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 61,
+    "firstName": "Тамара",
+    "lastName": "Денисова",
+    "email": "student61@university.edu",
+    "age": 22,
+    "faculty": "Философия",
+    "year": 3,
+    "gpa": 4.8,
+    "enrollmentDate": "2022-12-10",
+    "courses": [
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 (153) 061-9208",
+    "birthDate": "2001-09-28",
+    "country": "Украина",
+    "skills": [
+      "PostgreSQL",
+      "AutoCAD"
+    ],
+    "internshipCompany": "ИП «Аксенов»",
+    "status": "graduated",
+    "registrationDate": "2025-08-11T11:20:31",
+    "lastLogin": "2025-12-07T03:42:28",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id4837820",
+      "telegram": "@qegorova",
+      "github": "github.com/miroslav_62"
+    }
+  },
+  {
+    "_id": 62,
+    "firstName": "Макар",
+    "lastName": "Наумова",
+    "email": "student62@university.edu",
+    "age": 21,
+    "faculty": "Физика",
+    "year": 1,
+    "gpa": 4.7,
+    "enrollmentDate": "2024-11-17",
+    "courses": [
+      "Электродинамика",
+      "Термодинамика",
+      "Оптика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "325C",
+    "phone": "8 (477) 524-9126",
+    "birthDate": "2000-08-06",
+    "country": "Узбекистан",
+    "skills": [
+      "AutoCAD",
+      "Java",
+      "Python"
+    ],
+    "internshipCompany": "Миронов Лтд",
+    "status": "graduated",
+    "registrationDate": "2024-11-19T09:31:36",
+    "lastLogin": "2025-02-08T05:37:13",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 63,
+    "firstName": "Нифонт",
+    "lastName": "Блохина",
+    "email": "student63@university.edu",
+    "age": 25,
+    "faculty": "История",
+    "year": 4,
+    "gpa": 3.3,
+    "enrollmentDate": "2021-09-05",
+    "courses": [
+      "Физика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 (602) 655-8801",
+    "birthDate": "2005-02-11",
+    "country": "Армения",
+    "skills": [
+      "Docker"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-06-10T21:15:21",
+    "lastLogin": "2025-12-25T21:21:00",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id1225723",
+      "telegram": "@zahar_1997",
+      "github": "github.com/medvedevamarfa"
+    }
+  },
+  {
+    "_id": 64,
+    "firstName": "Порфирий",
+    "lastName": "Осипова",
+    "email": "student64@university.edu",
+    "age": 20,
+    "faculty": "Юриспруденция",
+    "year": 2,
+    "gpa": 3.7,
+    "enrollmentDate": "2023-09-20",
+    "courses": [
+      "Физика",
+      "Математика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+7 (925) 710-8599",
+    "birthDate": "2000-03-01",
+    "country": "Беларусь",
+    "skills": [
+      "Linux",
+      "Немецкий"
+    ],
+    "internshipCompany": null,
+    "status": "graduated",
+    "registrationDate": "2024-04-16T05:51:19",
+    "lastLogin": "2025-02-23T23:50:20",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id8571816",
+      "telegram": "@naum_1990",
+      "github": "github.com/julian84"
+    }
+  },
+  {
+    "_id": 65,
+    "firstName": "Пров",
+    "lastName": "Пестов",
+    "email": "student65@university.edu",
+    "age": 22,
+    "faculty": "Информационные технологии",
+    "year": 1,
+    "gpa": 3.9,
+    "enrollmentDate": "2024-12-08",
+    "courses": [
+      "ИИ"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 365 184 70 60",
+    "birthDate": "2007-12-31",
+    "country": "Узбекистан",
+    "skills": [
+      "Node.js",
+      "React"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-04-24T20:19:46",
+    "lastLogin": "2025-05-08T06:44:44",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 66,
+    "firstName": "Елисей",
+    "lastName": "Константинов",
+    "email": "student66@university.edu",
+    "age": 22,
+    "faculty": "Психология",
+    "year": 1,
+    "gpa": 3.2,
+    "enrollmentDate": "2024-10-11",
+    "courses": [
+      "Математика",
+      "Физика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": "215B",
+    "phone": "8 075 977 0423",
+    "birthDate": "2000-02-05",
+    "country": "Украина",
+    "skills": [
+      "Kubernetes",
+      "Git",
+      "Docker",
+      "MongoDB"
+    ],
+    "internshipCompany": "НПО «Чернов Матвеева»",
+    "status": "active",
+    "registrationDate": "2025-12-22T20:58:55",
+    "lastLogin": "2025-11-25T13:46:23",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id5512048",
+      "telegram": "@avde81",
+      "github": "github.com/progova"
+    }
+  },
+  {
+    "_id": 67,
+    "firstName": "Афанасий",
+    "lastName": "Поляков",
+    "email": "student67@university.edu",
+    "age": 18,
+    "faculty": "Биология",
+    "year": 5,
+    "gpa": 4.2,
+    "enrollmentDate": "2020-12-20",
+    "courses": [
+      "Физика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "491C",
+    "phone": "+7 (680) 080-5153",
+    "birthDate": "2003-02-07",
+    "country": "Кыргызстан",
+    "skills": [
+      "PostgreSQL",
+      "Статистика",
+      "Node.js",
+      "Excel",
+      "Python"
+    ],
+    "internshipCompany": null,
+    "status": "graduated",
+    "registrationDate": "2025-12-03T22:55:10",
+    "lastLogin": "2025-11-05T22:46:56",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 68,
+    "firstName": "Клавдий",
+    "lastName": "Лукина",
+    "email": "student68@university.edu",
+    "age": 24,
+    "faculty": "Математика",
+    "year": 3,
+    "gpa": 4.5,
+    "enrollmentDate": "2022-10-19",
+    "courses": [
+      "Химия",
+      "Физика",
+      "Математика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": "271C",
+    "phone": "89783422800",
+    "birthDate": "2004-05-01",
+    "country": "Азербайджан",
+    "skills": [
+      "Kubernetes",
+      "PostgreSQL",
+      "Node.js",
+      "Анализ данных",
+      "Немецкий"
+    ],
+    "internshipCompany": "АО «Шашкова Кузнецова»",
+    "status": "active",
+    "registrationDate": "2025-05-09T15:17:22",
+    "lastLogin": "2025-04-21T10:17:12",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 69,
+    "firstName": "Лаврентий",
+    "lastName": "Александрова",
+    "email": "student69@university.edu",
+    "age": 22,
+    "faculty": "Экономика",
+    "year": 2,
+    "gpa": 3.2,
+    "enrollmentDate": "2023-10-09",
+    "courses": [
+      "Финансы",
+      "Статистика",
+      "Менеджмент"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+7 684 907 4315",
+    "birthDate": "2006-10-21",
+    "country": "Таджикистан",
+    "skills": [
+      "AutoCAD",
+      "SQL",
+      "Git",
+      "Kubernetes"
+    ],
+    "internshipCompany": "Смирнова Лтд",
+    "status": "active",
+    "registrationDate": "2024-03-04T19:09:07",
+    "lastLogin": "2025-06-20T09:41:41",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id2505535",
+      "telegram": "@lev21",
+      "github": "github.com/izjaslav1980"
+    }
+  },
+  {
+    "_id": 70,
+    "firstName": "Евстигней",
+    "lastName": "Турова",
+    "email": "student70@university.edu",
+    "age": 25,
+    "faculty": "Биология",
+    "year": 1,
+    "gpa": 3.2,
+    "enrollmentDate": "2024-10-13",
+    "courses": [
+      "Математика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "8 814 544 9667",
+    "birthDate": "2004-10-24",
+    "country": "Казахстан",
+    "skills": [
+      "Python",
+      "Kubernetes"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-07-19T19:38:49",
+    "lastLogin": "2025-06-02T13:38:21",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id3353033",
+      "telegram": "@gostomisl2011",
+      "github": "github.com/gzhukova"
+    }
+  },
+  {
+    "_id": 71,
+    "firstName": "Валентин",
+    "lastName": "Рыбаков",
+    "email": "student71@university.edu",
+    "age": 25,
+    "faculty": "Психология",
+    "year": 2,
+    "gpa": 4.7,
+    "enrollmentDate": "2023-10-06",
+    "courses": [
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 429 438 9549",
+    "birthDate": "2000-01-21",
+    "country": "Туркменистан",
+    "skills": [
+      "Git",
+      "Docker",
+      "Немецкий",
+      "Статистика",
+      "AutoCAD"
+    ],
+    "internshipCompany": "Т2 РТК Холдинг",
+    "status": "graduated",
+    "registrationDate": "2024-10-27T04:38:49",
+    "lastLogin": "2025-12-29T07:32:46",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id6767240",
+      "telegram": "@feliks_53",
+      "github": "github.com/afinogen_2009"
+    }
+  },
+  {
+    "_id": 72,
+    "firstName": "Венедикт",
+    "lastName": "Щербакова",
+    "email": "student72@university.edu",
+    "age": 24,
+    "faculty": "Социология",
+    "year": 5,
+    "gpa": 3.2,
+    "enrollmentDate": "2020-11-18",
+    "courses": [
+      "Химия",
+      "Математика",
+      "Физика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "359A",
+    "phone": "82401052515",
+    "birthDate": "2000-06-16",
+    "country": "Украина",
+    "skills": [
+      "Java",
+      "MATLAB",
+      "Статистика",
+      "PostgreSQL",
+      "Git"
+    ],
+    "internshipCompany": "ОАО «Зуева-Кондратьева»",
+    "status": "active",
+    "registrationDate": "2025-07-18T11:40:52",
+    "lastLogin": "2025-12-28T06:57:39",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 73,
+    "firstName": "Ферапонт",
+    "lastName": "Калинин",
+    "email": "student73@university.edu",
+    "age": 24,
+    "faculty": "Юриспруденция",
+    "year": 4,
+    "gpa": 4.9,
+    "enrollmentDate": "2021-09-19",
+    "courses": [
+      "Химия"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "8 476 590 54 74",
+    "birthDate": "2000-05-05",
+    "country": "Армения",
+    "skills": [
+      "AutoCAD",
+      "React"
+    ],
+    "internshipCompany": null,
+    "status": "graduated",
+    "registrationDate": "2024-09-03T07:45:29",
+    "lastLogin": "2025-08-30T01:17:39",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 74,
+    "firstName": "Афанасий",
+    "lastName": "Самойлова",
+    "email": "student74@university.edu",
+    "age": 22,
+    "faculty": "Философия",
+    "year": 4,
+    "gpa": 3.1,
+    "enrollmentDate": "2021-10-23",
+    "courses": [
+      "Математика",
+      "Химия",
+      "Физика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+71669593387",
+    "birthDate": "2005-05-14",
+    "country": "Таджикистан",
+    "skills": [
+      "Английский",
+      "React",
+      "Excel"
+    ],
+    "internshipCompany": "Газнефтетрэйдинг",
+    "status": "active",
+    "registrationDate": "2025-02-18T13:46:24",
+    "lastLogin": "2025-03-17T23:18:55",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 75,
+    "firstName": "Аким",
+    "lastName": "Князева",
+    "email": "student75@university.edu",
+    "age": 20,
+    "faculty": "Социология",
+    "year": 2,
+    "gpa": 3.5,
+    "enrollmentDate": "2023-12-05",
+    "courses": [
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 (253) 961-9838",
+    "birthDate": "2005-06-22",
+    "country": "Украина",
+    "skills": [
+      "Немецкий",
+      "AutoCAD"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-02-14T18:09:20",
+    "lastLogin": "2025-02-26T10:03:38",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 76,
+    "firstName": "Карп",
+    "lastName": "Чернова",
+    "email": "student76@university.edu",
+    "age": 23,
+    "faculty": "Экономика",
+    "year": 4,
+    "gpa": 4.6,
+    "enrollmentDate": "2021-10-24",
+    "courses": [
+      "Микроэкономика",
+      "Финансы",
+      "Макроэкономика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+70906506912",
+    "birthDate": "2006-02-15",
+    "country": "Казахстан",
+    "skills": [
+      "AutoCAD",
+      "SQL",
+      "Kubernetes",
+      "Node.js",
+      "Git"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-07-08T00:25:48",
+    "lastLogin": "2025-05-01T15:07:13",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 77,
+    "firstName": "Пров",
+    "lastName": "Федорова",
+    "email": "student77@university.edu",
+    "age": 20,
+    "faculty": "Юриспруденция",
+    "year": 3,
+    "gpa": 4.7,
+    "enrollmentDate": "2022-09-21",
+    "courses": [
+      "Физика",
+      "Химия",
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "313A",
+    "phone": "8 (669) 512-9111",
+    "birthDate": "2001-02-26",
+    "country": "Узбекистан",
+    "skills": [
+      "PostgreSQL",
+      "Excel",
+      "Английский"
+    ],
+    "internshipCompany": "Никонова Инк",
+    "status": "active",
+    "registrationDate": "2024-07-09T22:15:57",
+    "lastLogin": "2025-06-17T12:46:22",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 78,
+    "firstName": "Ксения",
+    "lastName": "Кузьмина",
+    "email": "student78@university.edu",
+    "age": 21,
+    "faculty": "Юриспруденция",
+    "year": 2,
+    "gpa": 3.8,
+    "enrollmentDate": "2023-12-18",
+    "courses": [
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "113A",
+    "phone": "8 203 417 19 56",
+    "birthDate": "2000-11-20",
+    "country": "Беларусь",
+    "skills": [
+      "Linux"
+    ],
+    "internshipCompany": "Полиметалл",
+    "status": "active",
+    "registrationDate": "2024-02-03T19:46:30",
+    "lastLogin": "2025-07-06T17:12:19",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 79,
+    "firstName": "Устин",
+    "lastName": "Никифоров",
+    "email": "student79@university.edu",
+    "age": 18,
+    "faculty": "Психология",
+    "year": 4,
+    "gpa": 4.0,
+    "enrollmentDate": "2021-10-01",
+    "courses": [
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+70760464416",
+    "birthDate": "2006-06-04",
+    "country": "Азербайджан",
+    "skills": [
+      "Английский",
+      "Python"
+    ],
+    "internshipCompany": "ИП «Никитин, Шилова и Петрова»",
+    "status": "graduated",
+    "registrationDate": "2024-11-15T01:01:24",
+    "lastLogin": "2025-06-23T09:50:18",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id7758284",
+      "telegram": "@smirnovselivan",
+      "github": "github.com/efremovseliverst"
+    }
+  },
+  {
+    "_id": 80,
+    "firstName": "Никодим",
+    "lastName": "Мельникова",
+    "email": "student80@university.edu",
+    "age": 22,
+    "faculty": "Лингвистика",
+    "year": 4,
+    "gpa": 4.6,
+    "enrollmentDate": "2021-10-13",
+    "courses": [
+      "Культурология",
+      "Английский язык",
+      "Теория перевода"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": "158B",
+    "phone": "85452474359",
+    "birthDate": "2005-06-24",
+    "country": "Украина",
+    "skills": [
+      "Docker",
+      "Node.js",
+      "Kubernetes",
+      "Linux"
+    ],
+    "internshipCompany": "ООО «Игнатьев Одинцова»",
+    "status": "active",
+    "registrationDate": "2025-01-16T10:38:10",
+    "lastLogin": "2025-08-07T09:03:20",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id1261951",
+      "telegram": "@emil_1982",
+      "github": "github.com/akim91"
+    }
+  },
+  {
+    "_id": 81,
+    "firstName": "Радислав",
+    "lastName": "Щербаков",
+    "email": "student81@university.edu",
+    "age": 21,
+    "faculty": "История",
+    "year": 4,
+    "gpa": 3.5,
+    "enrollmentDate": "2021-12-27",
+    "courses": [
+      "Математика",
+      "Физика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 256 476 95 54",
+    "birthDate": "2006-09-13",
+    "country": "Армения",
+    "skills": [
+      "Java",
+      "Excel",
+      "PostgreSQL"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-08-29T07:11:53",
+    "lastLogin": "2025-02-08T09:17:08",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 82,
+    "firstName": "Глеб",
+    "lastName": "Самсонов",
+    "email": "student82@university.edu",
+    "age": 25,
+    "faculty": "Юриспруденция",
+    "year": 5,
+    "gpa": 3.3,
+    "enrollmentDate": "2020-09-07",
+    "courses": [
+      "Физика",
+      "Химия",
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 (574) 211-5464",
+    "birthDate": "2000-12-29",
+    "country": "Туркменистан",
+    "skills": [
+      "React",
+      "Статистика",
+      "MATLAB"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-11-07T15:18:01",
+    "lastLogin": "2025-03-29T02:11:04",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 83,
+    "firstName": "Виталий",
+    "lastName": "Александров",
+    "email": "student83@university.edu",
+    "age": 21,
+    "faculty": "Экономика",
+    "year": 4,
+    "gpa": 3.2,
+    "enrollmentDate": "2021-09-24",
+    "courses": [
+      "Финансы"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+79674142311",
+    "birthDate": "2003-09-05",
+    "country": "Беларусь",
+    "skills": [
+      "PostgreSQL",
+      "AutoCAD",
+      "SQL"
+    ],
+    "internshipCompany": "Дорофеева Инк",
+    "status": "active",
+    "registrationDate": "2025-04-08T15:59:10",
+    "lastLogin": "2025-01-13T17:28:46",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 84,
+    "firstName": "Жанна",
+    "lastName": "Доронин",
+    "email": "student84@university.edu",
+    "age": 25,
+    "faculty": "Юриспруденция",
+    "year": 3,
+    "gpa": 3.4,
+    "enrollmentDate": "2022-09-04",
+    "courses": [
+      "Химия",
+      "Математика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": "325C",
+    "phone": "8 861 748 6420",
+    "birthDate": "2001-01-27",
+    "country": "Россия",
+    "skills": [
+      "Английский",
+      "React",
+      "Node.js",
+      "PostgreSQL",
+      "Git"
+    ],
+    "internshipCompany": "РАО «Дмитриева Коновалов»",
+    "status": "active",
+    "registrationDate": "2025-01-19T04:28:01",
+    "lastLogin": "2025-02-04T16:44:24",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 85,
+    "firstName": "Данила",
+    "lastName": "Нестерова",
+    "email": "student85@university.edu",
+    "age": 20,
+    "faculty": "Философия",
+    "year": 5,
+    "gpa": 3.7,
+    "enrollmentDate": "2020-12-18",
+    "courses": [
+      "Химия",
+      "Физика",
+      "Математика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+7 018 060 97 24",
+    "birthDate": "2005-11-19",
+    "country": "Кыргызстан",
+    "skills": [
+      "Английский",
+      "React",
+      "Java"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-03-19T19:57:48",
+    "lastLogin": "2025-03-27T01:32:29",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 86,
+    "firstName": "Гедеон",
+    "lastName": "Матвеев",
+    "email": "student86@university.edu",
+    "age": 23,
+    "faculty": "Социология",
+    "year": 1,
+    "gpa": 3.4,
+    "enrollmentDate": "2024-09-18",
+    "courses": [
+      "Химия",
+      "Математика",
+      "Физика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "8 295 374 88 69",
+    "birthDate": "2005-10-02",
+    "country": "Беларусь",
+    "skills": [
+      "Английский",
+      "SQL",
+      "Kubernetes",
+      "MATLAB"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-11-06T13:01:15",
+    "lastLogin": "2025-06-25T14:18:08",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id9815223",
+      "telegram": "@prokofi07",
+      "github": "github.com/spartak_30"
+    }
+  },
+  {
+    "_id": 87,
+    "firstName": "Софон",
+    "lastName": "Лыткин",
+    "email": "student87@university.edu",
+    "age": 24,
+    "faculty": "Механика",
+    "year": 2,
+    "gpa": 4.3,
+    "enrollmentDate": "2023-10-23",
+    "courses": [
+      "Математика",
+      "Физика",
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 (343) 649-0937",
+    "birthDate": "2000-10-20",
+    "country": "Армения",
+    "skills": [
+      "MongoDB",
+      "MATLAB",
+      "SQL",
+      "Python"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-04-09T14:09:18",
+    "lastLogin": "2025-04-16T17:52:43",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 88,
+    "firstName": "Александра",
+    "lastName": "Носков",
+    "email": "student88@university.edu",
+    "age": 23,
+    "faculty": "Химия",
+    "year": 3,
+    "gpa": 4.1,
+    "enrollmentDate": "2022-11-03",
+    "courses": [
+      "Физика",
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 517 768 1572",
+    "birthDate": "2003-07-25",
+    "country": "Беларусь",
+    "skills": [
+      "AutoCAD",
+      "Docker",
+      "Kubernetes",
+      "C++",
+      "Python"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-11-26T07:32:01",
+    "lastLogin": "2025-04-15T23:17:58",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id5879727",
+      "telegram": "@terentevarkadi",
+      "github": "github.com/milovan71"
+    }
+  },
+  {
+    "_id": 89,
+    "firstName": "Феоктист",
+    "lastName": "Дмитриева",
+    "email": "student89@university.edu",
+    "age": 24,
+    "faculty": "Философия",
+    "year": 3,
+    "gpa": 4.8,
+    "enrollmentDate": "2022-11-22",
+    "courses": [
+      "Математика",
+      "Физика",
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "+7 759 304 71 17",
+    "birthDate": "2003-01-20",
+    "country": "Казахстан",
+    "skills": [
+      "Java",
+      "MATLAB",
+      "Git",
+      "Python"
+    ],
+    "internshipCompany": "Зерно-трейд",
+    "status": "active",
+    "registrationDate": "2025-09-26T02:29:59",
+    "lastLogin": "2025-10-28T22:34:22",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 90,
+    "firstName": "Василий",
+    "lastName": "Доронин",
+    "email": "student90@university.edu",
+    "age": 22,
+    "faculty": "Лингвистика",
+    "year": 3,
+    "gpa": 3.1,
+    "enrollmentDate": "2022-10-23",
+    "courses": [
+      "Теория перевода",
+      "Фонетика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": "482B",
+    "phone": "81397781094",
+    "birthDate": "2001-03-02",
+    "country": "Таджикистан",
+    "skills": [
+      "Python",
+      "Git",
+      "Linux",
+      "Английский"
+    ],
+    "internshipCompany": "НПО «Белякова-Чернова»",
+    "status": "active",
+    "registrationDate": "2025-03-10T09:57:12",
+    "lastLogin": "2025-05-27T02:48:22",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id9733509",
+      "telegram": "@martin1983",
+      "github": "github.com/korolevapolina"
+    }
+  },
+  {
+    "_id": 91,
+    "firstName": "Сигизмунд",
+    "lastName": "Цветков",
+    "email": "student91@university.edu",
+    "age": 20,
+    "faculty": "Информационные технологии",
+    "year": 5,
+    "gpa": 4.4,
+    "enrollmentDate": "2020-10-16",
+    "courses": [
+      "Базы данных"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 (565) 951-00-66",
+    "birthDate": "2003-04-14",
+    "country": "Казахстан",
+    "skills": [
+      "Python",
+      "Анализ данных",
+      "Git"
+    ],
+    "internshipCompany": "АО «Рыбакова Константинов»",
+    "status": "active",
+    "registrationDate": "2025-07-22T10:42:57",
+    "lastLogin": "2025-10-06T15:09:45",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 92,
+    "firstName": "Ефрем",
+    "lastName": "Белова",
+    "email": "student92@university.edu",
+    "age": 19,
+    "faculty": "Лингвистика",
+    "year": 2,
+    "gpa": 4.8,
+    "enrollmentDate": "2023-11-27",
+    "courses": [
+      "Культурология"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "189A",
+    "phone": "8 126 587 0937",
+    "birthDate": "2003-01-17",
+    "country": "Казахстан",
+    "skills": [
+      "Excel"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2024-10-30T15:43:06",
+    "lastLogin": "2025-10-02T01:32:17",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 93,
+    "firstName": "Нинель",
+    "lastName": "Лыткина",
+    "email": "student93@university.edu",
+    "age": 23,
+    "faculty": "Философия",
+    "year": 3,
+    "gpa": 4.4,
+    "enrollmentDate": "2022-11-16",
+    "courses": [
+      "Химия"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 (312) 497-0057",
+    "birthDate": "2006-07-02",
+    "country": "Азербайджан",
+    "skills": [
+      "Kubernetes",
+      "Git"
+    ],
+    "internshipCompany": null,
+    "status": "graduated",
+    "registrationDate": "2024-07-25T19:28:25",
+    "lastLogin": "2025-03-25T23:19:05",
+    "isInternational": false,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 94,
+    "firstName": "Климент",
+    "lastName": "Кабанов",
+    "email": "student94@university.edu",
+    "age": 19,
+    "faculty": "Химия",
+    "year": 5,
+    "gpa": 4.5,
+    "enrollmentDate": "2020-12-08",
+    "courses": [
+      "Химия",
+      "Физика",
+      "Математика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+74833763621",
+    "birthDate": "2006-09-26",
+    "country": "Узбекистан",
+    "skills": [
+      "C++"
+    ],
+    "internshipCompany": "РАО «Григорьев Беспалова»",
+    "status": "active",
+    "registrationDate": "2024-10-03T03:21:33",
+    "lastLogin": "2025-12-21T12:20:15",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id9351981",
+      "telegram": "@mark85",
+      "github": "github.com/sergenikiforov"
+    }
+  },
+  {
+    "_id": 95,
+    "firstName": "Казимир",
+    "lastName": "Кононова",
+    "email": "student95@university.edu",
+    "age": 19,
+    "faculty": "Социология",
+    "year": 4,
+    "gpa": 4.4,
+    "enrollmentDate": "2021-10-17",
+    "courses": [
+      "Математика"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+7 503 502 0492",
+    "birthDate": "2007-04-20",
+    "country": "Туркменистан",
+    "skills": [
+      "Немецкий"
+    ],
+    "internshipCompany": null,
+    "status": "active",
+    "registrationDate": "2025-02-26T22:32:08",
+    "lastLogin": "2025-02-23T22:21:55",
+    "isInternational": true,
+    "socialNetworks": {}
+  },
+  {
+    "_id": 96,
+    "firstName": "Людмила",
+    "lastName": "Дорофеева",
+    "email": "student96@university.edu",
+    "age": 25,
+    "faculty": "Математика",
+    "year": 2,
+    "gpa": 3.9,
+    "enrollmentDate": "2023-10-13",
+    "courses": [
+      "Математика",
+      "Химия"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+7 108 808 59 39",
+    "birthDate": "2000-11-29",
+    "country": "Россия",
+    "skills": [
+      "Анализ данных",
+      "SQL",
+      "Статистика"
+    ],
+    "internshipCompany": "Рожкова Групп",
+    "status": "graduated",
+    "registrationDate": "2025-02-01T11:34:51",
+    "lastLogin": "2025-08-05T21:01:41",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id1808509",
+      "telegram": "@eliseevanatalja",
+      "github": "github.com/htrofimov"
+    }
+  },
+  {
+    "_id": 97,
+    "firstName": "Вадим",
+    "lastName": "Фомичев",
+    "email": "student97@university.edu",
+    "age": 20,
+    "faculty": "Информационные технологии",
+    "year": 1,
+    "gpa": 3.2,
+    "enrollmentDate": "2024-12-01",
+    "courses": [
+      "Алгоритмы",
+      "Сети"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": "283B",
+    "phone": "8 (010) 500-0533",
+    "birthDate": "2003-09-16",
+    "country": "Туркменистан",
+    "skills": [
+      "Немецкий",
+      "MongoDB",
+      "Java"
+    ],
+    "internshipCompany": "Дроздов Инкорпорэйтед",
+    "status": "graduated",
+    "registrationDate": "2025-11-25T18:14:09",
+    "lastLogin": "2025-12-27T18:37:45",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id4114425",
+      "telegram": "@sharapovapollinari",
+      "github": "github.com/ychernova"
+    }
+  },
+  {
+    "_id": 98,
+    "firstName": "Роман",
+    "lastName": "Казаков",
+    "email": "student98@university.edu",
+    "age": 25,
+    "faculty": "Экономика",
+    "year": 1,
+    "gpa": 4.3,
+    "enrollmentDate": "2024-09-02",
+    "courses": [
+      "Бухучет",
+      "Финансы"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "80382305320",
+    "birthDate": "2004-02-27",
+    "country": "Казахстан",
+    "skills": [
+      "Excel",
+      "Статистика",
+      "React",
+      "Linux",
+      "Kubernetes"
+    ],
+    "internshipCompany": "ОАО «Котов Ларионова»",
+    "status": "graduated",
+    "registrationDate": "2025-06-06T21:07:42",
+    "lastLogin": "2025-04-09T04:30:41",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id6120822",
+      "telegram": "@anisimovvjacheslav",
+      "github": "github.com/vatslav_1993"
+    }
+  },
+  {
+    "_id": 99,
+    "firstName": "Прокофий",
+    "lastName": "Никонова",
+    "email": "student99@university.edu",
+    "age": 22,
+    "faculty": "Психология",
+    "year": 3,
+    "gpa": 3.1,
+    "enrollmentDate": "2022-09-08",
+    "courses": [
+      "Математика",
+      "Физика",
+      "Химия"
+    ],
+    "hasScholarship": false,
+    "dormitoryRoom": null,
+    "phone": "+7 (050) 972-1159",
+    "birthDate": "2003-01-30",
+    "country": "Таджикистан",
+    "skills": [
+      "Excel",
+      "MATLAB"
+    ],
+    "internshipCompany": null,
+    "status": "graduated",
+    "registrationDate": "2026-01-09T20:38:07",
+    "lastLogin": "2025-08-03T03:58:56",
+    "isInternational": true,
+    "socialNetworks": {
+      "vk": "vk.com/id6547397",
+      "telegram": "@ipat1993",
+      "github": "github.com/rzhuravlev"
+    }
+  },
+  {
+    "_id": 100,
+    "firstName": "Орест",
+    "lastName": "Данилова",
+    "email": "student100@university.edu",
+    "age": 18,
+    "faculty": "Математика",
+    "year": 1,
+    "gpa": 4.7,
+    "enrollmentDate": "2024-10-19",
+    "courses": [
+      "Физика",
+      "Химия",
+      "Математика"
+    ],
+    "hasScholarship": true,
+    "dormitoryRoom": null,
+    "phone": "8 561 801 39 05",
+    "birthDate": "2007-07-25",
+    "country": "Казахстан",
+    "skills": [
+      "AutoCAD",
+      "Docker",
+      "Статистика"
+    ],
+    "internshipCompany": "ЗАО «Сысоева, Казаков и Кириллова»",
+    "status": "active",
+    "registrationDate": "2025-05-23T22:07:30",
+    "lastLogin": "2025-02-04T01:39:34",
+    "isInternational": false,
+    "socialNetworks": {
+      "vk": "vk.com/id4258067",
+      "telegram": "@sergeevdobroslav",
+      "github": "github.com/eturova"
+    }
+  }
+]
