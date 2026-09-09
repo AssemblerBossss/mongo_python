@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ collection_name }} — Mongo Admin{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <a href="/" class="back-link">← Все коллекции</a>
+        <h1>{{ collection_name }}</h1>
+    </div>
+    <button class="btn btn-primary" onclick="openDocModal()">+ Добавить документ</button>
+</div>
+
+<div class="toolbar">
+    <input id="filter-input" type="text" placeholder='Фильтр в формате JSON, например: {"status": "active"}'>
+    <button class="btn" onclick="applyFilter()">Найти</button>
+    <button class="btn" onclick="resetFilter()">Сброс</button>
+</div>
+
+<div class="table-wrap">
+    <table id="docs-table">
+        <thead id="docs-thead"></thead>
+        <tbody id="docs-tbody">
+            <tr><td class="muted">Загрузка...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="pagination">
+    <button class="btn" id="prev-page" onclick="prevPage()">← Назад</button>
+    <span id="page-info"></span>
+    <button class="btn" id="next-page" onclick="nextPage()">Вперёд →</button>
+</div>
+
+<div id="doc-modal" class="modal-overlay" hidden>
+    <div class="modal modal-wide">
+        <h2 id="doc-modal-title">Документ</h2>
+        <textarea id="doc-editor" rows="16" spellcheck="false"></textarea>
+        <p class="hint">Отредактируйте JSON и нажмите «Сохранить». Поле <code>_id</code> менять не нужно.</p>
+        <div class="modal-actions">
+            <button class="btn" onclick="closeModal('doc-modal')">Отмена</button>
+            <button class="btn btn-primary" onclick="saveDocument()">Сохранить</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>const COLLECTION_NAME = {{ collection_name | tojson }};</script>
+<script src="/static/js/collection.js"></script>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Коллекции — Mongo Admin{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Коллекции базы данных</h1>
+    <button class="btn btn-primary" onclick="openCreateCollectionModal()">+ Новая коллекция</button>
+</div>
+
+<div id="collections-grid" class="grid"></div>
+
+<div id="create-collection-modal" class="modal-overlay" hidden>
+    <div class="modal">
+        <h2>Новая коллекция</h2>
+        <label for="new-collection-name">Имя коллекции</label>
+        <input id="new-collection-name" type="text" placeholder="например, orders" autocomplete="off">
+        <div class="modal-actions">
+            <button class="btn" onclick="closeModal('create-collection-modal')">Отмена</button>
+            <button class="btn btn-primary" onclick="submitCreateCollection()">Создать</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}
