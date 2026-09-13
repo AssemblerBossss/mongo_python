@@ -1,14 +1,26 @@
-import os
-from dataclasses import dataclass
+from functools import lru_cache
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-@dataclass(frozen=True)
-class Settings:
-    mongo_host: str = os.getenv("MONGO_HOST", "localhost")
-    mongo_port: int = int(os.getenv("MONGO_PORT", "27017"))
-    mongo_username: str = os.getenv("MONGO_USERNAME", "admin")
-    mongo_password: str = os.getenv("MONGO_PASSWORD", "admin")
-    mongo_db: str = os.getenv("MONGO_DB", "datasets")
+class Settings(BaseSettings):
+    """Настройки приложения. Читаются из ENV с префиксом APP_ и файла .env."""
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    mongo_host: str = "localhost"
+    mongo_port: int = 27017
+    mongo_username: str = "admin"
+    mongo_password: str = "admin"
+    mongo_db: str = "datasets"
+    mongo_auth_source: str = "admin"
+
+    cors_allow_origins: list[str] = ["http://localhost:5173"]
+
+    log_level: str = "INFO"
+    environment: str = "local"
 
 
-settings = Settings()
+@lru_cache
+def get_settings() -> Settings:
+    """Возвращает закэшированный экземпляр настроек."""
+    return Settings()
