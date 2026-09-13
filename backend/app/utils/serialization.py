@@ -1,3 +1,4 @@
+"""Сериализация значений MongoDB в JSON-совместимые типы."""
 from datetime import datetime
 from typing import Any
 
@@ -18,4 +19,5 @@ def serialize_value(value: Any) -> Any:
 
 
 def serialize_document(doc: dict) -> dict:
+    """Сериализует документ целиком."""
     return {key: serialize_value(value) for key, value in doc.items()}

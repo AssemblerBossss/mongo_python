@@ -1,30 +1,41 @@
-"""Точка входа к БД для REST API.
-
-Подключение к MongoDB не переизобретается — используется учебный класс
-MongoDBConnection из python_project/database.py. Сервисный слой (MongoService)
-строится на его методах (get_collection, find, count, insert_many), в точности
-как это делают solution.py и examples.py.
-"""
+"""Подключение к MongoDB через PyMongo (без учебных обёрток)."""
 from functools import lru_cache
 
-from python_project.database import MongoDBConnection
+from pymongo import MongoClient
+from pymongo.database import Database
+from pymongo.errors import PyMongoError
 
-from app.config import settings
-from app.services.mongo_service import MongoService
+from app.config import get_settings
+
+
+def _build_connection_string(settings) -> str:
+    """Строит connection string с учётом наличия учётных данных."""
+    if settings.mongo_username and settings.mongo_password:
+        return (
+            f"mongodb://{settings.mongo_username}:{settings.mongo_password}"
+            f"@{settings.mongo_host}:{settings.mongo_port}/{settings.mongo_db}"
+            f"?authSource={settings.mongo_auth_source}"
+        )
+    return f"mongodb://{settings.mongo_host}:{settings.mongo_port}/{settings.mongo_db}"
 
 
 @lru_cache
-def get_connection() -> MongoDBConnection:
-    connection = MongoDBConnection(
-        host=settings.mongo_host,
-        port=settings.mongo_port,
-        username=settings.mongo_username,
-        password=settings.mongo_password,
-        db_name=settings.mongo_db,
-    )
-    connection.connect()
-    return connection
+def get_mongo_client() -> MongoClient:
+    """Возвращает закэшированный клиент MongoDB."""
+    settings = get_settings()
+    return MongoClient(_build_connection_string(settings), serverSelectionTimeoutMS=5000)
 
 
-def get_service() -> MongoService:
-    return MongoService(get_connection())
+def get_database() -> Database:
+    """Возвращает объект базы данных для работы с коллекциями."""
+    settings = get_settings()
+    return get_mongo_client()[settings.mongo_db]
+
+
+def ping(client: MongoClient) -> bool:
+    """Проверяет доступность MongoDB (используется в /ready)."""
+    try:
+        client.admin.command("ping")
+        return True
+    except PyMongoError:
+        return False

@@ -1,0 +1,23 @@
+import { apiFetch } from "./client";
+import type { CollectionInfo, FieldInfo } from "./types";
+
+export function getCollections(): Promise<CollectionInfo[]> {
+  return apiFetch<CollectionInfo[]>("/api/collections");
+}
+
+export function createCollection(name: string): Promise<CollectionInfo> {
+  return apiFetch<CollectionInfo>("/api/collections", {
+    method: "POST",
+    body: JSON.stringify({ name }),
+  });
+}
+
+export function dropCollection(name: string): Promise<void> {
+  return apiFetch<void>(`/api/collections/${encodeURIComponent(name)}`, {
+    method: "DELETE",
+  });
+}
+
+export function getCollectionFields(name: string): Promise<FieldInfo[]> {
+  return apiFetch<FieldInfo[]>(`/api/collections/${encodeURIComponent(name)}/fields`);
+}

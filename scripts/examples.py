@@ -15,7 +15,7 @@
 2. Есть доступ к базе данных с тестовыми данными
 """
 
-from database import MongoDBConnection
+from mongo_connection import MongoDBConnection
 
 
 

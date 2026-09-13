@@ -1,4 +1,4 @@
-from database import MongoDBConnection
+from mongo_connection import MongoDBConnection
 
 
 class ExamSolution:
