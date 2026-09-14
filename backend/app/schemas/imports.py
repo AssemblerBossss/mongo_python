@@ -1,0 +1,35 @@
+"""Модели для массовой загрузки результатов сканирования, сгруппированных по доменам."""
+from typing import Any
+
+from pydantic import BaseModel, RootModel
+
+
+class ScanRecord(BaseModel):
+    """Один результат сканирования домена."""
+
+    instance: str
+    result: bool
+    data_type: str
+    data: dict[str, Any] = {}
+    error: str | None = None
+
+
+class ImportPayload(RootModel[dict[str, list[ScanRecord]]]):
+    """Тело запроса: домен -> список результатов сканирования."""
+
+
+class DomainImportStats(BaseModel):
+    """Статистика импорта по одному домену."""
+
+    domain: str
+    received: int
+    imported: int
+    skipped: int
+
+
+class ImportSummary(BaseModel):
+    """Итог массовой загрузки по всем доменам из запроса."""
+
+    domains: list[DomainImportStats]
+    total_imported: int
+    total_skipped: int
