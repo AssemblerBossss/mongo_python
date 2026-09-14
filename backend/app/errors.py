@@ -27,6 +27,10 @@ class CollectionExistsError(Exception):
     """Коллекция с таким именем уже существует."""
 
 
+class EmptyImportPayloadError(Exception):
+    """После фильтрации не осталось ни одной записи для импорта."""
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     """Регистрирует обработчики доменных исключений на уровне приложения."""
 
@@ -37,6 +41,10 @@ def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(CollectionExistsError)
     async def handle_collection_exists(request: Request, exc: CollectionExistsError) -> JSONResponse:
         return _error_response(request, 409, str(exc))
+
+    @app.exception_handler(EmptyImportPayloadError)
+    async def handle_empty_import(request: Request, exc: EmptyImportPayloadError) -> JSONResponse:
+        return _error_response(request, 400, str(exc))
 
     @app.exception_handler(DocumentNotFoundError)
     async def handle_not_found(request: Request, exc: DocumentNotFoundError) -> JSONResponse:
