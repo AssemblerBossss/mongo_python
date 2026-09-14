@@ -1,13 +1,13 @@
-"""Обобщённый сервисный слой поверх PyMongo, независимый от домена."""
+"""Обобщённый сервисный слой поверх репозитория, независимый от домена."""
 from __future__ import annotations
 
 from typing import Any
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from pymongo.database import Database
 
 from app.errors import CollectionExistsError, DocumentNotFoundError, InvalidObjectIdError
+from app.repositories.mongo_repository import MongoRepository
 from app.schemas.common import CollectionInfo, FieldInfo
 from app.services import policy as policy_module
 from app.services.policy import AllowAllPolicy, CollectionPolicy
@@ -17,37 +17,36 @@ from app.utils.serialization import serialize_document
 class MongoService:
     """Универсальные CRUD-операции над произвольными коллекциями MongoDB."""
 
-    def __init__(self, db: Database, policy: CollectionPolicy | None = None) -> None:
-        self.db = db
+    def __init__(self, repo: MongoRepository, policy: CollectionPolicy | None = None) -> None:
+        self.repo = repo
         self.policy = policy or AllowAllPolicy()
 
     # ---------- Коллекции ----------
 
     def list_collections(self) -> list[CollectionInfo]:
         """Возвращает список коллекций с количеством документов в каждой."""
-        names = sorted(self.db.list_collection_names())
+        names = sorted(self.repo.list_collection_names())
         return [
-            CollectionInfo(name=name, count=self.db[name].count_documents({}))
+            CollectionInfo(name=name, count=self.repo.count_documents(name, {}))
             for name in names
         ]
 
     def create_collection(self, name: str) -> None:
         """Создаёт новую коллекцию."""
-        if name in self.db.list_collection_names():
+        if name in self.repo.list_collection_names():
             raise CollectionExistsError(f"Коллекция '{name}' уже существует")
-        self.db.create_collection(name)
+        self.repo.create_collection(name)
 
     def drop_collection(self, name: str) -> None:
         """Удаляет коллекцию."""
-        if name not in self.db.list_collection_names():
+        if name not in self.repo.list_collection_names():
             raise DocumentNotFoundError(f"Коллекция '{name}' не найдена")
-        self.db.drop_collection(name)
+        self.repo.drop_collection(name)
 
     def infer_fields(self, collection: str, sample_size: int = 25) -> list[FieldInfo]:
         """Определяет набор полей и их типы по выборке документов."""
         fields: dict[str, set[str]] = {}
-        cursor = self.db[collection].find().limit(sample_size)
-        for doc in cursor:
+        for doc in self.repo.find_sample(collection, sample_size):
             for key, value in doc.items():
                 fields.setdefault(key, set()).add(type(value).__name__)
         return [FieldInfo(name=name, types=sorted(types)) for name, types in fields.items()]
@@ -72,16 +71,17 @@ class MongoService:
     ) -> tuple[list[dict[str, Any]], int]:
         """Возвращает страницу документов и их общее количество по фильтру."""
         query = query or {}
-        col = self.db[collection]
-        total = col.count_documents(query)
-        cursor = col.find(query).sort(sort_by, sort_dir).skip(skip).limit(limit)
-        documents = [serialize_document(doc) for doc in cursor]
+        total = self.repo.count_documents(collection, query)
+        documents = [
+            serialize_document(doc)
+            for doc in self.repo.find(collection, query, sort_by, sort_dir, skip, limit)
+        ]
         return documents, total
 
     def get(self, collection: str, doc_id: str) -> dict[str, Any]:
         """Возвращает документ по идентификатору."""
         object_id = self._to_object_id(doc_id)
-        doc = self.db[collection].find_one({"_id": object_id})
+        doc = self.repo.find_one(collection, {"_id": object_id})
         if doc is None:
             raise DocumentNotFoundError(f"Документ {doc_id} не найден")
         return serialize_document(doc)
@@ -90,8 +90,8 @@ class MongoService:
         """Создаёт новый документ."""
         data = policy_module.before_write(collection, dict(data))
         data.pop("_id", None)
-        result = self.db[collection].insert_one(data)
-        document = self.get(collection, str(result.inserted_id))
+        inserted_id = self.repo.insert_one(collection, data)
+        document = self.get(collection, str(inserted_id))
         return policy_module.after_write(collection, document)
 
     def replace(self, collection: str, doc_id: str, data: dict[str, Any]) -> dict[str, Any]:
@@ -99,8 +99,8 @@ class MongoService:
         object_id = self._to_object_id(doc_id)
         data = policy_module.before_write(collection, dict(data))
         data.pop("_id", None)
-        result = self.db[collection].replace_one({"_id": object_id}, data)
-        if result.matched_count == 0:
+        matched_count = self.repo.replace_one(collection, {"_id": object_id}, data)
+        if matched_count == 0:
             raise DocumentNotFoundError(f"Документ {doc_id} не найден")
         document = self.get(collection, doc_id)
         return policy_module.after_write(collection, document)
@@ -110,8 +110,8 @@ class MongoService:
         object_id = self._to_object_id(doc_id)
         data = policy_module.before_write(collection, dict(data))
         data.pop("_id", None)
-        result = self.db[collection].update_one({"_id": object_id}, {"$set": data})
-        if result.matched_count == 0:
+        matched_count = self.repo.update_one(collection, {"_id": object_id}, {"$set": data})
+        if matched_count == 0:
             raise DocumentNotFoundError(f"Документ {doc_id} не найден")
         document = self.get(collection, doc_id)
         return policy_module.after_write(collection, document)
@@ -119,6 +119,6 @@ class MongoService:
     def delete(self, collection: str, doc_id: str) -> None:
         """Удаляет документ."""
         object_id = self._to_object_id(doc_id)
-        result = self.db[collection].delete_one({"_id": object_id})
-        if result.deleted_count == 0:
+        deleted_count = self.repo.delete_one(collection, {"_id": object_id})
+        if deleted_count == 0:
             raise DocumentNotFoundError(f"Документ {doc_id} не найден")

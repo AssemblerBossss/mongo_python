@@ -4,6 +4,8 @@ from pymongo.database import Database
 
 from app.config import Settings, get_settings
 from app.database import get_database
+from app.repositories.mongo_repository import MongoRepository
+from app.services.import_service import ImportService
 from app.services.mongo_service import MongoService
 
 
@@ -17,6 +19,16 @@ def get_db(settings: Settings = Depends(get_settings_dep)) -> Database:
     return get_database()
 
 
-def get_mongo_service(db: Database = Depends(get_db)) -> MongoService:
+def get_mongo_repository(db: Database = Depends(get_db)) -> MongoRepository:
+    """Зависимость для получения репозитория MongoDB."""
+    return MongoRepository(db)
+
+
+def get_mongo_service(repo: MongoRepository = Depends(get_mongo_repository)) -> MongoService:
     """Зависимость для получения сервисного слоя MongoService."""
-    return MongoService(db)
+    return MongoService(repo)
+
+
+def get_import_service(repo: MongoRepository = Depends(get_mongo_repository)) -> ImportService:
+    """Зависимость для получения сервисного слоя ImportService."""
+    return ImportService(repo)
