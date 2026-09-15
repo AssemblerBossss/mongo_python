@@ -1,5 +1,5 @@
 import { apiFetch } from "./client";
-import type { ImportSummary } from "./types";
+import type { ImportSummary, ImportPayloadBody } from "./types";
 
 export function importFiles(collection: string, files: File[]): Promise<ImportSummary> {
   const formData = new FormData();
@@ -11,4 +11,14 @@ export function importFiles(collection: string, files: File[]): Promise<ImportSu
     `/api/collections/${encodeURIComponent(collection)}/import/files`,
     { method: "POST", body: formData },
   );
+}
+
+export function importPayload(
+    collection: string,
+    payload: ImportPayloadBody,
+): Promise<ImportSummary> {
+    return apiFetch<ImportSummary>(
+        `/api/collections/${encodeURIComponent(collection)}/import`,
+        { method : "POST", body: JSON.stringify(payload) },
+    );
 }

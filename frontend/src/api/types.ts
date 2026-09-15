@@ -41,3 +41,13 @@ export interface ImportSummary {
     total_imported: number;
     total_skipped: number;
 }
+
+export interface ScanRecord  {
+    instance: string;
+    result: boolean;
+    data_type: string;
+    data?: Record<string, unknown>;
+    error?: string | null;
+};
+
+export type ImportPayloadBody = Record<string, ScanRecord[]>;
