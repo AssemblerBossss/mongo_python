@@ -32,13 +32,13 @@ class MongoRepository:
         return self.db[collection].count_documents(query)
 
     def find(
-        self,
-        collection: str,
-        query: dict[str, Any],
-        sort_by: str,
-        sort_dir: int,
-        skip: int,
-        limit: int,
+            self,
+            collection: str,
+            query: dict[str, Any],
+            sort_by: str,
+            sort_dir: int,
+            skip: int,
+            limit: int,
     ) -> list[dict[str, Any]]:
         cursor = self.db[collection].find(query).sort(sort_by, sort_dir).skip(skip).limit(limit)
         return list(cursor)
@@ -53,9 +53,18 @@ class MongoRepository:
         result: InsertOneResult = self.db[collection].insert_one(document)
         return result.inserted_id
 
-    def insert_many(self, collection: str, documents: list[dict[str, Any]]) -> list[Any]:
-        result: InsertManyResult = self.db[collection].insert_many(documents)
-        return list(result.inserted_ids)
+    def upsert_results(self, collection: str, address: str, results: list[dict[str, Any]]) -> None:
+        self.db[collection].update_one(
+            {"address": address},
+            {
+                "$setOnInsert": {"address": address},
+                "$addToSet": {"results": {"$each": results}},
+            },
+            upsert=True,
+        )
+
+    def upsert_results_bulk(self, collection: str, address: str, results: list[dict[str, Any]]) -> None:
+        pass
 
     def replace_one(self, collection: str, query: dict[str, Any], document: dict[str, Any]) -> int:
         result: UpdateResult = self.db[collection].replace_one(query, document)

@@ -16,11 +16,12 @@ def import_documents(name: str, payload: ImportPayload, service: ImportServiceDe
 
 @router.post("/collections/{name}/import/files", response_model=ImportSummary, status_code=201)
 async def import_document_files(
-    name: str,
-    service: ImportServiceDep,
-    files: Annotated[list[UploadFile], File(description="Один или несколько файлов, один файл на домен/IP")],
+        name: str,
+        service: ImportServiceDep,
+        files: Annotated[
+            list[UploadFile], File(description="Один или несколько файлов; адрес берётся из содержимого файла")],
 ) -> ImportSummary:
-    """Принимает один или несколько файлов (каждый — результаты сканирования одного домена/IP).
+    """Принимает один или несколько файлов.
 
     Чтение файлов идёт параллельно через async I/O, а разбор JSON и запись в
     Mongo вынесены в отдельный поток, чтобы большие файлы не блокировали event

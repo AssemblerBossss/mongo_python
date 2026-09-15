@@ -17,10 +17,10 @@ class ImportPayload(RootModel[dict[str, list[ScanRecord]]]):
     """Тело запроса: домен -> список результатов сканирования."""
 
 
-class DomainImportStats(BaseModel):
-    """Статистика импорта по одному домену."""
+class AddressImportStats(BaseModel):
+    """Статистика импорта по одному адресу (ipv4/ipv6/домен/MAC)."""
 
-    domain: str
+    address: str
     received: int
     imported: int
     skipped: int
@@ -29,6 +29,6 @@ class DomainImportStats(BaseModel):
 class ImportSummary(BaseModel):
     """Итог массовой загрузки по всем доменам из запроса."""
 
-    domains: list[DomainImportStats]
+    addresses: list[AddressImportStats]
     total_imported: int
     total_skipped: int
