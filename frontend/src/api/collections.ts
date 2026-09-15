@@ -1,5 +1,5 @@
 import { apiFetch } from "./client";
-import type { CollectionInfo, FieldInfo } from "./types";
+import type { CollectionInfo, FieldInfo, FilterFieldInfo } from "./types";
 
 export function getCollections(): Promise<CollectionInfo[]> {
   return apiFetch<CollectionInfo[]>("/api/collections");
@@ -20,4 +20,9 @@ export function dropCollection(name: string): Promise<void> {
 
 export function getCollectionFields(name: string): Promise<FieldInfo[]> {
   return apiFetch<FieldInfo[]>(`/api/collections/${encodeURIComponent(name)}/fields`);
+}
+
+export function getCollectionFilters(name: string): Promise<FilterFieldInfo[]> {
+  return apiFetch<FilterFieldInfo[]>(`/api/collections/${encodeURIComponent(name)}/filters`);
+  
 }
