@@ -12,7 +12,9 @@ def list_collections(service: MongoServiceDep) -> list[CollectionInfo]:
 
 
 @router.post("/collections", status_code=201, response_model=CollectionInfo)
-def create_collection(payload: CreateCollectionRequest, service: MongoServiceDep) -> CollectionInfo:
+def create_collection(
+    payload: CreateCollectionRequest, service: MongoServiceDep
+) -> CollectionInfo:
     service.create_collection(payload.name)
     return CollectionInfo(name=payload.name, count=0)
 

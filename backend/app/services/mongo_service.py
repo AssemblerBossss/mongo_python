@@ -5,9 +5,14 @@ from typing import Any
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from app.errors import CollectionExistsError, DocumentNotFoundError, InvalidObjectIdError
+from app.errors import (
+    CollectionExistsError,
+    DocumentNotFoundError,
+    InvalidObjectIdError,
+)
 from app.repositories.mongo_repository import MongoRepository
-from app.schemas.common import CollectionInfo, FieldInfo
+from app.schemas import CollectionInfo, FieldInfo, FilterField
+from app.services.filters import ENUM_THRESHOLD, build_field, merge_leaf_paths
 from app.utils.serialization import serialize_document
 
 
@@ -40,14 +45,33 @@ class MongoService:
         for doc in self.repo.find_sample(collection, sample_size):
             for key, value in doc.items():
                 fields.setdefault(key, set()).add(type(value).__name__)
-        return [FieldInfo(name=name, types=sorted(types)) for name, types in fields.items()]
+        return [
+            FieldInfo(name=name, types=sorted(types)) for name, types in fields.items()
+        ]
+
+    def list_filter_fields(
+        self, collection: str, sample_size: int = 200
+    ) -> list[FilterField]:
+        """Поля, доступные для фильтра: путь, типы, операторы, готовые значения для кнопок."""
+        samples = self.repo.find_sample(collection, sample_size)
+        leaf_paths = merge_leaf_paths(samples)
+
+        fields: list[FilterField] = []
+        for path, types in sorted(leaf_paths.items()):
+            distinct_values = self.repo.distinct_values(
+                collection, path, ENUM_THRESHOLD + 1
+            )
+            fields.append(build_field(path, types, distinct_values))
+        return fields
 
     @staticmethod
     def _to_object_id(doc_id: str) -> ObjectId:
         try:
             return ObjectId(doc_id)
         except (InvalidId, TypeError):
-            raise InvalidObjectIdError(f"Некорректный идентификатор документа: {doc_id}")
+            raise InvalidObjectIdError(
+                f"Некорректный идентификатор документа: {doc_id}"
+            )
 
     def find(
         self,
@@ -79,7 +103,9 @@ class MongoService:
         inserted_id = self.repo.insert_one(collection, data)
         return self.get(collection, str(inserted_id))
 
-    def replace(self, collection: str, doc_id: str, data: dict[str, Any]) -> dict[str, Any]:
+    def replace(
+        self, collection: str, doc_id: str, data: dict[str, Any]
+    ) -> dict[str, Any]:
         object_id = self._to_object_id(doc_id)
         data = dict(data)
         data.pop("_id", None)
@@ -88,11 +114,15 @@ class MongoService:
             raise DocumentNotFoundError(f"Документ {doc_id} не найден")
         return self.get(collection, doc_id)
 
-    def patch(self, collection: str, doc_id: str, data: dict[str, Any]) -> dict[str, Any]:
+    def patch(
+        self, collection: str, doc_id: str, data: dict[str, Any]
+    ) -> dict[str, Any]:
         object_id = self._to_object_id(doc_id)
         data = dict(data)
         data.pop("_id", None)
-        matched_count = self.repo.update_one(collection, {"_id": object_id}, {"$set": data})
+        matched_count = self.repo.update_one(
+            collection, {"_id": object_id}, {"$set": data}
+        )
         if matched_count == 0:
             raise DocumentNotFoundError(f"Документ {doc_id} не найден")
         return self.get(collection, doc_id)

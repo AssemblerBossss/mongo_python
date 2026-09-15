@@ -1,38 +1,56 @@
 import json
 from typing import Annotated, Any
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query, HTTPException
+from pydantic import TypeAdapter, ValidationError
 
 from app.dependencies import MongoServiceDep
-from app.schemas.common import DocumentsPage
+from app.errors import InvalidFilterError
+from app.schemas.common import DocumentsPage, FilterCondition, FilterField
+from app.services.filters import build_mongo_query
 
 router = APIRouter(prefix="/api")
+
+_conditions_adapter = TypeAdapter(list[FilterCondition])
+
+
+@router.get("/collections/{name}/filters", response_model=list[FilterField])
+def get_filter_fields(name: str, service: MongoServiceDep) -> list[FilterField]:
+    return service.list_filter_fields(name)
 
 
 @router.get("/collections/{name}/documents", response_model=DocumentsPage)
 def get_documents(
     name: str,
     service: MongoServiceDep,
-    filter: Annotated[str | None, Query()] = None,
+    conditions: Annotated[str | None, Query()] = None,
     skip: Annotated[int, Query(ge=0)] = 0,
     limit: Annotated[int, Query(ge=1, le=200)] = 20,
     sort_by: Annotated[str, Query()] = "_id",
     sort_dir: Annotated[int, Query()] = 1,
 ) -> DocumentsPage:
     query: dict[str, Any] = {}
-    if filter:
+    if conditions:
         try:
-            query = json.loads(filter)
-        except json.JSONDecodeError:
-            raise HTTPException(400, "Некорректный JSON в параметре filter")
-        if not isinstance(query, dict):
-            raise HTTPException(400, "filter должен быть JSON-объектом")
-    documents, total = service.find(name, query, skip, limit, sort_by, sort_dir)
+            parsed = _conditions_adapter.validate_json(conditions)
+        except ValidationError as exc:
+            raise InvalidFilterError(f"Некорректные условия фильтра: {exc}") from exc
+        query = build_mongo_query(parsed)
+    documents, total = service.find(
+        collection=name,
+        query=query,
+        skip=skip,
+        limit=limit,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
+    )
     return DocumentsPage(items=documents, total=total, skip=skip, limit=limit)
 
 
 @router.post("/collections/{name}/documents", status_code=201)
-def create_document(name: str, data: dict[str, Any], service: MongoServiceDep) -> dict[str, Any]:
+def create_document(
+    name: str, data: dict[str, Any], service: MongoServiceDep
+) -> dict[str, Any]:
     return service.insert(name, data)
 
 

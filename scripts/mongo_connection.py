@@ -17,15 +17,16 @@
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
+
 class MongoDBConnection:
     """Класс для управления подключением к MongoDB
-    
+
     Позволяет:
     1. Подключаться к MongoDB с аутентификацией или без
     2. Выполнять операции find, count, aggregate, insertMany
     3. Выполнять агрегационные запросы
     4. Работать с несколькими коллекциями
-    
+
     Пример использования:
         >>> db = MongoDBConnection(db_name='my_database')
         >>> db.connect()
@@ -33,24 +34,26 @@ class MongoDBConnection:
         >>> db.print_results(results)
         >>> db.close()
     """
-    
-    def __init__(self, 
-                 host='localhost', 
-                 port=27017, 
-                 username='admin',
-                 password='admin',
-                 db_name='test'):
+
+    def __init__(
+        self,
+        host="localhost",
+        port=27017,
+        username="admin",
+        password="admin",
+        db_name="test",
+    ):
         """
-        Инициализация подключения к MongoDB 
+        Инициализация подключения к MongoDB
         Args:
             host (str): Хост MongoDB (по умолчанию 'localhost')
             port (int): Порт MongoDB (по умолчанию 27017)
             username (str): Имя пользователя для аутентификации
             password (str): Пароль для аутентификации
-            db_name (str): Имя базы данных (по умолчанию 'local') 
+            db_name (str): Имя базы данных (по умолчанию 'local')
         Пример:
             # Подключение без аутентификации
-            db = MongoDBConnection(db_name='my_db') 
+            db = MongoDBConnection(db_name='my_db')
             # Подключение с аутентификацией
             db = MongoDBConnection(
                 username='admin',
@@ -59,13 +62,13 @@ class MongoDBConnection:
             )
         """
         self.client = None  # Клиент MongoDB
-        self.db = None      # Объект базы данных
+        self.db = None  # Объект базы данных
         self.host = host
         self.port = port
         self.username = username
         self.password = password
         self.db_name = db_name
-    
+
     def connect(self):
         """Установка соединения с MongoDB
         Returns:
@@ -84,27 +87,31 @@ class MongoDBConnection:
             if self.username and self.password:
                 # Подключение с аутентификацией
                 connection_string = f"mongodb://{self.username}:{self.password}@{self.host}:{self.port}/{self.db_name}?authSource=admin"
-                self.client = MongoClient(connection_string, serverSelectionTimeoutMS=5000)
+                self.client = MongoClient(
+                    connection_string, serverSelectionTimeoutMS=5000
+                )
             else:
                 # Подключение без аутентификации
-                self.client = MongoClient(self.host, self.port, serverSelectionTimeoutMS=5000)
-            
+                self.client = MongoClient(
+                    self.host, self.port, serverSelectionTimeoutMS=5000
+                )
+
             # Проверка подключения (ping команда)
-            self.client.admin.command('ping')
+            self.client.admin.command("ping")
             self.db = self.client[self.db_name]
-            
+
             print(f"Успешное подключение к MongoDB: {self.host}:{self.port}")
             print(f"  База данных: {self.db_name}")
-            
+
             # Выводим список коллекций
             collections = self.db.list_collection_names()
             if collections:
                 print(f"  Доступные коллекции: {', '.join(collections)}")
             else:
                 print("  Коллекции отсутствуют")
-                
+
             return True
-            
+
         except ServerSelectionTimeoutError:
             print("Не удалось подключиться к MongoDB")
             print(f"  Проверьте, запущен ли MongoDB на {self.host}:{self.port}")
@@ -116,7 +123,7 @@ class MongoDBConnection:
         except ConnectionFailure as e:
             print(f"Ошибка подключения: {e}")
             return False
-    
+
     def close(self):
         """Закрыть соединение с MongoDB
         Всегда закрывайте соединение после работы с базой данных
@@ -130,7 +137,7 @@ class MongoDBConnection:
         if self.client:
             self.client.close()
             print("Соединение с MongoDB закрыто")
-    
+
     def __enter__(self):
         """Магический метод для использования в контекстном менеджере (with)
         Пример:
@@ -141,7 +148,7 @@ class MongoDBConnection:
         """
         self.connect()
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Магический метод для использования в контекстном менеджере (with)"""
         self.close()
@@ -163,7 +170,7 @@ class MongoDBConnection:
             return self.db[collection_name]
         print(f"Подключение к БД не установлено. Сначала вызовите connect()")
         return None
-    
+
     def find(self, collection_name, query=None, projection=None):
         """Поиск документов в коллекции
         Args:
@@ -180,7 +187,7 @@ class MongoDBConnection:
             >>> # Найти с проекцией (только определенные поля)
             >>> cursor = db.find('users', {'status': 'active'}, {'name': 1, 'email': 1, '_id': 0})
             >>> # Комбинированный запрос
-            >>> cursor = db.find('users', 
+            >>> cursor = db.find('users',
             >>>                 {'age': {'$gte': 18, '$lte': 30}, 'city': 'Москва'},
             >>>                 {'_id': 0, 'name': 1, 'age': 1})
         """
@@ -197,7 +204,7 @@ class MongoDBConnection:
         except Exception as e:
             print(f"Ошибка при выполнении find: {e}")
             return None
-    
+
     def count(self, collection_name, query=None):
         """Подсчитать количество документов в коллекции
         Args:
@@ -219,7 +226,7 @@ class MongoDBConnection:
         except Exception as e:
             print(f"Ошибка при подсчете документов: {e}")
             return 0
-    
+
     def aggregation(self, collection_name, pipeline):
         """Выполнить агрегационный запрос
         Агрегация позволяет выполнять сложные операции обработки данных:
@@ -251,7 +258,7 @@ class MongoDBConnection:
             print(f"Ошибка при выполнении агрегации: {e}")
             print(f"  Pipeline: {pipeline}")
             return None
-    
+
     def insert_many(self, collection_name, documents):
         """Вставить несколько документов в коллекцию
         Args:
@@ -278,7 +285,9 @@ class MongoDBConnection:
             return []
         try:
             result = collection.insert_many(documents)
-            print(f"Вставлено {len(result.inserted_ids)} документов в коллекцию '{collection_name}'")
+            print(
+                f"Вставлено {len(result.inserted_ids)} документов в коллекцию '{collection_name}'"
+            )
             return result.inserted_ids
         except Exception as e:
             print(f"Ошибка при вставке документов: {e}")
@@ -297,21 +306,23 @@ class MongoDBConnection:
         if cursor is None:
             print(f"{title}: Курсор пустой")
             return
-        
+
         try:
             results = list(cursor.limit(limit))
         except Exception as e:
             print(f"Ошибка при получении результатов: {e}")
             return
-        
+
         if not results:
             print(f"{title}: Нет результатов")
             return
-        
+
         print(f"{title}")
         print(f"{'-'*60}")
-        print(f"Найдено документов: {len(results)}{' (первые ' + str(limit) + ')' if len(results) == limit else ''}")
-        
+        print(
+            f"Найдено документов: {len(results)}{' (первые ' + str(limit) + ')' if len(results) == limit else ''}"
+        )
+
         for i, doc in enumerate(results, 1):
             print(f"  {i}.")
             for key, value in doc.items():
@@ -325,6 +336,5 @@ class MongoDBConnection:
                     value_str = f"{{...}} ({len(value)} полей)"
                 else:
                     value_str = str(value)
-                
-                print(f"   {key}: {value_str}")
 
+                print(f"   {key}: {value_str}")
