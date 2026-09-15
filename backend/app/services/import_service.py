@@ -7,9 +7,9 @@ from pydantic import ValidationError
 
 from app.errors import EmptyImportPayloadError, InvalidImportFileError
 from app.repositories.mongo_repository import MongoRepository
-from app.schemas.imports import DomainImportStats, ImportPayload, ImportSummary, ScanRecord
+from app.schemas.imports import AddressImportStats, ImportPayload, ImportSummary, ScanRecord
 
-DOMAIN_INDEX_FIELD = "domain"
+ADDRESS_FIELD = "address"
 
 
 class ImportService:
@@ -57,31 +57,32 @@ class ImportService:
         return self.import_records(collection, ImportPayload(payload_root))
 
     def import_records(self, collection: str, payload: ImportPayload) -> ImportSummary:
-        """Фильтрует, нормализует ({domain, records}) и сохраняет записи в коллекцию."""
-        stats: list[DomainImportStats] = []
-        documents: list[dict] = []
+        """Фильтрует записи и мёржит результаты по каждому адресу (ipv4/ipv6/домен/MAC)."""
+        stats: list[AddressImportStats] = []
+        pending: dict[str, list[dict]] = {}
 
-        for domain, records in payload.root.items():
+        for address, records in payload.root.items():
             valid_records = [record.model_dump() for record in records if self._is_valid(record)]
             stats.append(
-                DomainImportStats(
-                    domain=domain,
+                AddressImportStats(
+                    address=address,
                     received=len(records),
                     imported=len(valid_records),
                     skipped=len(records) - len(valid_records),
+
                 )
             )
             if valid_records:
-                documents.append({DOMAIN_INDEX_FIELD: domain, "records": valid_records})
-
-        if not documents:
+                pending[address] = valid_records
+        if not pending:
             raise EmptyImportPayloadError("После фильтрации не осталось ни одной записи для импорта")
 
-        self.repo.create_index(collection, DOMAIN_INDEX_FIELD)
-        self.repo.insert_many(collection, documents)
+        self.repo.create_index(collection, ADDRESS_FIELD, unique=True)
+        for address, results in pending.items():
+            self.repo.upsert_results(collection=collection, address=address, results=results)
 
         return ImportSummary(
-            domains=stats,
+            addresses=stats,
             total_imported=sum(s.imported for s in stats),
-            total_skipped=sum(s.skipped for s in stats),
+            total_skipped=sum(s.skipped for s in stats)
         )
