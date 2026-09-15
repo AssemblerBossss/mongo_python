@@ -18,13 +18,33 @@ def service(repo_mock: MagicMock) -> ImportService:
     return ImportService(repo_mock)
 
 
-def test_filters_empty_data_and_non_empty_error(service: ImportService, repo_mock: MagicMock) -> None:
+def test_filters_empty_data_and_non_empty_error(
+    service: ImportService, repo_mock: MagicMock
+) -> None:
     payload = ImportPayload.model_validate(
         {
             "example.com": [
-                {"instance": "a", "result": True, "data_type": "ip", "data": {"ip": "1.1.1.1"}, "error": None},
-                {"instance": "b", "result": False, "data_type": "ip", "data": {}, "error": None},
-                {"instance": "c", "result": False, "data_type": "ip", "data": {"ip": "2.2.2.2"}, "error": "timeout"},
+                {
+                    "instance": "a",
+                    "result": True,
+                    "data_type": "ip",
+                    "data": {"ip": "1.1.1.1"},
+                    "error": None,
+                },
+                {
+                    "instance": "b",
+                    "result": False,
+                    "data_type": "ip",
+                    "data": {},
+                    "error": None,
+                },
+                {
+                    "instance": "c",
+                    "result": False,
+                    "data_type": "ip",
+                    "data": {"ip": "2.2.2.2"},
+                    "error": "timeout",
+                },
             ]
         }
     )
@@ -35,20 +55,38 @@ def test_filters_empty_data_and_non_empty_error(service: ImportService, repo_moc
     assert summary.total_skipped == 2
     assert summary.addresses[0].address == "example.com"
 
-    repo_mock.create_index.assert_called_once_with("scan_results", "address", unique=True)
+    repo_mock.create_index.assert_called_once_with(
+        "scan_results", "address", unique=True
+    )
     repo_mock.insert_many.assert_called_once()
     repo_mock.upsert_results.assert_called_once_with(
         "scan_results",
         "example.com",
-        [{"instance": "a", "result": True, "data_type": "ip", "data": {"ip": "1.1.1.1"}, "error": None}],
+        [
+            {
+                "instance": "a",
+                "result": True,
+                "data_type": "ip",
+                "data": {"ip": "1.1.1.1"},
+                "error": None,
+            }
+        ],
     )
 
 
-def test_raises_when_nothing_left_after_filtering(service: ImportService, repo_mock: MagicMock) -> None:
+def test_raises_when_nothing_left_after_filtering(
+    service: ImportService, repo_mock: MagicMock
+) -> None:
     payload = ImportPayload.model_validate(
         {
             "example.com": [
-                {"instance": "a", "result": False, "data_type": "ip", "data": {}, "error": "timeout"},
+                {
+                    "instance": "a",
+                    "result": False,
+                    "data_type": "ip",
+                    "data": {},
+                    "error": "timeout",
+                },
             ]
         }
     )
@@ -69,7 +107,9 @@ def test_parse_file_rejects_non_dict_payload(service: ImportService) -> None:
         service.parse_file("a1b2c3.json", b'[{"instance": "a"}]')
 
 
-def test_import_files_groups_by_address_from_content(service: ImportService, repo_mock: MagicMock) -> None:
+def test_import_files_groups_by_address_from_content(
+    service: ImportService, repo_mock: MagicMock
+) -> None:
     files = {
         "9f8a1c.json": (
             b'{"example.com": [{"instance": "a", "result": true, "data_type": "ip", "data": {"ip": "1.1.1.1"}}]}'
@@ -88,7 +128,7 @@ def test_import_files_groups_by_address_from_content(service: ImportService, rep
 
 
 def test_import_files_merges_same_address_from_different_files(
-        service: ImportService, repo_mock: MagicMock
+    service: ImportService, repo_mock: MagicMock
 ) -> None:
     """Два файла с разными (хэш-подобными) именами, но одним адресом внутри —
     должны схлопнуться в один вызов upsert_results с обоими результатами."""
@@ -105,7 +145,9 @@ def test_import_files_merges_same_address_from_different_files(
 
     assert summary.total_imported == 2
     assert repo_mock.upsert_results.call_count == 1
-    called_collection, called_address, called_results = repo_mock.upsert_results.call_args[0]
+    called_collection, called_address, called_results = (
+        repo_mock.upsert_results.call_args[0]
+    )
     assert called_collection == "scan_results"
     assert called_address == "89.99.117.132"
     assert {r["instance"] for r in called_results} == {"a", "b"}

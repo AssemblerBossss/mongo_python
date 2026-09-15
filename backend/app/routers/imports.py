@@ -9,17 +9,27 @@ from app.schemas.imports import ImportPayload, ImportSummary
 router = APIRouter(prefix="/api")
 
 
-@router.post("/collections/{name}/import", response_model=ImportSummary, status_code=201)
-def import_documents(name: str, payload: ImportPayload, service: ImportServiceDep) -> ImportSummary:
+@router.post(
+    "/collections/{name}/import", response_model=ImportSummary, status_code=201
+)
+def import_documents(
+    name: str, payload: ImportPayload, service: ImportServiceDep
+) -> ImportSummary:
     return service.import_records(name, payload)
 
 
-@router.post("/collections/{name}/import/files", response_model=ImportSummary, status_code=201)
+@router.post(
+    "/collections/{name}/import/files", response_model=ImportSummary, status_code=201
+)
 async def import_document_files(
-        name: str,
-        service: ImportServiceDep,
-        files: Annotated[
-            list[UploadFile], File(description="Один или несколько файлов; адрес берётся из содержимого файла")],
+    name: str,
+    service: ImportServiceDep,
+    files: Annotated[
+        list[UploadFile],
+        File(
+            description="Один или несколько файлов; адрес берётся из содержимого файла"
+        ),
+    ],
 ) -> ImportSummary:
     """Принимает один или несколько файлов.
 

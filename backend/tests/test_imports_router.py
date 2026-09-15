@@ -23,7 +23,9 @@ def client(import_service_mock: MagicMock) -> TestClient:
 
 def test_import_documents(client: TestClient, import_service_mock: MagicMock) -> None:
     import_service_mock.import_records.return_value = ImportSummary(
-        addresses=[AddressImportStats(address="example.com", received=2, imported=1, skipped=1)],
+        addresses=[
+            AddressImportStats(address="example.com", received=2, imported=1, skipped=1)
+        ],
         total_imported=1,
         total_skipped=1,
     )
@@ -32,8 +34,20 @@ def test_import_documents(client: TestClient, import_service_mock: MagicMock) ->
         "/api/collections/scan_results/import",
         json={
             "example.com": [
-                {"instance": "a", "result": True, "data_type": "ip", "data": {"ip": "1.1.1.1"}, "error": None},
-                {"instance": "b", "result": False, "data_type": "ip", "data": {}, "error": "timeout"},
+                {
+                    "instance": "a",
+                    "result": True,
+                    "data_type": "ip",
+                    "data": {"ip": "1.1.1.1"},
+                    "error": None,
+                },
+                {
+                    "instance": "b",
+                    "result": False,
+                    "data_type": "ip",
+                    "data": {},
+                    "error": "timeout",
+                },
             ]
         },
     )
@@ -46,7 +60,9 @@ def test_import_documents(client: TestClient, import_service_mock: MagicMock) ->
 def test_import_files(client: TestClient, import_service_mock: MagicMock) -> None:
     import_service_mock.import_files.return_value = ImportSummary(
         addresses=[
-            AddressImportStats(address="example.com", received=1, imported=1, skipped=0),
+            AddressImportStats(
+                address="example.com", received=1, imported=1, skipped=0
+            ),
             AddressImportStats(address="1.2.3.4", received=1, imported=1, skipped=0),
         ],
         total_imported=2,

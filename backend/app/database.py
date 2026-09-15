@@ -21,7 +21,9 @@ def _build_connection_string(settings) -> str:
 @lru_cache
 def get_mongo_client() -> MongoClient:
     settings = get_settings()
-    return MongoClient(_build_connection_string(settings), serverSelectionTimeoutMS=5000)
+    return MongoClient(
+        _build_connection_string(settings), serverSelectionTimeoutMS=5000
+    )
 
 
 def get_database() -> Database:
