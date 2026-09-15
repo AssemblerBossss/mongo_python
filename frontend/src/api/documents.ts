@@ -3,7 +3,9 @@ import type { DocumentsPage, DocumentsQueryParams } from "./types";
 
 function buildQuery(params: DocumentsQueryParams): string {
   const search = new URLSearchParams();
-  if (params.filter) search.set("filter", params.filter);
+  if (params.conditions && params.conditions.length > 0) {
+    search.set("conditions", JSON.stringify(params.conditions));
+  }
   if (params.skip !== undefined) search.set("skip", String(params.skip));
   if (params.limit !== undefined) search.set("limit", String(params.limit));
   if (params.sortBy) search.set("sort_by", params.sortBy);

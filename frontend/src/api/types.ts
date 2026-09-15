@@ -21,7 +21,7 @@ export interface ApiError {
 }
 
 export interface DocumentsQueryParams {
-    filter?: string;
+    conditions?: FilterCondition[];
     skip?: number;
     limit?: number;
     sortBy?: string;
@@ -48,6 +48,26 @@ export interface ScanRecord  {
     data_type: string;
     data?: Record<string, unknown>;
     error?: string | null;
-};
+}
 
 export type ImportPayloadBody = Record<string, ScanRecord[]>;
+
+export type FilterOperator =
+    | "eq" | "ne" | "in" | "contains" | "exists"
+    | "gt" | "gte" | "lt" | "lte" | "between";
+
+
+export interface FilterFieldInfo {
+    field: string;
+    types: string[];
+    operators: FilterOperator[];
+    enumerable: boolean;
+    values: unknown[] | null;
+  }
+
+  export interface FilterCondition {
+    field: string;
+    operator: FilterOperator;
+    value: unknown;
+  }
+

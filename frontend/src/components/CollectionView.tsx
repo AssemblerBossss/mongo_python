@@ -1,6 +1,8 @@
 import { useState } from "react";
-import type { FieldInfo } from "../api/types";
+import type { FieldInfo, FilterCondition } from "../api/types";
+import { ApiRequestError } from "../api/client";
 import { useCollectionFields } from "../hooks/useCollectionFields";
+import { useCollectionFilters } from "../hooks/useCollectionFilters";
 import { useDocuments } from "../hooks/useDocuments";
 import { FieldRenderer } from "./FieldRenderer";
 import { FilterBar } from "./FilterBar";
@@ -21,16 +23,25 @@ export function CollectionView({
   onRowClick,
 }: CollectionViewProps): JSX.Element {
   const [skip, setSkip] = useState(0);
-  const [filter, setFilter] = useState("");
+  const [conditions, setConditions] = useState<FilterCondition[]>([]);
 
   const { data: fields } = useCollectionFields(collection);
+  const { data: filterFields } = useCollectionFilters(collection);
   const columns = columnsOverride ?? fields ?? [];
 
-  const { data: page, isLoading } = useDocuments(collection, {
-    filter: filter || undefined,
+  const { data: page, isLoading, error } = useDocuments(collection, {
+    conditions: conditions.length ? conditions : undefined,
     skip,
     limit: LIMIT,
   });
+
+  function handleConditionsChange(next: FilterCondition[]): void {
+    setConditions(next);
+    setSkip(0);
+  }
+
+  const filterErrorMessage =
+    error instanceof ApiRequestError ? error.payload.detail : error ? "Не удалось применить фильтр" : null;
 
   if (isLoading) {
     return <p className="text-sm text-gray-400">Загрузка…</p>;
@@ -40,12 +51,11 @@ export function CollectionView({
     return (
       <div className="flex flex-col gap-4">
         <FilterBar
-          value={filter}
-          onApply={(value) => {
-            setFilter(value);
-            setSkip(0);
-          }}
+          filters={filterFields ?? []}
+          conditions={conditions}
+          onChange={handleConditionsChange}
         />
+        {filterErrorMessage && <p className="text-sm text-red-600">{filterErrorMessage}</p>}
         <EmptyState title="Документы не найдены" />
       </div>
     );
@@ -54,12 +64,11 @@ export function CollectionView({
   return (
     <div className="flex flex-col gap-4">
       <FilterBar
-        value={filter}
-        onApply={(value) => {
-          setFilter(value);
-          setSkip(0);
-        }}
+        filters={filterFields ?? []}
+        conditions={conditions}
+        onChange={handleConditionsChange}
       />
+      {filterErrorMessage && <p className="text-sm text-red-600">{filterErrorMessage}</p>}
       <div className="overflow-x-auto rounded border">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-100">
