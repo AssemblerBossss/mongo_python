@@ -7,7 +7,12 @@ from pydantic import ValidationError
 
 from app.errors import EmptyImportPayloadError, InvalidImportFileError
 from app.repositories.mongo_repository import MongoRepository
-from app.schemas.imports import AddressImportStats, ImportPayload, ImportSummary, ScanRecord
+from app.schemas.imports import (
+    AddressImportStats,
+    ImportPayload,
+    ImportSummary,
+    ScanRecord,
+)
 
 ADDRESS_FIELD = "address"
 
@@ -28,7 +33,9 @@ class ImportService:
         try:
             raw = json.loads(content)
         except json.JSONDecodeError as exc:
-            raise InvalidImportFileError(f"Файл '{filename}': некорректный JSON ({exc})") from exc
+            raise InvalidImportFileError(
+                f"Файл '{filename}': некорректный JSON ({exc})"
+            ) from exc
 
         if not isinstance(raw, dict):
             raise InvalidImportFileError(
@@ -55,27 +62,32 @@ class ImportService:
         pending: dict[str, list[dict]] = {}
 
         for address, records in payload.root.items():
-            valid_records = [record.model_dump() for record in records if self._is_valid(record)]
+            valid_records = [
+                record.model_dump() for record in records if self._is_valid(record)
+            ]
             stats.append(
                 AddressImportStats(
                     address=address,
                     received=len(records),
                     imported=len(valid_records),
                     skipped=len(records) - len(valid_records),
-
                 )
             )
             if valid_records:
                 pending[address] = valid_records
         if not pending:
-            raise EmptyImportPayloadError("После фильтрации не осталось ни одной записи для импорта")
+            raise EmptyImportPayloadError(
+                "После фильтрации не осталось ни одной записи для импорта"
+            )
 
         self.repo.create_index(collection, ADDRESS_FIELD, unique=True)
         for address, results in pending.items():
-            self.repo.upsert_results(collection=collection, address=address, results=results)
+            self.repo.upsert_results(
+                collection=collection, address=address, results=results
+            )
 
         return ImportSummary(
             addresses=stats,
             total_imported=sum(s.imported for s in stats),
-            total_skipped=sum(s.skipped for s in stats)
+            total_skipped=sum(s.skipped for s in stats),
         )
