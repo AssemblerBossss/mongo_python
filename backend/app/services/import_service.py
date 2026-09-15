@@ -23,36 +23,29 @@ class ImportService:
         """Запись валидна, если есть непустые данные и нет ошибки."""
         return bool(record.data) and not record.error
 
-    @staticmethod
-    def domain_from_filename(filename: str) -> str:
-        """Домен/IP — имя файла без расширения, например 'example.com.json' -> 'example.com'."""
-        stem = PurePosixPath(filename).stem
-        return stem or filename
-
-    def parse_file(self, filename: str, content: bytes) -> tuple[str, list[ScanRecord]]:
-        """Разбирает один загруженный файл в (домен, список результатов сканирования)."""
-        domain = self.domain_from_filename(filename)
+    def parse_file(self, filename: str, content: bytes) -> ImportPayload:
+        """Разбирает один загруженный файл: JSON-объект {адрес: [результаты]}, как в /import."""
         try:
             raw = json.loads(content)
         except json.JSONDecodeError as exc:
             raise InvalidImportFileError(f"Файл '{filename}': некорректный JSON ({exc})") from exc
 
-        if not isinstance(raw, list):
-            raise InvalidImportFileError(f"Файл '{filename}': ожидается JSON-массив результатов")
-
+        if not isinstance(raw, dict):
+            raise InvalidImportFileError(
+                f"Файл '{filename}': ожидается JSON-объект вида {{адрес: [результаты]}}"
+            )
         try:
-            records = [ScanRecord.model_validate(item) for item in raw]
+            return ImportPayload.model_validate(raw)
         except ValidationError as exc:
             raise InvalidImportFileError(f"Файл '{filename}': {exc}") from exc
-
-        return domain, records
 
     def import_files(self, collection: str, files: dict[str, bytes]) -> ImportSummary:
         """Разбирает набор файлов (имя -> содержимое) и импортирует их одной транзакцией записи."""
         payload_root: dict[str, list[ScanRecord]] = {}
         for filename, content in files.items():
-            domain, records = self.parse_file(filename, content)
-            payload_root.setdefault(domain, []).extend(records)
+            file_payload = self.parse_file(filename, content)
+            for address, records in file_payload.root.items():
+                payload_root.setdefault(address, []).extend(records)
 
         return self.import_records(collection, ImportPayload(payload_root))
 

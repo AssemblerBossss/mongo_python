@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 
 from app.dependencies import get_import_service
 from app.main import create_app
-from app.schemas.imports import DomainImportStats, ImportSummary
+from app.schemas import AddressImportStats, ImportSummary
 from app.services.import_service import ImportService
 
 
@@ -23,7 +23,7 @@ def client(import_service_mock: MagicMock) -> TestClient:
 
 def test_import_documents(client: TestClient, import_service_mock: MagicMock) -> None:
     import_service_mock.import_records.return_value = ImportSummary(
-        domains=[DomainImportStats(domain="example.com", received=2, imported=1, skipped=1)],
+        addresses=[AddressImportStats(address="example.com", received=2, imported=1, skipped=1)],
         total_imported=1,
         total_skipped=1,
     )
@@ -45,9 +45,9 @@ def test_import_documents(client: TestClient, import_service_mock: MagicMock) ->
 
 def test_import_files(client: TestClient, import_service_mock: MagicMock) -> None:
     import_service_mock.import_files.return_value = ImportSummary(
-        domains=[
-            DomainImportStats(domain="example.com", received=1, imported=1, skipped=0),
-            DomainImportStats(domain="1.2.3.4", received=1, imported=1, skipped=0),
+        addresses=[
+            AddressImportStats(address="example.com", received=1, imported=1, skipped=0),
+            AddressImportStats(address="1.2.3.4", received=1, imported=1, skipped=0),
         ],
         total_imported=2,
         total_skipped=0,
