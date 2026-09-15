@@ -27,3 +27,16 @@ export interface DocumentsQueryParams {
   sortBy?: string;
   sortDir?: number;
 }
+
+export interface DomainImportStats {
+  domain: string;
+  received: number;
+  imported: number;
+  skipped: number;
+}
+
+export interface ImportSummary {
+  domains: DomainImportStats[];
+  total_imported: number;
+  total_skipped: number;
+}

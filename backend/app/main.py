@@ -1,4 +1,3 @@
-"""Точка входа FastAPI-приложения."""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -9,7 +8,6 @@ from app.routers import collections, documents, health, imports
 
 
 def create_app() -> FastAPI:
-    """Собирает и настраивает FastAPI-приложение."""
     settings = get_settings()
     setup_logging(settings.log_level)
 

@@ -1,4 +1,3 @@
-"""Конфигурация приложения через переменные окружения."""
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -24,5 +23,4 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    """Возвращает закэшированный экземпляр настроек."""
     return Settings()

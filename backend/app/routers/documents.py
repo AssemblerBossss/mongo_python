@@ -1,12 +1,10 @@
-"""Универсальные эндпоинты работы с документами произвольной коллекции."""
 import json
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query
 
-from app.dependencies import get_mongo_service
+from app.dependencies import MongoServiceDep
 from app.schemas.common import DocumentsPage
-from app.services.mongo_service import MongoService
 
 router = APIRouter(prefix="/api")
 
@@ -14,14 +12,13 @@ router = APIRouter(prefix="/api")
 @router.get("/collections/{name}/documents", response_model=DocumentsPage)
 def get_documents(
     name: str,
-    filter: str | None = Query(None),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=200),
-    sort_by: str = Query("_id"),
-    sort_dir: int = Query(1),
-    service: MongoService = Depends(get_mongo_service),
+    service: MongoServiceDep,
+    filter: Annotated[str | None, Query()] = None,
+    skip: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=200)] = 20,
+    sort_by: Annotated[str, Query()] = "_id",
+    sort_dir: Annotated[int, Query()] = 1,
 ) -> DocumentsPage:
-    """Возвращает страницу документов коллекции с фильтром, сортировкой и пагинацией."""
     query: dict[str, Any] = {}
     if filter:
         try:
@@ -35,40 +32,29 @@ def get_documents(
 
 
 @router.post("/collections/{name}/documents", status_code=201)
-def create_document(
-    name: str, data: dict[str, Any], service: MongoService = Depends(get_mongo_service)
-) -> dict[str, Any]:
-    """Создаёт новый документ в коллекции."""
+def create_document(name: str, data: dict[str, Any], service: MongoServiceDep) -> dict[str, Any]:
     return service.insert(name, data)
 
 
 @router.get("/collections/{name}/documents/{doc_id}")
-def get_document(
-    name: str, doc_id: str, service: MongoService = Depends(get_mongo_service)
-) -> dict[str, Any]:
-    """Возвращает документ по идентификатору."""
+def get_document(name: str, doc_id: str, service: MongoServiceDep) -> dict[str, Any]:
     return service.get(name, doc_id)
 
 
 @router.put("/collections/{name}/documents/{doc_id}")
 def replace_document(
-    name: str, doc_id: str, data: dict[str, Any], service: MongoService = Depends(get_mongo_service)
+    name: str, doc_id: str, data: dict[str, Any], service: MongoServiceDep
 ) -> dict[str, Any]:
-    """Полностью заменяет документ."""
     return service.replace(name, doc_id, data)
 
 
 @router.patch("/collections/{name}/documents/{doc_id}")
 def patch_document(
-    name: str, doc_id: str, data: dict[str, Any], service: MongoService = Depends(get_mongo_service)
+    name: str, doc_id: str, data: dict[str, Any], service: MongoServiceDep
 ) -> dict[str, Any]:
-    """Частично обновляет документ через $set."""
     return service.patch(name, doc_id, data)
 
 
 @router.delete("/collections/{name}/documents/{doc_id}", status_code=204)
-def delete_document(
-    name: str, doc_id: str, service: MongoService = Depends(get_mongo_service)
-) -> None:
-    """Удаляет документ."""
+def delete_document(name: str, doc_id: str, service: MongoServiceDep) -> None:
     service.delete(name, doc_id)

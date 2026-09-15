@@ -1,4 +1,3 @@
-"""Подключение к MongoDB через PyMongo (без учебных обёрток)."""
 from functools import lru_cache
 
 from pymongo import MongoClient
@@ -21,13 +20,11 @@ def _build_connection_string(settings) -> str:
 
 @lru_cache
 def get_mongo_client() -> MongoClient:
-    """Возвращает закэшированный клиент MongoDB."""
     settings = get_settings()
     return MongoClient(_build_connection_string(settings), serverSelectionTimeoutMS=5000)
 
 
 def get_database() -> Database:
-    """Возвращает объект базы данных для работы с коллекциями."""
     settings = get_settings()
     return get_mongo_client()[settings.mongo_db]
 

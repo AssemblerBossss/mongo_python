@@ -1,4 +1,3 @@
-"""Общие Pydantic-модели, независимые от домена."""
 from typing import Any
 
 from pydantic import BaseModel, Field

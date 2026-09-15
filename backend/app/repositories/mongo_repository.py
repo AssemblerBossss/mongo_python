@@ -1,4 +1,3 @@
-"""Репозиторий — единственный слой, обращающийся к pymongo напрямую."""
 from __future__ import annotations
 
 from typing import Any

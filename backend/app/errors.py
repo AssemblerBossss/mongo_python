@@ -1,4 +1,3 @@
-"""Доменные исключения и их отображение в HTTP-ответы."""
 from __future__ import annotations
 
 import logging
@@ -31,9 +30,11 @@ class EmptyImportPayloadError(Exception):
     """После фильтрации не осталось ни одной записи для импорта."""
 
 
-def register_exception_handlers(app: FastAPI) -> None:
-    """Регистрирует обработчики доменных исключений на уровне приложения."""
+class InvalidImportFileError(Exception):
+    """Загруженный файл не является валидным JSON со списком результатов сканирования."""
 
+
+def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(InvalidObjectIdError)
     async def handle_invalid_object_id(request: Request, exc: InvalidObjectIdError) -> JSONResponse:
         return _error_response(request, 400, str(exc))
@@ -44,6 +45,10 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(EmptyImportPayloadError)
     async def handle_empty_import(request: Request, exc: EmptyImportPayloadError) -> JSONResponse:
+        return _error_response(request, 400, str(exc))
+
+    @app.exception_handler(InvalidImportFileError)
+    async def handle_invalid_import_file(request: Request, exc: InvalidImportFileError) -> JSONResponse:
         return _error_response(request, 400, str(exc))
 
     @app.exception_handler(DocumentNotFoundError)

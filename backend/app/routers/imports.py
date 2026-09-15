@@ -1,16 +1,33 @@
-"""Эндпоинт массовой загрузки результатов сканирования, сгруппированных по доменам."""
-from fastapi import APIRouter, Depends
+import asyncio
+from typing import Annotated
 
-from app.dependencies import get_import_service
+from fastapi import APIRouter, File, UploadFile
+
+from app.dependencies import ImportServiceDep
 from app.schemas.imports import ImportPayload, ImportSummary
-from app.services.import_service import ImportService
 
 router = APIRouter(prefix="/api")
 
 
 @router.post("/collections/{name}/import", response_model=ImportSummary, status_code=201)
-def import_documents(
-    name: str, payload: ImportPayload, service: ImportService = Depends(get_import_service)
-) -> ImportSummary:
-    """Фильтрует и загружает результаты сканирования доменов в коллекцию."""
+def import_documents(name: str, payload: ImportPayload, service: ImportServiceDep) -> ImportSummary:
     return service.import_records(name, payload)
+
+
+@router.post("/collections/{name}/import/files", response_model=ImportSummary, status_code=201)
+async def import_document_files(
+    name: str,
+    service: ImportServiceDep,
+    files: Annotated[list[UploadFile], File(description="Один или несколько файлов, один файл на домен/IP")],
+) -> ImportSummary:
+    """Принимает один или несколько файлов (каждый — результаты сканирования одного домена/IP).
+
+    Чтение файлов идёт параллельно через async I/O, а разбор JSON и запись в
+    Mongo вынесены в отдельный поток, чтобы большие файлы не блокировали event
+    loop и не мешали другим одновременным загрузкам.
+    """
+    contents = await asyncio.gather(*(file.read() for file in files))
+    filenames = [file.filename or f"file_{index}" for index, file in enumerate(files)]
+    files_by_name = dict(zip(filenames, contents))
+
+    return await asyncio.to_thread(service.import_files, name, files_by_name)

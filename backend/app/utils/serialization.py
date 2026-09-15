@@ -1,4 +1,3 @@
-"""Сериализация значений MongoDB в JSON-совместимые типы."""
 from datetime import datetime
 from typing import Any
 

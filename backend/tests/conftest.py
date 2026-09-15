@@ -1,4 +1,3 @@
-"""Общие фикстуры для тестов backend."""
 from unittest.mock import MagicMock
 
 import pytest

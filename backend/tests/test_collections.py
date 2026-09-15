@@ -1,4 +1,3 @@
-"""Smoke-тест списка коллекций (с моком MongoService, без реальной Mongo)."""
 from unittest.mock import MagicMock
 
 from fastapi.testclient import TestClient

@@ -1,4 +1,3 @@
-"""Настройка логирования и middleware с request-id."""
 from __future__ import annotations
 
 import logging

@@ -1,4 +1,3 @@
-"""Модели для массовой загрузки результатов сканирования, сгруппированных по доменам."""
 from typing import Any
 
 from pydantic import BaseModel, RootModel

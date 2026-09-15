@@ -1,9 +1,8 @@
-"""Тесты фильтрации и нормализации в ImportService (репозиторий замокан)."""
 from unittest.mock import MagicMock
 
 import pytest
 
-from app.errors import EmptyImportPayloadError
+from app.errors import EmptyImportPayloadError, InvalidImportFileError
 from app.repositories.mongo_repository import MongoRepository
 from app.schemas.imports import ImportPayload
 from app.services.import_service import ImportService
@@ -63,3 +62,43 @@ def test_raises_when_nothing_left_after_filtering(service: ImportService, repo_m
         service.import_records("scan_results", payload)
 
     repo_mock.insert_many.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    ("filename", "expected_domain"),
+    [
+        ("example.com.json", "example.com"),
+        ("1.2.3.4.json", "1.2.3.4"),
+        ("no_extension", "no_extension"),
+    ],
+)
+def test_domain_from_filename(filename: str, expected_domain: str) -> None:
+    assert ImportService.domain_from_filename(filename) == expected_domain
+
+
+def test_parse_file_rejects_invalid_json(service: ImportService) -> None:
+    with pytest.raises(InvalidImportFileError):
+        service.parse_file("example.com.json", b"not json")
+
+
+def test_parse_file_rejects_non_list_payload(service: ImportService) -> None:
+    with pytest.raises(InvalidImportFileError):
+        service.parse_file("example.com.json", b'{"instance": "a"}')
+
+
+def test_import_files_groups_by_filename_domain(service: ImportService, repo_mock: MagicMock) -> None:
+    files = {
+        "example.com.json": (
+            b'[{"instance": "a", "result": true, "data_type": "ip", "data": {"ip": "1.1.1.1"}}]'
+        ),
+        "1.2.3.4.json": (
+            b'[{"instance": "b", "result": true, "data_type": "ip", "data": {"ip": "2.2.2.2"}}]'
+        ),
+    }
+
+    summary = service.import_files("scan_results", files)
+
+    assert summary.total_imported == 2
+    assert summary.total_skipped == 0
+    assert {s.domain for s in summary.domains} == {"example.com", "1.2.3.4"}
+    repo_mock.insert_many.assert_called_once()
