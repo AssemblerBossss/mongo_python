@@ -30,29 +30,49 @@ class EmptyImportPayloadError(Exception):
     """После фильтрации не осталось ни одной записи для импорта."""
 
 
+class InvalidFilterError(Exception):
+    """Условие фильтра ссылается на недопустимое поле или некорректно для своего оператора."""
+
+
 class InvalidImportFileError(Exception):
     """Загруженный файл не является валидным JSON со списком результатов сканирования."""
 
 
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(InvalidObjectIdError)
-    async def handle_invalid_object_id(request: Request, exc: InvalidObjectIdError) -> JSONResponse:
+    async def handle_invalid_object_id(
+        request: Request, exc: InvalidObjectIdError
+    ) -> JSONResponse:
         return _error_response(request, 400, str(exc))
 
     @app.exception_handler(CollectionExistsError)
-    async def handle_collection_exists(request: Request, exc: CollectionExistsError) -> JSONResponse:
+    async def handle_collection_exists(
+        request: Request, exc: CollectionExistsError
+    ) -> JSONResponse:
         return _error_response(request, 409, str(exc))
 
     @app.exception_handler(EmptyImportPayloadError)
-    async def handle_empty_import(request: Request, exc: EmptyImportPayloadError) -> JSONResponse:
+    async def handle_empty_import(
+        request: Request, exc: EmptyImportPayloadError
+    ) -> JSONResponse:
+        return _error_response(request, 400, str(exc))
+
+    @app.exception_handler(InvalidFilterError)
+    async def handle_invalid_filter_error(
+        request: Request, exc: InvalidFilterError
+    ) -> JSONResponse:
         return _error_response(request, 400, str(exc))
 
     @app.exception_handler(InvalidImportFileError)
-    async def handle_invalid_import_file(request: Request, exc: InvalidImportFileError) -> JSONResponse:
+    async def handle_invalid_import_file(
+        request: Request, exc: InvalidImportFileError
+    ) -> JSONResponse:
         return _error_response(request, 400, str(exc))
 
     @app.exception_handler(DocumentNotFoundError)
-    async def handle_not_found(request: Request, exc: DocumentNotFoundError) -> JSONResponse:
+    async def handle_not_found(
+        request: Request, exc: DocumentNotFoundError
+    ) -> JSONResponse:
         return _error_response(request, 404, str(exc))
 
     @app.exception_handler(Exception)

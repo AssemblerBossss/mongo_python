@@ -3,7 +3,12 @@ from __future__ import annotations
 from typing import Any
 
 from pymongo.database import Database
-from pymongo.results import DeleteResult, InsertManyResult, InsertOneResult, UpdateResult
+from pymongo.results import (
+    DeleteResult,
+    InsertManyResult,
+    InsertOneResult,
+    UpdateResult,
+)
 
 
 class MongoRepository:
@@ -23,7 +28,9 @@ class MongoRepository:
     def drop_collection(self, name: str) -> None:
         self.db.drop_collection(name)
 
-    def create_index(self, collection: str, keys: str | list[tuple[str, int]], **kwargs: Any) -> str:
+    def create_index(
+        self, collection: str, keys: str | list[tuple[str, int]], **kwargs: Any
+    ) -> str:
         return self.db[collection].create_index(keys, **kwargs)
 
     # ---------- Документы ----------
@@ -32,19 +39,33 @@ class MongoRepository:
         return self.db[collection].count_documents(query)
 
     def find(
-            self,
-            collection: str,
-            query: dict[str, Any],
-            sort_by: str,
-            sort_dir: int,
-            skip: int,
-            limit: int,
+        self,
+        collection: str,
+        query: dict[str, Any],
+        sort_by: str,
+        sort_dir: int,
+        skip: int,
+        limit: int,
     ) -> list[dict[str, Any]]:
-        cursor = self.db[collection].find(query).sort(sort_by, sort_dir).skip(skip).limit(limit)
+        cursor = (
+            self.db[collection]
+            .find(query)
+            .sort(sort_by, sort_dir)
+            .skip(skip)
+            .limit(limit)
+        )
         return list(cursor)
 
     def find_sample(self, collection: str, limit: int) -> list[dict[str, Any]]:
         return list(self.db[collection].find().limit(limit))
+
+    def distinct_values(self, collection: str, field: str, limit: int) -> list[Any]:
+        pipeline = [{"$group": {"_id": f"${field}"}}, {"$limit": limit}]
+        return [
+            doc["_id"]
+            for doc in self.db[collection].aggregate(pipeline)
+            if doc["_id"] is not None
+        ]
 
     def find_one(self, collection: str, query: dict[str, Any]) -> dict[str, Any] | None:
         return self.db[collection].find_one(query)
@@ -53,7 +74,9 @@ class MongoRepository:
         result: InsertOneResult = self.db[collection].insert_one(document)
         return result.inserted_id
 
-    def upsert_results(self, collection: str, address: str, results: list[dict[str, Any]]) -> None:
+    def upsert_results(
+        self, collection: str, address: str, results: list[dict[str, Any]]
+    ) -> None:
         self.db[collection].update_one(
             {"address": address},
             {
@@ -63,14 +86,20 @@ class MongoRepository:
             upsert=True,
         )
 
-    def upsert_results_bulk(self, collection: str, address: str, results: list[dict[str, Any]]) -> None:
+    def upsert_results_bulk(
+        self, collection: str, address: str, results: list[dict[str, Any]]
+    ) -> None:
         pass
 
-    def replace_one(self, collection: str, query: dict[str, Any], document: dict[str, Any]) -> int:
+    def replace_one(
+        self, collection: str, query: dict[str, Any], document: dict[str, Any]
+    ) -> int:
         result: UpdateResult = self.db[collection].replace_one(query, document)
         return result.matched_count
 
-    def update_one(self, collection: str, query: dict[str, Any], update: dict[str, Any]) -> int:
+    def update_one(
+        self, collection: str, query: dict[str, Any], update: dict[str, Any]
+    ) -> int:
         result: UpdateResult = self.db[collection].update_one(query, update)
         return result.matched_count
 
