@@ -677,9 +677,6 @@ function CollectionPageContent() {
                                                 documents</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
-
-                                    <Button size="sm" variant="outline" onClick={() => exportBulkCode("delete")}><FileJson
-                                        size={14}/> Export Code</Button>
                                 </div>
                             </div>
 
