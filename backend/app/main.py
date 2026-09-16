@@ -1,3 +1,7 @@
+import logging
+import time
+
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -12,6 +16,8 @@ from app.routers import (
     server_router,
 )
 
+
+logger = logging.getLogger("timing")
 
 def create_app() -> FastAPI:
     settings = get_settings()
@@ -30,6 +36,15 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
     app.add_middleware(RequestIdMiddleware)
+
+    @app.middleware("http")
+    async def add_process_time_header(request, call_next):
+        start = time.perf_counter()
+        response = await call_next(request)
+        elapsed_ms = (time.perf_counter() - start) * 1000
+        response.headers["X-Process-Time-Ms"] = f"{elapsed_ms:.2f}"
+        logger.info("%s %s -> %.2f ms", request.method, request.url.path, elapsed_ms)
+        return response
 
     register_exception_handlers(app)
 
