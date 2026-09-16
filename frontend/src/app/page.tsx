@@ -145,14 +145,14 @@ export default function CollectionsPage() {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-compass-bg">
+        <div className="flex h-screen overflow-hidden bg-slate-50">
             <Sidebar/>
             <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-20 lg:pt-8">
                 <div className="max-w-5xl mx-auto">
                     <header className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-compass-text">Collections</h1>
-                            <p className="text-gray-500 dark:text-compass-muted mt-2">Browse collections in the
+                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Collections</h1>
+                            <p className="text-gray-500 mt-2">Browse collections in the
                                 database.</p>
                         </div>
                         <Button onClick={() => setIsCreating(true)} className="self-start sm:self-auto">
@@ -183,7 +183,7 @@ export default function CollectionsPage() {
                         </div>
                     ) : error ? (
                         <div
-                            className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg text-red-700 dark:text-red-400">
+                            className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
                             Error: {(error as Error).message}
                         </div>
                     ) : (
@@ -191,27 +191,27 @@ export default function CollectionsPage() {
                             {collections?.map((col: any) => (
                                 <Link key={col.name} href={`/collections/${col.name}`}>
                                     <div
-                                        className="p-6 bg-white dark:bg-compass-bg border border-gray-200 dark:border-compass-border rounded-xl hover:border-blue-300 dark:hover:border-compass-green hover:shadow-md transition-all group cursor-pointer relative">
+                                        className="p-6 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-md transition-all group cursor-pointer relative">
                                         <div className="flex items-center justify-between mb-4">
                                             <div
-                                                className="p-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-lg">
+                                                className="p-2 bg-purple-50 text-purple-600 rounded-lg">
                                                 <Layers size={20}/>
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
                                                     onClick={(e) => handleDeleteClick(e, col.name)}
                                                 >
                                                     <Trash2 size={16}/>
                                                 </Button>
                                                 <ChevronRight size={18}
-                                                              className="text-gray-300 dark:text-gray-700 group-hover:text-blue-500 dark:group-hover:text-compass-green transition-colors"/>
+                                                              className="text-gray-300 group-hover:text-blue-500 transition-colors"/>
                                             </div>
                                         </div>
-                                        <h3 className="font-bold text-gray-900 dark:text-compass-text mb-1">{col.name}</h3>
-                                        <p className="text-sm text-gray-500 dark:text-compass-muted">
+                                        <h3 className="font-bold text-gray-900 mb-1">{col.name}</h3>
+                                        <p className="text-sm text-gray-500">
                                             {col.count} documents
                                         </p>
                                     </div>
@@ -219,7 +219,7 @@ export default function CollectionsPage() {
                             ))}
                             {collections?.length === 0 && (
                                 <div
-                                    className="col-span-full p-12 text-center text-gray-500 dark:text-compass-muted border border-dashed dark:border-compass-border rounded-xl">
+                                    className="col-span-full p-12 text-center text-gray-500 border border-dashed rounded-xl">
                                     No collections found.
                                 </div>
                             )}
@@ -232,7 +232,7 @@ export default function CollectionsPage() {
             {isCreating && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div
-                        className="bg-white dark:bg-compass-bg text-gray-900 dark:text-compass-text w-full max-w-md rounded-lg shadow-2xl border border-gray-200 dark:border-compass-border overflow-hidden">
+                        className="bg-white text-gray-900 w-full max-w-md rounded-lg shadow-2xl border border-gray-200 overflow-hidden">
                         <div className="p-6">
                             <div className="flex justify-between items-start mb-6">
                                 <h2 className="text-2xl font-bold">New Collection</h2>
@@ -242,7 +242,7 @@ export default function CollectionsPage() {
                                         setNewCollectionName("");
                                         setCreateError(null);
                                     }}
-                                    className="text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors"
+                                    className="text-gray-400 hover:text-gray-700 transition-colors"
                                 >
                                     <X size={20}/>
                                 </button>
@@ -263,7 +263,7 @@ export default function CollectionsPage() {
 
                                 {createError && (
                                     <div
-                                        className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-400 text-sm rounded">
+                                        className="p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded">
                                         {createError}
                                     </div>
                                 )}
