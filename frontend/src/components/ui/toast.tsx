@@ -67,32 +67,32 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={toast.id}
             className={cn(
-              'pointer-events-auto overflow-hidden rounded-xl border bg-white p-4 shadow-2xl backdrop-blur dark:bg-compass-sidebar',
+              'pointer-events-auto overflow-hidden rounded-xl border bg-white p-4 shadow-2xl backdrop-blur',
               'toast-enter',
-              toast.type === 'success' && 'border-emerald-200 dark:border-emerald-800',
-              toast.type === 'error' && 'border-red-200 dark:border-red-800',
-              toast.type === 'warning' && 'border-amber-200 dark:border-amber-800',
-              toast.type === 'info' && 'border-sky-200 dark:border-sky-800',
+              toast.type === 'success' && 'border-emerald-200',
+              toast.type === 'error' && 'border-red-200',
+              toast.type === 'warning' && 'border-amber-200',
+              toast.type === 'info' && 'border-sky-200',
             )}
           >
             <div className="flex items-start gap-3">
               <div className={cn(
                 'mt-0.5 rounded-lg p-1.5',
-                toast.type === 'success' && 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300',
-                toast.type === 'error' && 'bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-300',
-                toast.type === 'warning' && 'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300',
-                toast.type === 'info' && 'bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-300',
+                toast.type === 'success' && 'bg-emerald-50 text-emerald-600',
+                toast.type === 'error' && 'bg-red-50 text-red-600',
+                toast.type === 'warning' && 'bg-amber-50 text-amber-600',
+                toast.type === 'info' && 'bg-sky-50 text-sky-600',
               )}>
                 <IconForType type={toast.type} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-gray-900 dark:text-compass-text">{toast.title}</p>
-                {toast.description ? <p className="mt-1 text-sm text-gray-500 dark:text-compass-muted">{toast.description}</p> : null}
+                <p className="text-sm font-semibold text-gray-900">{toast.title}</p>
+                {toast.description ? <p className="mt-1 text-sm text-gray-500">{toast.description}</p> : null}
               </div>
               <button
                 type="button"
                 onClick={() => dismiss(toast.id)}
-                className="rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-compass-border/40 dark:hover:text-compass-text"
+                className="rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
                 aria-label="Dismiss notification"
               >
                 <X size={16} />

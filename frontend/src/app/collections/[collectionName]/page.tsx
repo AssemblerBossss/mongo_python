@@ -80,9 +80,9 @@ function parseJsonArray(value: string, label: string) {
 function Value({value}: { value: unknown }) {
     if (value === null) return <span className="text-gray-400">null</span>;
     if (typeof value === "boolean") return <span
-        className="text-purple-600 dark:text-purple-400">{String(value)}</span>;
-    if (typeof value === "number") return <span className="text-blue-600 dark:text-blue-400">{value}</span>;
-    if (typeof value === "string") return <span className="text-cyan-700 dark:text-cyan-300">&quot;{value}&quot;</span>;
+        className="text-purple-600">{String(value)}</span>;
+    if (typeof value === "number") return <span className="text-blue-600">{value}</span>;
+    if (typeof value === "string") return <span className="text-cyan-700">&quot;{value}&quot;</span>;
     if (Array.isArray(value)) return <span className="text-gray-400">Array({value.length})</span>;
     if (typeof value === "object") return <span className="text-gray-400">Object</span>;
     return <span>{String(value)}</span>;
@@ -100,13 +100,13 @@ function TreeNode({label, value}: { label: string; value: unknown }) {
                         <span className={cn("inline-block transition-transform", open && "rotate-90")}>›</span>
                     </button>
                 ) : <span className="w-4"/>}
-                <span className="font-medium text-gray-700 dark:text-gray-300">{label}:</span>
+                <span className="font-medium text-gray-700">{label}:</span>
                 {expandable ? <span
                         className="text-xs italic text-gray-400">{Array.isArray(value) ? `Array(${keys.length})` : `{${keys.slice(0, 4).join(", ")}${keys.length > 4 ? ", …" : ""}}`}</span> :
                     <Value value={value}/>}
             </div>
             {expandable && open && (
-                <div className="ml-5 border-l border-gray-200 dark:border-compass-border/50 pl-2">
+                <div className="ml-5 border-l border-gray-200 pl-2">
                     {keys.map((key) => <TreeNode key={key} label={key} value={(value as JsonObject)[key]}/>)}
                 </div>
             )}
@@ -125,11 +125,11 @@ function DocumentTree({doc}: { doc: unknown }) {
 function JsonPrimitive({value}: { value: unknown }) {
     if (value === null) return <span className="text-gray-400">null</span>;
     if (typeof value === "boolean") return <span
-        className="text-purple-600 dark:text-purple-400">{String(value)}</span>;
-    if (typeof value === "number") return <span className="text-blue-600 dark:text-blue-400">{value}</span>;
+        className="text-purple-600">{String(value)}</span>;
+    if (typeof value === "number") return <span className="text-blue-600">{value}</span>;
     if (typeof value === "string") return <span
-        className="text-emerald-700 dark:text-emerald-300">{JSON.stringify(value)}</span>;
-    return <span className="text-gray-700 dark:text-gray-300">{JSON.stringify(value)}</span>;
+        className="text-emerald-700">{JSON.stringify(value)}</span>;
+    return <span className="text-gray-700">{JSON.stringify(value)}</span>;
 }
 
 function CollapsibleJsonNode({
@@ -151,9 +151,9 @@ function CollapsibleJsonNode({
     const entries = expandable ? Object.entries(value as JsonObject) : [];
     const opener = isArray ? "[" : "{";
     const closer = isArray ? "]" : "}";
-    const prefix = name !== undefined ? <><span className="text-sky-700 dark:text-sky-300">{JSON.stringify(name)}</span><span
-        className="text-gray-500 dark:text-gray-400">: </span></> : null;
-    const comma = isLast ? null : <span className="text-gray-500 dark:text-gray-400">,</span>;
+    const prefix = name !== undefined ? <><span className="text-sky-700">{JSON.stringify(name)}</span><span
+        className="text-gray-500">: </span></> : null;
+    const comma = isLast ? null : <span className="text-gray-500">,</span>;
 
     if (!expandable) {
         return (
@@ -167,7 +167,7 @@ function CollapsibleJsonNode({
         return (
             <div className="leading-6" style={{paddingLeft: depth * 18}}>
                 <span className="inline-block w-4"/>{prefix}<span
-                className="text-gray-600 dark:text-gray-300">{opener}{closer}</span>{comma}
+                className="text-gray-600">{opener}{closer}</span>{comma}
             </div>
         );
     }
@@ -183,10 +183,10 @@ function CollapsibleJsonNode({
                 >
                     <span className={cn("inline-block transition-transform", open && "rotate-90")}>›</span>
                 </button>
-                {prefix}<span className="text-gray-600 dark:text-gray-300">{opener}</span>
+                {prefix}<span className="text-gray-600">{opener}</span>
                 {!open && <span
                     className="text-gray-400">… {isArray ? `${entries.length} items` : `${entries.length} fields`} …</span>}
-                {!open && <span className="text-gray-600 dark:text-gray-300">{closer}</span>}
+                {!open && <span className="text-gray-600">{closer}</span>}
                 {!open && comma}
             </div>
             {open && (
@@ -201,7 +201,7 @@ function CollapsibleJsonNode({
                         />
                     ))}
                     <div style={{paddingLeft: depth * 18}}><span className="inline-block w-4"/><span
-                        className="text-gray-600 dark:text-gray-300">{closer}</span>{comma}</div>
+                        className="text-gray-600">{closer}</span>{comma}</div>
                 </>
             )}
         </div>
@@ -210,7 +210,7 @@ function CollapsibleJsonNode({
 
 function CollapsibleJsonView({value, dark = false}: { value: unknown; dark?: boolean }) {
     return (
-        <div className={cn("font-mono text-xs", dark ? "text-gray-100" : "text-gray-800 dark:text-gray-100")}>
+        <div className={cn("font-mono text-xs", dark ? "text-gray-100" : "text-gray-800")}>
             <CollapsibleJsonNode value={value}/>
         </div>
     );
@@ -571,40 +571,36 @@ function CollectionPageContent() {
     }
 
     return (
-        <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-compass-bg">
+        <div className="flex h-screen overflow-hidden bg-slate-50">
             <Sidebar/>
             <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-20 lg:pt-8">
                 <div className="max-w-7xl mx-auto space-y-6">
                     <header className="space-y-4">
                         <Link href="/"
-                              className="inline-flex items-center gap-1 text-sm text-blue-600 dark:text-compass-green hover:underline">
+                              className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline">
                             <ArrowLeft size={14}/> Back to Collections
                         </Link>
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                             <div className="flex items-center gap-3 min-w-0">
                                 <div
-                                    className="p-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-compass-green rounded-lg">
+                                    className="p-2 bg-purple-50 text-purple-600 rounded-lg">
                                     <Layers size={24}/></div>
                                 <div className="min-w-0">
-                                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-compass-text truncate">{collectionName}</h1>
+                                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 truncate">{collectionName}</h1>
                                 </div>
                             </div>
                             <div className="flex flex-wrap gap-2">
                                 <Button variant="outline" onClick={() => documentsQuery.refetch()}
-                                        disabled={documentsQuery.isFetching}
-                                        className="dark:border-compass-border dark:hover:bg-compass-border/30">
+                                        disabled={documentsQuery.isFetching}>
                                     <RefreshCw size={16}
                                                className={cn(documentsQuery.isFetching && "animate-spin")}/> Reload
                                 </Button>
-                                <Button variant="outline" onClick={() => exportCurrent("json")}
-                                        className="dark:border-compass-border dark:hover:bg-compass-border/30"><Download
+                                <Button variant="outline" onClick={() => exportCurrent("json")}><Download
                                     size={16}/> JSON</Button>
-                                <Button variant="outline" onClick={() => exportCurrent("csv")}
-                                        className="dark:border-compass-border dark:hover:bg-compass-border/30"><Download
+                                <Button variant="outline" onClick={() => exportCurrent("csv")}><Download
                                     size={16}/> CSV</Button>
                                 <Button variant="outline" onClick={() => fileInputRef.current?.click()}
-                                        disabled={importMutation.isPending}
-                                        className="dark:border-compass-border dark:hover:bg-compass-border/30"><Upload
+                                        disabled={importMutation.isPending}><Upload
                                     size={16}/> Import</Button>
                                 <input ref={fileInputRef} type="file" accept=".json,application/json"
                                        onChange={handleFileChange} className="hidden"/>
@@ -613,18 +609,18 @@ function CollectionPageContent() {
                     </header>
 
                     <div
-                        className="overflow-x-auto rounded-xl border border-gray-200 dark:border-compass-border bg-white dark:bg-compass-sidebar p-1 flex gap-1">
+                        className="overflow-x-auto rounded-xl border border-gray-200 bg-white p-1 flex gap-1">
                         {tabs.map((item) => {
                             const Icon = item.icon;
                             const active = tab === item.key;
                             return <button key={item.key} onClick={() => switchTab(item.key)}
-                                           className={cn("flex items-center gap-2 px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-colors", active ? "bg-blue-600 text-white dark:bg-compass-green dark:text-compass-bg" : "text-gray-600 dark:text-compass-muted hover:bg-gray-100 dark:hover:bg-compass-border/30")}>
+                                           className={cn("flex items-center gap-2 px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-colors", active ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-100")}>
                                 <Icon size={16}/>{item.label}</button>;
                         })}
                     </div>
 
                     <section
-                        className="rounded-xl border border-gray-200 dark:border-compass-border bg-white dark:bg-compass-sidebar p-4 space-y-3 shadow-sm">
+                        className="rounded-xl border border-gray-200 bg-white p-4 space-y-3 shadow-sm">
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                             <LabeledEditor label="Filter" value={filterInput} onChange={setFilterInput}/>
                             <LabeledEditor label="Project" value={projectInput} onChange={setProjectInput}/>
@@ -632,63 +628,57 @@ function CollectionPageContent() {
                         </div>
                         <div className="flex flex-wrap gap-2 justify-between">
                             <div className="flex gap-2">
-                                <Button onClick={runFind} className="dark:bg-compass-green dark:text-compass-bg"><Search
+                                <Button onClick={runFind}><Search
                                     size={16}/> Find</Button>
-                                <Button variant="outline" onClick={resetQuery}
-                                        className="dark:border-compass-border dark:hover:bg-compass-border/30">Reset</Button>
+                                <Button variant="outline" onClick={resetQuery}>Reset</Button>
                             </div>
                             <div className="flex gap-2">
                                 {(["tree", "json"] as ViewMode[]).map((mode) => <Button key={mode}
                                                                                                  variant={viewMode === mode ? "default" : "outline"}
                                                                                                  onClick={() => setViewMode(mode)}
-                                                                                                 className="capitalize dark:border-compass-border">{mode}</Button>)}
+                                                                                                 className="capitalize">{mode}</Button>)}
                             </div>
                         </div>
                     </section>
 
                     {tab === "documents" && (
                         <section className="space-y-4">
-                            <div className="flex flex-col gap-3 text-sm text-gray-500 dark:text-compass-muted">
+                            <div className="flex flex-col gap-3 text-sm text-gray-500">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <span>Showing <b
-                                        className="text-gray-900 dark:text-compass-text">{documents.length}</b> of <b
-                                        className="text-gray-900 dark:text-compass-text">{pagination.total}</b> documents</span>
+                                        className="text-gray-900">{documents.length}</b> of <b
+                                        className="text-gray-900">{pagination.total}</b> documents</span>
                                     <div className="flex items-center gap-2">
                                         <Button variant="outline" size="icon" disabled={page <= 1}
                                                 onClick={() => updateUrl({page: page - 1})}><ChevronLeft
                                             size={16}/></Button>
                                         <span
-                                            className="px-3 py-2 rounded-lg border border-gray-200 dark:border-compass-border bg-white dark:bg-compass-sidebar">Page {page} / {pagination.pages}</span>
+                                            className="px-3 py-2 rounded-lg border border-gray-200 bg-white">Page {page} / {pagination.pages}</span>
                                         <Button variant="outline" size="icon" disabled={page >= pagination.pages}
                                                 onClick={() => updateUrl({page: page + 1})}><ChevronRight
                                             size={16}/></Button>
                                     </div>
                                 </div>
                                 <div
-                                    className="flex flex-wrap items-center gap-2 rounded-xl border border-gray-200 dark:border-compass-border bg-white dark:bg-compass-sidebar p-2">
-                                    <Button size="sm" className="dark:bg-compass-green dark:text-compass-bg"
+                                    className="flex flex-wrap items-center gap-2 rounded-xl border border-gray-200 bg-white p-2">
+                                    <Button size="sm"
                                             onClick={() => fileInputRef.current?.click()}><Plus size={14}/> Add
                                         Data</Button>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button size="sm" variant="outline"
-                                                    className="dark:border-compass-border dark:bg-compass-bg dark:text-compass-text"><Layers
+                                            <Button size="sm" variant="outline"><Layers
                                                 size={14}/> Bulk <ChevronDown size={14}/></Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="start"
-                                                             className="dark:border-compass-border dark:bg-compass-sidebar dark:text-compass-text">
+                                        <DropdownMenuContent align="start">
                                             <DropdownMenuItem onClick={() => openBulk("update")}>Bulk update
                                                 documents</DropdownMenuItem>
                                             <DropdownMenuItem onClick={() => openBulk("delete")}
-                                                              className="text-red-600 dark:text-red-300">Bulk delete
+                                                              className="text-red-600">Bulk delete
                                                 documents</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
-                                    <Button size="sm" variant="outline" onClick={() => exportCurrent("json")}
-                                            className="dark:border-compass-border dark:bg-compass-bg dark:text-compass-text"><Download
-                                        size={14}/> Export Data</Button>
-                                    <Button size="sm" variant="outline" onClick={() => exportBulkCode("delete")}
-                                            className="dark:border-compass-border dark:bg-compass-bg dark:text-compass-text"><FileJson
+
+                                    <Button size="sm" variant="outline" onClick={() => exportBulkCode("delete")}><FileJson
                                         size={14}/> Export Code</Button>
                                 </div>
                             </div>
@@ -699,11 +689,11 @@ function CollectionPageContent() {
                                         <div className="space-y-4">
                                             {documents.map((doc) => (
                                                 <div key={String(doc._id)}
-                                                     className="rounded-xl border border-gray-200 dark:border-compass-border bg-white dark:bg-compass-sidebar shadow-sm overflow-hidden">
+                                                     className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
                                                     <div
-                                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 py-3 bg-gray-100 dark:bg-compass-border/20 border-b border-gray-200 dark:border-compass-border">
+                                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 py-3 bg-gray-100 border-b border-gray-200">
                                                         <code
-                                                            className="text-xs truncate text-gray-600 dark:text-compass-muted">_id: {String(doc._id)}</code>
+                                                            className="text-xs truncate text-gray-600">_id: {String(doc._id)}</code>
                                                         <div className="flex gap-2">
                                                             <Button variant="outline" size="sm" onClick={() => {
                                                                 const {_id, ...clone} = doc;
@@ -720,7 +710,7 @@ function CollectionPageContent() {
                                                         </div>
                                                     </div>
                                                     <div
-                                                        className="p-4 overflow-x-auto bg-white dark:bg-compass-bg/30">{viewMode === "json" ?
+                                                        className="p-4 overflow-x-auto bg-white">{viewMode === "json" ?
                                                         <CollapsibleJsonView value={doc}/> :
                                                         <DocumentTree doc={doc}/>}</div>
                                                 </div>
@@ -743,7 +733,7 @@ function CollectionPageContent() {
                                                     action={<Button onClick={() => schemaMutation.mutate()}
                                                                     disabled={schemaMutation.isPending}><DatabaseZap
                                                         size={16}/> Analyze Sample</Button>}>
-                        <p className="text-sm text-gray-500 dark:text-compass-muted">Analyze a random sample of
+                        <p className="text-sm text-gray-500">Analyze a random sample of
                             documents and show detected fields, types, presence, and examples.</p>
                         <ResultBlock value={schemaResult} loading={schemaMutation.isPending}/>
                     </ToolPanel>}
@@ -765,10 +755,10 @@ function CollectionPageContent() {
                                 <div className="space-y-2">
                                     {(indexesQuery.data?.indexes ?? []).map((index: JsonObject) => <div
                                         key={String(index.name)}
-                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-lg border border-gray-200 dark:border-compass-border p-3">
+                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-lg border border-gray-200 p-3">
                                         <div><b>{String(index.name)}</b>
                                             <pre
-                                                className="text-xs text-gray-500 dark:text-compass-muted mt-1 overflow-x-auto">{pretty(index.key)}</pre>
+                                                className="text-xs text-gray-500 mt-1 overflow-x-auto">{pretty(index.key)}</pre>
                                         </div>
                                         <Button variant="outline" size="sm"
                                                 disabled={index.name === "_id_" || dropIndexMutation.isPending}
@@ -778,7 +768,7 @@ function CollectionPageContent() {
                                 </div>
                             )}
                     </ToolPanel>}
-
+                  
                     {tab === "stats" && <ToolPanel title="Collection Stats">
                         {statsQuery.isLoading ? <LoaderBlock text="Loading stats…"/> : statsQuery.error ?
                             <ErrorBox message={(statsQuery.error as Error).message}/> :
@@ -814,18 +804,18 @@ function CollectionPageContent() {
             </Modal>}
 
             {bulkMode === "update" && <Modal title={`Update ${pagination.total} documents`} onClose={closeBulk}>
-                <p className="text-sm text-gray-500 dark:text-compass-muted"><b>{collectionName}</b></p>
+                <p className="text-sm text-gray-500"><b>{collectionName}</b></p>
                 <div className="space-y-2">
                     <div
-                        className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-compass-text">Filter <span
-                        className="rounded-full bg-gray-200 dark:bg-compass-border px-2 py-0.5 text-xs">applied</span>
+                        className="flex items-center gap-2 text-sm font-semibold text-gray-700">Filter <span
+                        className="rounded-full bg-gray-200 px-2 py-0.5 text-xs">applied</span>
                     </div>
                     <code
-                        className="block rounded-lg border border-gray-200 dark:border-compass-border bg-gray-50 dark:bg-compass-bg p-3 text-xs">{filter === "{}" ? "None" : filter}</code>
+                        className="block rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs">{filter === "{}" ? "None" : filter}</code>
                 </div>
                 <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
-                        <h3 className="font-semibold text-gray-900 dark:text-compass-text">Update</h3>
+                        <h3 className="font-semibold text-gray-900">Update</h3>
                         <Button variant="outline" size="sm" onClick={() => exportBulkCode("update")}><FileJson
                             size={14}/> Export command</Button>
                     </div>
@@ -862,27 +852,27 @@ function CollectionPageContent() {
                        onClose={closeBulk}>
                     {!bulkConfirmStep ? (
                         <>
-                            <p className="text-sm text-gray-500 dark:text-compass-muted"><b>{collectionName}</b></p>
+                            <p className="text-sm text-gray-500"><b>{collectionName}</b></p>
                             <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-end">
                                 <div className="space-y-2">
                                     <div
-                                        className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-compass-text">Filter <span
-                                        className="rounded-full bg-gray-200 dark:bg-compass-border px-2 py-0.5 text-xs">applied</span>
+                                        className="flex items-center gap-2 text-sm font-semibold text-gray-700">Filter <span
+                                        className="rounded-full bg-gray-200 px-2 py-0.5 text-xs">applied</span>
                                     </div>
                                     <code
-                                        className="block rounded-lg border border-gray-200 dark:border-compass-border bg-gray-50 dark:bg-compass-bg p-3 text-xs">{filter === "{}" ? "None" : filter}</code>
+                                        className="block rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs">{filter === "{}" ? "None" : filter}</code>
                                 </div>
                                 <Button variant="outline" onClick={() => exportBulkCode("delete")}><FileJson
                                     size={16}/> Export</Button>
                             </div>
                             <div className="space-y-3">
-                                <h3 className="font-semibold text-gray-900 dark:text-compass-text">Preview sample
+                                <h3 className="font-semibold text-gray-900">Preview sample
                                     of {Math.min(5, documents.length)} documents</h3>
                                 <div
-                                    className="max-h-[360px] overflow-auto rounded-xl border border-gray-200 dark:border-compass-border bg-white dark:bg-compass-bg p-4">
+                                    className="max-h-[360px] overflow-auto rounded-xl border border-gray-200 bg-white p-4">
                                     {documents.slice(0, 5).length ? documents.slice(0, 5).map((doc) => <div
                                             key={String(doc._id)}
-                                            className="mb-4 border-b border-gray-200 dark:border-compass-border pb-4 last:mb-0 last:border-0 last:pb-0">
+                                            className="mb-4 border-b border-gray-200 pb-4 last:mb-0 last:border-0 last:pb-0">
                                             <CollapsibleJsonView value={doc}/></div>) :
                                         <EmptyBox text="No preview available."/>}
                                 </div>
@@ -896,22 +886,21 @@ function CollectionPageContent() {
                     ) : (
                         <>
                             <div
-                                className="flex gap-3 rounded-lg bg-red-50 dark:bg-red-950/30 p-4 text-red-700 dark:text-red-300">
+                                className="flex gap-3 rounded-lg bg-red-50 p-4 text-red-700">
                                 <AlertTriangle size={22}/> This action cannot be undone. This will permanently
                                 delete {pagination.total} documents.
                             </div>
                             <div
-                                className="rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-800 dark:text-amber-200">
+                                className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
                                 The document list and count may not always reflect the latest updates in real time. This
                                 action applies to all documents matching the current filter, including documents not
                                 currently visible.
                             </div>
                             <div className="space-y-2">
                                 <label
-                                    className="text-sm font-semibold text-gray-700 dark:text-compass-text">Type <code>{collectionName}</code> to
+                                    className="text-sm font-semibold text-gray-700">Type <code>{collectionName}</code> to
                                     confirm</label>
-                                <Input value={bulkConfirmInput} onChange={(e) => setBulkConfirmInput(e.target.value)}
-                                       className="dark:bg-compass-bg dark:border-compass-border dark:text-compass-text"/>
+                                <Input value={bulkConfirmInput} onChange={(e) => setBulkConfirmInput(e.target.value)}/>
                             </div>
                             <div className="flex justify-end gap-2 pt-4">
                                 <Button variant="outline" onClick={() => setBulkConfirmStep(false)}>Cancel</Button>
@@ -925,11 +914,11 @@ function CollectionPageContent() {
                 </Modal>}
 
             {dropIndexName && <Modal title="Drop Index?" onClose={() => setDropIndexName(null)} maxWidth="max-w-xl">
-                <div className="flex gap-3 rounded-lg bg-red-50 dark:bg-red-950/30 p-4 text-red-700 dark:text-red-300">
+                <div className="flex gap-3 rounded-lg bg-red-50 p-4 text-red-700">
                     <AlertTriangle size={22}/> Dropping an index can slow down queries that rely on it.
                 </div>
                 <code
-                    className="block text-xs break-all rounded-lg bg-gray-100 dark:bg-compass-bg p-3">{dropIndexName}</code>
+                    className="block text-xs break-all rounded-lg bg-gray-100 p-3">{dropIndexName}</code>
                 <div className="flex justify-end gap-2">
                     <Button variant="outline" onClick={() => setDropIndexName(null)}>Cancel</Button>
                     <Button variant="destructive" onClick={() => dropIndexMutation.mutate(dropIndexName)}
@@ -939,11 +928,11 @@ function CollectionPageContent() {
             </Modal>}
 
             {deleteDocId && <Modal title="Delete Document?" onClose={() => setDeleteDocId(null)}>
-                <div className="flex gap-3 rounded-lg bg-red-50 dark:bg-red-950/30 p-4 text-red-700 dark:text-red-300">
+                <div className="flex gap-3 rounded-lg bg-red-50 p-4 text-red-700">
                     <AlertTriangle size={22}/> This action cannot be undone.
                 </div>
                 <code
-                    className="block text-xs break-all rounded-lg bg-gray-100 dark:bg-compass-bg p-3">{deleteDocId}</code>
+                    className="block text-xs break-all rounded-lg bg-gray-100 p-3">{deleteDocId}</code>
                 <div className="flex justify-end gap-2"><Button variant="outline"
                                                                 onClick={() => setDeleteDocId(null)}>Cancel</Button><Button
                     variant="destructive" onClick={() => deleteMutation.mutate(deleteDocId)}
@@ -955,10 +944,10 @@ function CollectionPageContent() {
 
 function LabeledEditor({label, value, onChange}: { label: string; value: string; onChange: (value: string) => void }) {
     return <div className="space-y-1"><label
-        className="text-[11px] font-bold uppercase tracking-wide text-gray-500 dark:text-compass-muted">{label}</label><Input
+        className="text-[11px] font-bold uppercase tracking-wide text-gray-500">{label}</label><Input
         value={value} onChange={(e) => onChange(e.target.value)}
         placeholder={label === "Filter" ? '{ status: "active" }' : "{}"} spellCheck={false}
-        className="font-mono text-xs dark:bg-compass-bg dark:border-compass-border dark:text-compass-text"/></div>;
+        className="font-mono text-xs"/></div>;
 }
 
 function EditorBox({value, onChange, height = "220px"}: {
@@ -966,7 +955,7 @@ function EditorBox({value, onChange, height = "220px"}: {
     onChange: (value: string) => void;
     height?: string
 }) {
-    return <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-compass-border"><Editor
+    return <div className="overflow-hidden rounded-xl border border-gray-200"><Editor
         height={height} defaultLanguage="json" theme="vs-dark" value={value} onChange={(v) => onChange(v ?? "")}
         options={{
             minimap: {enabled: false},
@@ -980,9 +969,9 @@ function EditorBox({value, onChange, height = "220px"}: {
 
 function ToolPanel({title, action, children}: { title: string; action?: ReactNode; children: ReactNode }) {
     return <section
-        className="rounded-xl border border-gray-200 dark:border-compass-border bg-white dark:bg-compass-sidebar p-4 md:p-6 shadow-sm space-y-4">
+        className="rounded-xl border border-gray-200 bg-white p-4 md:p-6 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><h2
-            className="text-xl font-bold text-gray-900 dark:text-compass-text">{title}</h2>{action}</div>
+            className="text-xl font-bold text-gray-900">{title}</h2>{action}</div>
         {children}</section>;
 }
 
@@ -990,24 +979,24 @@ function ResultBlock({value, loading}: { value: unknown; loading?: boolean }) {
     if (loading) return <LoaderBlock text="Running…"/>;
     if (!value) return <EmptyBox text="No result yet."/>;
     return <div
-        className="max-h-[520px] overflow-auto rounded-xl border border-gray-200 dark:border-compass-border bg-gray-950 p-4">
+        className="max-h-[520px] overflow-auto rounded-xl border border-gray-200 bg-gray-950 p-4">
         <CollapsibleJsonView value={value} dark/></div>;
 }
 
 function LoaderBlock({text}: { text: string }) {
     return <div
-        className="flex items-center justify-center gap-3 rounded-xl border border-dashed border-gray-200 dark:border-compass-border p-10 text-gray-500 dark:text-compass-muted">
+        className="flex items-center justify-center gap-3 rounded-xl border border-dashed border-gray-200 p-10 text-gray-500">
         <Loader2 className="animate-spin" size={22}/> {text}</div>;
 }
 
 function ErrorBox({message}: { message: string }) {
     return <div
-        className="rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 p-4 text-red-700 dark:text-red-300">{message}</div>;
+        className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">{message}</div>;
 }
 
 function EmptyBox({text}: { text: string }) {
     return <div
-        className="rounded-xl border border-dashed border-gray-200 dark:border-compass-border p-10 text-center text-gray-500 dark:text-compass-muted">{text}</div>;
+        className="rounded-xl border border-dashed border-gray-200 p-10 text-center text-gray-500">{text}</div>;
 }
 
 function Modal({title, onClose, children, maxWidth = "max-w-5xl"}: {
@@ -1018,10 +1007,10 @@ function Modal({title, onClose, children, maxWidth = "max-w-5xl"}: {
 }) {
     return <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
         <div
-            className={cn("w-full max-h-[92vh] overflow-y-auto rounded-2xl border border-gray-200 dark:border-compass-border bg-white dark:bg-compass-sidebar shadow-2xl", maxWidth)}>
-            <div className="flex items-center justify-between border-b border-gray-200 dark:border-compass-border p-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-compass-text">{title}</h2>
-                <button onClick={onClose} className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-compass-border/30">
+            className={cn("w-full max-h-[92vh] overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-2xl", maxWidth)}>
+            <div className="flex items-center justify-between border-b border-gray-200 p-4">
+                <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+                <button onClick={onClose} className="rounded-lg p-2 hover:bg-gray-100">
                     <X size={20}/></button>
             </div>
             <div className="p-4 space-y-4">{children}</div>
