@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /
+
+# MongoGUI is an administration interface.
+# Do not index login, databases, collections, API routes, or internal data.
