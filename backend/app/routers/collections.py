@@ -33,4 +33,4 @@ def get_fields(name: str, service: MongoServiceDep) -> list[FieldInfo]:
 
 @router.get("/collections/{name}/stats")
 def get_collection_stats(name: str, service: MongoServiceDep) -> dict[str, Any]:
-    return service.collection_stats(name)
+    return {"stats": service.collection_stats(name)}

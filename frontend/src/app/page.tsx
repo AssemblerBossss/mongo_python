@@ -1,133 +1,202 @@
 "use client";
 
+import { useState } from "react";
+import { cn } from "@/src/lib/utils";
 import Sidebar from "@/src/components/custom/Sidebar";
-import { useQuery } from "@tanstack/react-query";
-import { Database, Layers, Activity, Loader2 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Loader2, Layers, ChevronRight, Trash2, AlertTriangle, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { Label } from "@/src/components/ui/label";
 
-// Skeleton card shown while stats load — prevents layout shift (CLS = 0)
-function StatCard({
-  title,
-  icon: Icon,
-  value,
-  isLoading,
-  iconClass,
-}: {
-  title: string;
-  icon: React.ElementType;
-  value: React.ReactNode;
-  isLoading: boolean;
-  iconClass: string;
-}) {
-  return (
-    <div className="p-6 bg-white dark:bg-compass-bg rounded-xl border border-gray-200 dark:border-compass-border shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-600 dark:text-compass-muted">{title}</h3>
-        <Icon className={`w-5 h-5 ${iconClass}`} />
-      </div>
-      {isLoading ? (
-        // Fixed-height skeleton so the card doesn't jump when data arrives
-        <div className="h-9 w-16 bg-gray-200 dark:bg-compass-border rounded animate-pulse" />
-      ) : (
-        value
-      )}
-    </div>
-  );
-}
+export default function CollectionsPage() {
+  const queryClient = useQueryClient();
+  const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null);
+  const [confirmName, setConfirmName] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
-export default function Home() {
-  const { data: stats, isLoading, error } = useQuery({
-    queryKey: ["stats"],
+  const { data: collections, isLoading, error } = useQuery({
+    queryKey: ["collections"],
     queryFn: async () => {
-      const res = await fetch("/api/stats");
-      if (!res.ok) throw new Error("Failed to fetch stats");
+      const res = await fetch("/api/collections");
+      if (!res.ok) throw new Error("Failed to fetch collections");
       return res.json();
     },
-    // Keep previous data visible while revalidating — no flash of empty state
-    placeholderData: (prev) => prev,
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (collectionName: string) => {
+      const res = await fetch(`/api/collections/${collectionName}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to delete collection");
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["collections"] });
+      setCollectionToDelete(null);
+      setConfirmName("");
+      setDeleteError(null);
+    },
+    onError: (err: any) => {
+      setDeleteError(err.message);
+    },
+    onSettled: () => {
+      setIsDeleting(false);
+    }
+  });
+
+  const handleDeleteClick = (e: React.MouseEvent, collectionName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCollectionToDelete(collectionName);
+    setDeleteError(null);
+  };
+
+  const confirmDelete = () => {
+    if (confirmName === collectionToDelete) {
+      setIsDeleting(true);
+      deleteMutation.mutate(collectionToDelete);
+    }
+  };
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-compass-bg">
       <Sidebar />
       <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-20 lg:pt-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <header className="mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-compass-text">Dashboard</h1>
-            <p className="text-gray-500 dark:text-compass-muted mt-2">
-              Welcome to your MongoDB management interface.
-            </p>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-compass-text">Collections</h1>
+            <p className="text-gray-500 dark:text-compass-muted mt-2">Browse collections in the database.</p>
           </header>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-            <StatCard
-              title="Total Databases"
-              icon={Database}
-              iconClass="text-blue-600 dark:text-blue-500"
-              isLoading={isLoading}
-              value={
-                <p className="text-3xl font-bold text-gray-900 dark:text-compass-text">
-                  {stats?.dbCount ?? 0}
-                </p>
-              }
-            />
-            <StatCard
-              title="Total Collections"
-              icon={Layers}
-              iconClass="text-purple-600 dark:text-purple-500"
-              isLoading={isLoading}
-              value={
-                <p className="text-3xl font-bold text-gray-900 dark:text-compass-text">
-                  {stats?.collectionCount ?? 0}
-                </p>
-              }
-            />
-            <StatCard
-              title="Server Status"
-              icon={Activity}
-              iconClass="text-compass-green"
-              isLoading={isLoading}
-              value={
-                <p className={
-                  stats?.status === "online"
-                    ? "text-emerald-600 dark:text-compass-green font-bold text-xl"
-                    : "text-red-600 dark:text-red-400 font-bold text-xl"
-                }>
-                  {stats?.status === "online" ? "Online" : "Offline"}
-                </p>
-              }
-            />
-          </div>
-
-          {error && (
-            <div className="mt-8 p-6 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 rounded-xl text-amber-800 dark:text-amber-200">
-              <div className="flex items-start gap-4">
-                <div className="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-lg text-amber-600 dark:text-amber-400">
-                  <Activity size={24} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg mb-1">Connection Error</h3>
-                  <p className="text-sm opacity-90 mb-4">
-                    Could not connect to MongoDB. Check your <code>MONGODB_URI</code> in <code>.env</code>.
-                  </p>
-                  <div className="flex gap-3">
-                    <Link href="/connections">
-                      <Button className="bg-amber-600 hover:bg-amber-700 text-white border-none">
-                        Configure Connection
-                      </Button>
-                    </Link>
-                    <Button variant="outline" onClick={() => window.location.reload()}
-                      className="border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300">
-                      Retry
-                    </Button>
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center h-64 text-gray-400">
+              <Loader2 className="animate-spin mb-4" size={32} />
+              <p>Loading collections...</p>
+            </div>
+          ) : error ? (
+            <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg text-red-700 dark:text-red-400">
+              Error: {(error as Error).message}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {collections?.map((col: any) => (
+                <Link key={col.name} href={`/collections/${col.name}`}>
+                  <div className="p-6 bg-white dark:bg-compass-bg border border-gray-200 dark:border-compass-border rounded-xl hover:border-blue-300 dark:hover:border-compass-green hover:shadow-md transition-all group cursor-pointer relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="p-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-lg">
+                        <Layers size={20} />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => handleDeleteClick(e, col.name)}
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                        <ChevronRight size={18} className="text-gray-300 dark:text-gray-700 group-hover:text-blue-500 dark:group-hover:text-compass-green transition-colors" />
+                      </div>
+                    </div>
+                    <h3 className="font-bold text-gray-900 dark:text-compass-text mb-1">{col.name}</h3>
+                    <p className="text-sm text-gray-500 dark:text-compass-muted">
+                      {col.count} documents
+                    </p>
                   </div>
+                </Link>
+              ))}
+              {collections?.length === 0 && (
+                <div className="col-span-full p-12 text-center text-gray-500 dark:text-compass-muted border border-dashed dark:border-compass-border rounded-xl">
+                  No collections found.
                 </div>
-              </div>
+              )}
             </div>
           )}
         </div>
       </main>
+
+      {/* Delete Collection Confirmation Modal */}
+      {collectionToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-[#001e2b] text-white w-full max-w-md rounded-lg shadow-2xl border border-gray-800 overflow-hidden">
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-2 bg-red-900/50 text-red-500 rounded-full">
+                    <AlertTriangle size={24} />
+                  </div>
+                  <h2 className="text-2xl font-bold">Drop Collection?</h2>
+                </div>
+                <button
+                  onClick={() => { setCollectionToDelete(null); setConfirmName(""); setDeleteError(null); }}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                <p className="text-gray-300">
+                  Are you sure you want to drop collection <span className="font-bold text-white">&quot;{collectionToDelete}&quot;</span>? This action cannot be undone.
+                </p>
+
+                <div className="space-y-3">
+                  <Label htmlFor="confirmName" className="text-sm font-medium text-gray-300">
+                    Type <span className="font-bold text-white">&quot;{collectionToDelete}&quot;</span> to confirm
+                  </Label>
+                  <Input
+                    id="confirmName"
+                    value={confirmName}
+                    onChange={(e) => setConfirmName(e.target.value)}
+                    placeholder={collectionToDelete}
+                    className="bg-[#001e2b] border-gray-700 focus:border-blue-500 text-white h-12"
+                    autoFocus
+                    onKeyDown={(e) => e.key === "Enter" && confirmDelete()}
+                  />
+                </div>
+
+                {deleteError && (
+                  <div className="p-3 bg-red-900/20 border border-red-900/50 text-red-400 text-sm rounded">
+                    {deleteError}
+                  </div>
+                )}
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <Button
+                    variant="ghost"
+                    onClick={() => { setCollectionToDelete(null); setConfirmName(""); setDeleteError(null); }}
+                    className="text-gray-300 hover:text-white hover:bg-gray-800"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={confirmDelete}
+                    disabled={confirmName !== collectionToDelete || isDeleting}
+                    className={cn(
+                      "min-w-[120px]",
+                      confirmName === collectionToDelete
+                        ? "bg-red-600 hover:bg-red-700 text-white"
+                        : "bg-gray-800 text-gray-500 cursor-not-allowed"
+                    )}
+                  >
+                    {isDeleting ? (
+                      <Loader2 className="animate-spin" size={18} />
+                    ) : (
+                      "Drop Collection"
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

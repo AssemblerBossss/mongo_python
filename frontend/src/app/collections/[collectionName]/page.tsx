@@ -1,19 +1,19 @@
 "use client";
 
-import Sidebar from "@/src/components/custom/Sidebar";
-import Editor from "@/src/components/custom/MonacoEditorLazy";
-import { Button } from "@/src/components/ui/button";
+import Sidebar from "@/src/components/custom/Sidebar.tsx";
+import Editor from "@/src/components/custom/MonacoEditorLazy.tsx";
+import { Button } from "@/src/components/ui/button.tsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu";
-import { Input } from "@/src/components/ui/input";
-import { useToast } from "@/src/components/ui/toast";
-import { cn } from "@/src/lib/utils";
-import { convertToCSV } from "@/src/lib/data-utils";
-import { parseQueryArray, parseQueryObject } from "@/src/lib/query-parser";
+} from "@/src/components/ui/dropdown-menu.tsx";
+import { Input } from "@/src/components/ui/input.tsx";
+import { useToast } from "@/src/components/ui/toast.tsx";
+import { cn } from "@/src/lib/utils.ts";
+import { convertToCSV } from "@/src/lib/data-utils.ts";
+import { parseQueryArray, parseQueryObject } from "@/src/lib/query-parser.ts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
@@ -30,7 +30,6 @@ import {
   FileJson,
   GitBranch,
   Layers,
-  Lock,
   Loader2,
   Plus,
   RefreshCw,
@@ -243,9 +242,8 @@ function CollectionPageContent() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
 
-  const dbName = params.dbName as string;
   const collectionName = params.collectionName as string;
-  const apiCollectionPath = `/api/databases/${encodeURIComponent(dbName)}/collections/${encodeURIComponent(collectionName)}`;
+  const apiCollectionPath = `/api/collections/${encodeURIComponent(collectionName)}`;
   const requestedTab = searchParams.get("tab") as TabKey | null;
   const tab = requestedTab && tabKeys.has(requestedTab) ? requestedTab : "documents";
   const page = boundedClientInteger(searchParams.get("page"), 1, 1, Number.MAX_SAFE_INTEGER);
@@ -286,7 +284,7 @@ function CollectionPageContent() {
   }, [editingDoc]);
 
   const documentsQuery = useQuery({
-    queryKey: ["documents", dbName, collectionName, page, limit, filter, project, sort],
+    queryKey: ["documents", collectionName, page, limit, filter, project, sort],
     queryFn: async () => {
       const p = new URLSearchParams({ page: String(page), limit: String(limit), filter, project, sort });
       const res = await fetch(`${apiCollectionPath}/documents?${p}`);
@@ -297,7 +295,7 @@ function CollectionPageContent() {
   });
 
   const indexesQuery = useQuery({
-    queryKey: ["indexes", dbName, collectionName],
+    queryKey: ["indexes", collectionName],
     enabled: tab === "indexes",
     queryFn: async () => {
       const res = await fetch(`${apiCollectionPath}/indexes`);
@@ -308,7 +306,7 @@ function CollectionPageContent() {
   });
 
   const statsQuery = useQuery({
-    queryKey: ["collection-stats", dbName, collectionName],
+    queryKey: ["collection-stats", collectionName],
     enabled: tab === "stats",
     queryFn: async () => {
       const res = await fetch(`${apiCollectionPath}/stats`);
@@ -319,7 +317,7 @@ function CollectionPageContent() {
   });
 
   const validationQuery = useQuery({
-    queryKey: ["validation", dbName, collectionName],
+    queryKey: ["validation", collectionName],
     enabled: tab === "validation",
     queryFn: async () => {
       const res = await fetch(`${apiCollectionPath}/validation`);
@@ -329,26 +327,6 @@ function CollectionPageContent() {
       return json;
     },
   });
-
-  const appInfoQuery = useQuery({
-    queryKey: ["app-info"],
-    queryFn: async () => {
-      const res = await fetch("/api/app");
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Failed to fetch app mode");
-      return json as { mode: "full" | "readonly"; readonly: boolean; systemDatabases: string[] };
-    },
-    staleTime: 60_000,
-  });
-
-  const isReadOnlyMode = appInfoQuery.data?.readonly === true;
-  const isSystemDatabase = appInfoQuery.data?.systemDatabases?.includes(dbName) ?? ["admin", "local", "config"].includes(dbName);
-  const writesDisabled = isReadOnlyMode || isSystemDatabase;
-  const writeDisabledReason = isReadOnlyMode
-    ? "Write actions are disabled because MONGO_GUI_MODE=readonly."
-    : isSystemDatabase
-      ? "Write actions are disabled for system databases."
-      : "";
 
   const documents: JsonObject[] = documentsQuery.data?.documents ?? [];
   const pagination = documentsQuery.data?.pagination ?? { total: 0, pages: 1, page, limit };
@@ -394,7 +372,7 @@ function CollectionPageContent() {
     },
     onSuccess: (json) => {
       toast.success(json.message || "Import completed");
-      queryClient.invalidateQueries({ queryKey: ["documents", dbName, collectionName] });
+      queryClient.invalidateQueries({ queryKey: ["documents", collectionName] });
     },
     onError: (error) => toast.error((error as Error).message),
   });
@@ -413,7 +391,7 @@ function CollectionPageContent() {
     onSuccess: () => {
       toast.success("Document updated successfully.");
       setEditingDoc(null);
-      queryClient.invalidateQueries({ queryKey: ["documents", dbName, collectionName] });
+      queryClient.invalidateQueries({ queryKey: ["documents", collectionName] });
     },
     onError: (error) => toast.error((error as Error).message),
   });
@@ -429,7 +407,7 @@ function CollectionPageContent() {
       toast.success("Document deleted successfully.");
       setDeleteDocId(null);
       setEditingDoc(null);
-      queryClient.invalidateQueries({ queryKey: ["documents", dbName, collectionName] });
+      queryClient.invalidateQueries({ queryKey: ["documents", collectionName] });
     },
     onError: (error) => toast.error((error as Error).message),
   });
@@ -449,7 +427,7 @@ function CollectionPageContent() {
     onSuccess: (json) => {
       toast.success(json.message || "Bulk update completed");
       setBulkMode(null);
-      queryClient.invalidateQueries({ queryKey: ["documents", dbName, collectionName] });
+      queryClient.invalidateQueries({ queryKey: ["documents", collectionName] });
     },
     onError: (error) => toast.error((error as Error).message),
   });
@@ -470,7 +448,7 @@ function CollectionPageContent() {
       setBulkMode(null);
       setBulkConfirmStep(false);
       setBulkConfirmInput("");
-      queryClient.invalidateQueries({ queryKey: ["documents", dbName, collectionName] });
+      queryClient.invalidateQueries({ queryKey: ["documents", collectionName] });
     },
     onError: (error) => toast.error((error as Error).message),
   });
@@ -509,7 +487,7 @@ function CollectionPageContent() {
     },
     onSuccess: () => {
       toast.success("Index created successfully.");
-      queryClient.invalidateQueries({ queryKey: ["indexes", dbName, collectionName] });
+      queryClient.invalidateQueries({ queryKey: ["indexes", collectionName] });
     },
     onError: (error) => toast.error((error as Error).message),
   });
@@ -524,7 +502,7 @@ function CollectionPageContent() {
     onSuccess: () => {
       toast.success("Index dropped successfully.");
       setDropIndexName(null);
-      queryClient.invalidateQueries({ queryKey: ["indexes", dbName, collectionName] });
+      queryClient.invalidateQueries({ queryKey: ["indexes", collectionName] });
     },
     onError: (error) => toast.error((error as Error).message),
   });
@@ -579,17 +557,12 @@ function CollectionPageContent() {
     },
     onSuccess: () => {
       toast.success("Validation updated successfully.");
-      queryClient.invalidateQueries({ queryKey: ["validation", dbName, collectionName] });
+      queryClient.invalidateQueries({ queryKey: ["validation", collectionName] });
     },
     onError: (error) => toast.error((error as Error).message),
   });
 
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
-    if (writesDisabled) {
-      toast.warning({ title: "Read-only mode", description: writeDisabledReason });
-      e.target.value = "";
-      return;
-    }
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
@@ -618,10 +591,6 @@ function CollectionPageContent() {
   }
 
   function openBulk(mode: Exclude<BulkMode, null>) {
-    if (writesDisabled) {
-      toast.warning({ title: "Read-only mode", description: writeDisabledReason });
-      return;
-    }
     setBulkMode(mode);
     setBulkConfirmStep(false);
     setBulkConfirmInput("");
@@ -649,10 +618,6 @@ function CollectionPageContent() {
   }
 
   function saveEditor() {
-    if (writesDisabled) {
-      toast.warning({ title: "Read-only mode", description: writeDisabledReason });
-      return;
-    }
     try {
       setJsonError(null);
       const parsed = parseJsonObject(editorValue, "Document");
@@ -668,7 +633,7 @@ function CollectionPageContent() {
       <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-20 lg:pt-8">
         <div className="max-w-7xl mx-auto space-y-6">
           <header className="space-y-4">
-            <Link href={`/databases/${dbName}`} className="inline-flex items-center gap-1 text-sm text-blue-600 dark:text-compass-green hover:underline">
+            <Link href="/" className="inline-flex items-center gap-1 text-sm text-blue-600 dark:text-compass-green hover:underline">
               <ArrowLeft size={14} /> Back to Collections
             </Link>
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -676,7 +641,6 @@ function CollectionPageContent() {
                 <div className="p-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-compass-green rounded-lg"><Layers size={24} /></div>
                 <div className="min-w-0">
                   <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-compass-text truncate">{collectionName}</h1>
-                  <p className="text-sm text-gray-500 dark:text-compass-muted truncate">{dbName} / {collectionName}</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -685,21 +649,11 @@ function CollectionPageContent() {
                 </Button>
                 <Button variant="outline" onClick={() => exportCurrent("json")} className="dark:border-compass-border dark:hover:bg-compass-border/30"><Download size={16} /> JSON</Button>
                 <Button variant="outline" onClick={() => exportCurrent("csv")} className="dark:border-compass-border dark:hover:bg-compass-border/30"><Download size={16} /> CSV</Button>
-                <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={writesDisabled || importMutation.isPending} title={writesDisabled ? writeDisabledReason : undefined} className="dark:border-compass-border dark:hover:bg-compass-border/30"><Upload size={16} /> Import</Button>
-                <input ref={fileInputRef} type="file" accept=".json,application/json" onChange={handleFileChange} disabled={writesDisabled} className="hidden" />
+                <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={importMutation.isPending} className="dark:border-compass-border dark:hover:bg-compass-border/30"><Upload size={16} /> Import</Button>
+                <input ref={fileInputRef} type="file" accept=".json,application/json" onChange={handleFileChange} className="hidden" />
               </div>
             </div>
           </header>
-
-          {writesDisabled && (
-            <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
-              <Lock size={20} className="mt-0.5 shrink-0" />
-              <div>
-                <p className="font-semibold">Read-only protection enabled</p>
-                <p className="text-sm opacity-90">{writeDisabledReason} Add, import, edit, delete, bulk, index changes and validator updates are disabled in the UI.</p>
-              </div>
-            </div>
-          )}
 
           <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-compass-border bg-white dark:bg-compass-sidebar p-1 flex gap-1">
             {tabs.map((item) => {
@@ -738,14 +692,14 @@ function CollectionPageContent() {
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 rounded-xl border border-gray-200 dark:border-compass-border bg-white dark:bg-compass-sidebar p-2">
-                  <Button size="sm" className="dark:bg-compass-green dark:text-compass-bg" onClick={() => fileInputRef.current?.click()} disabled={writesDisabled} title={writesDisabled ? writeDisabledReason : undefined}><Plus size={14} /> Add Data</Button>
+                  <Button size="sm" className="dark:bg-compass-green dark:text-compass-bg" onClick={() => fileInputRef.current?.click()}><Plus size={14} /> Add Data</Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button size="sm" variant="outline" disabled={writesDisabled} title={writesDisabled ? writeDisabledReason : undefined} className="dark:border-compass-border dark:bg-compass-bg dark:text-compass-text"><Layers size={14} /> Bulk <ChevronDown size={14} /></Button>
+                      <Button size="sm" variant="outline" className="dark:border-compass-border dark:bg-compass-bg dark:text-compass-text"><Layers size={14} /> Bulk <ChevronDown size={14} /></Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="dark:border-compass-border dark:bg-compass-sidebar dark:text-compass-text">
-                      <DropdownMenuItem disabled={writesDisabled} onClick={() => openBulk("update")}>Bulk update documents</DropdownMenuItem>
-                      <DropdownMenuItem disabled={writesDisabled} onClick={() => openBulk("delete")} className="text-red-600 dark:text-red-300">Bulk delete documents</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => openBulk("update")}>Bulk update documents</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => openBulk("delete")} className="text-red-600 dark:text-red-300">Bulk delete documents</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <Button size="sm" variant="outline" onClick={() => exportCurrent("json")} className="dark:border-compass-border dark:bg-compass-bg dark:text-compass-text"><Download size={14} /> Export Data</Button>
@@ -761,8 +715,8 @@ function CollectionPageContent() {
                         <code className="text-xs truncate text-gray-600 dark:text-compass-muted">_id: {String(doc._id)}</code>
                         <div className="flex gap-2">
                           <Button variant="outline" size="sm" onClick={() => { const { _id, ...clone } = doc; void _id; navigator.clipboard?.writeText(pretty(clone)); toast.success("Document JSON copied."); }}><Copy size={14} /> Clone JSON</Button>
-                          <Button variant="outline" size="sm" onClick={() => setEditingDoc(doc)} disabled={writesDisabled} title={writesDisabled ? writeDisabledReason : undefined}><Edit3 size={14} /> Edit</Button>
-                          <Button variant="outline" size="sm" onClick={() => setDeleteDocId(String(doc._id))} disabled={writesDisabled} title={writesDisabled ? writeDisabledReason : undefined} className="text-red-600"><Trash2 size={14} /> Delete</Button>
+                          <Button variant="outline" size="sm" onClick={() => setEditingDoc(doc)}><Edit3 size={14} /> Edit</Button>
+                          <Button variant="outline" size="sm" onClick={() => setDeleteDocId(String(doc._id))} className="text-red-600"><Trash2 size={14} /> Delete</Button>
                         </div>
                       </div>
                       <div className="p-4 overflow-x-auto bg-white dark:bg-compass-bg/30">{viewMode === "json" ? <CollapsibleJsonView value={doc} /> : <DocumentTree doc={doc} />}</div>
@@ -784,7 +738,7 @@ function CollectionPageContent() {
             <ResultBlock value={schemaResult} loading={schemaMutation.isPending} />
           </ToolPanel>}
 
-          {tab === "indexes" && <ToolPanel title="Indexes" action={<Button onClick={() => createIndexMutation.mutate()} disabled={writesDisabled || createIndexMutation.isPending} title={writesDisabled ? writeDisabledReason : undefined}><Plus size={16} /> Create Index</Button>}>
+          {tab === "indexes" && <ToolPanel title="Indexes" action={<Button onClick={() => createIndexMutation.mutate()} disabled={createIndexMutation.isPending}><Plus size={16} /> Create Index</Button>}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div><h3 className="font-semibold mb-2">Keys</h3><EditorBox value={indexKeys} onChange={setIndexKeys} height="160px" /></div>
               <div><h3 className="font-semibold mb-2">Options</h3><EditorBox value={indexOptions} onChange={setIndexOptions} height="160px" /></div>
@@ -793,7 +747,7 @@ function CollectionPageContent() {
               <div className="space-y-2">
                 {(indexesQuery.data?.indexes ?? []).map((index: JsonObject) => <div key={String(index.name)} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-lg border border-gray-200 dark:border-compass-border p-3">
                   <div><b>{String(index.name)}</b><pre className="text-xs text-gray-500 dark:text-compass-muted mt-1 overflow-x-auto">{pretty(index.key)}</pre></div>
-                  <Button variant="outline" size="sm" disabled={writesDisabled || index.name === "_id_" || dropIndexMutation.isPending} onClick={() => setDropIndexName(String(index.name))} className="text-red-600"><Trash2 size={14} /> Drop</Button>
+                  <Button variant="outline" size="sm" disabled={index.name === "_id_" || dropIndexMutation.isPending} onClick={() => setDropIndexName(String(index.name))} className="text-red-600"><Trash2 size={14} /> Drop</Button>
                 </div>)}
               </div>
             )}
@@ -804,7 +758,7 @@ function CollectionPageContent() {
             <ResultBlock value={explainResult} loading={explainMutation.isPending} />
           </ToolPanel>}
 
-          {tab === "validation" && <ToolPanel title="JSON Schema Validation" action={<Button onClick={() => validationMutation.mutate()} disabled={writesDisabled || validationMutation.isPending} title={writesDisabled ? writeDisabledReason : undefined}><ShieldCheck size={16} /> Apply Validator</Button>}>
+          {tab === "validation" && <ToolPanel title="JSON Schema Validation" action={<Button onClick={() => validationMutation.mutate()} disabled={validationMutation.isPending}><ShieldCheck size={16} /> Apply Validator</Button>}>
             {validationQuery.isLoading ? <LoaderBlock text="Loading validator…" /> : validationQuery.error ? <ErrorBox message={(validationQuery.error as Error).message} /> : <EditorBox value={validationInput} onChange={setValidationInput} height="320px" />}
           </ToolPanel>}
 
@@ -818,16 +772,16 @@ function CollectionPageContent() {
         <EditorBox value={editorValue} onChange={(value) => { setEditorValue(value); try { parseJsonObject(value, "Document"); setJsonError(null); } catch (error) { setJsonError((error as Error).message); } }} height="60vh" />
         {jsonError ? <ErrorBox message={jsonError} /> : <div className="flex items-center gap-2 text-sm text-emerald-600"><Check size={16} /> Valid JSON</div>}
         <div className="flex justify-between gap-3 pt-4">
-          <Button variant="destructive" onClick={() => setDeleteDocId(String(editingDoc._id))} disabled={writesDisabled} title={writesDisabled ? writeDisabledReason : undefined}><Trash2 size={16} /> Delete</Button>
+          <Button variant="destructive" onClick={() => setDeleteDocId(String(editingDoc._id))}><Trash2 size={16} /> Delete</Button>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setEditorValue(pretty(JSON.parse(editorValue)))}><Wand2 size={16} /> Beautify</Button>
-            <Button onClick={saveEditor} disabled={writesDisabled || !!jsonError || updateMutation.isPending} title={writesDisabled ? writeDisabledReason : undefined}>{updateMutation.isPending ? <Loader2 className="animate-spin" size={16} /> : <Check size={16} />} Save</Button>
+            <Button onClick={saveEditor} disabled={!!jsonError || updateMutation.isPending}>{updateMutation.isPending ? <Loader2 className="animate-spin" size={16} /> : <Check size={16} />} Save</Button>
           </div>
         </div>
       </Modal>}
 
       {bulkMode === "update" && <Modal title={`Update ${pagination.total} documents`} onClose={closeBulk}>
-        <p className="text-sm text-gray-500 dark:text-compass-muted"><b>{dbName}.{collectionName}</b></p>
+        <p className="text-sm text-gray-500 dark:text-compass-muted"><b>{collectionName}</b></p>
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-compass-text">Filter <span className="rounded-full bg-gray-200 dark:bg-compass-border px-2 py-0.5 text-xs">applied</span></div>
           <code className="block rounded-lg border border-gray-200 dark:border-compass-border bg-gray-50 dark:bg-compass-bg p-3 text-xs">{filter === "{}" ? "None" : filter}</code>
@@ -844,7 +798,7 @@ function CollectionPageContent() {
           <Button variant="outline" onClick={() => toast.info({ title: "Saved operations are coming soon", description: "Bulk operation presets will be added in a later version." })}><Star size={16} /> Save</Button>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={closeBulk}>Cancel</Button>
-            <Button onClick={() => bulkUpdateMutation.mutate()} disabled={writesDisabled || !!jsonError || bulkUpdateMutation.isPending} title={writesDisabled ? writeDisabledReason : undefined}>{bulkUpdateMutation.isPending ? <Loader2 className="animate-spin" size={16} /> : <Check size={16} />} Update {pagination.total} documents</Button>
+            <Button onClick={() => bulkUpdateMutation.mutate()} disabled={!!jsonError || bulkUpdateMutation.isPending}>{bulkUpdateMutation.isPending ? <Loader2 className="animate-spin" size={16} /> : <Check size={16} />} Update {pagination.total} documents</Button>
           </div>
         </div>
       </Modal>}
@@ -852,7 +806,7 @@ function CollectionPageContent() {
       {bulkMode === "delete" && <Modal title={bulkConfirmStep ? "Are you absolutely sure?" : `Delete ${pagination.total} documents`} onClose={closeBulk}>
         {!bulkConfirmStep ? (
           <>
-            <p className="text-sm text-gray-500 dark:text-compass-muted"><b>{dbName}.{collectionName}</b></p>
+            <p className="text-sm text-gray-500 dark:text-compass-muted"><b>{collectionName}</b></p>
             <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-end">
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-compass-text">Filter <span className="rounded-full bg-gray-200 dark:bg-compass-border px-2 py-0.5 text-xs">applied</span></div>
@@ -868,7 +822,7 @@ function CollectionPageContent() {
             </div>
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={closeBulk}>Cancel</Button>
-              <Button variant="destructive" onClick={() => setBulkConfirmStep(true)} disabled={writesDisabled} title={writesDisabled ? writeDisabledReason : undefined}><Trash2 size={16} /> Delete {pagination.total} documents</Button>
+              <Button variant="destructive" onClick={() => setBulkConfirmStep(true)}><Trash2 size={16} /> Delete {pagination.total} documents</Button>
             </div>
           </>
         ) : (
@@ -883,7 +837,7 @@ function CollectionPageContent() {
             </div>
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={() => setBulkConfirmStep(false)}>Cancel</Button>
-              <Button variant="destructive" onClick={() => bulkDeleteMutation.mutate()} disabled={writesDisabled || bulkConfirmInput !== collectionName || bulkDeleteMutation.isPending} title={writesDisabled ? writeDisabledReason : undefined}>{bulkDeleteMutation.isPending ? <Loader2 className="animate-spin" size={16} /> : <Trash2 size={16} />} Delete {pagination.total} documents</Button>
+              <Button variant="destructive" onClick={() => bulkDeleteMutation.mutate()} disabled={bulkConfirmInput !== collectionName || bulkDeleteMutation.isPending}>{bulkDeleteMutation.isPending ? <Loader2 className="animate-spin" size={16} /> : <Trash2 size={16} />} Delete {pagination.total} documents</Button>
             </div>
           </>
         )}
@@ -894,14 +848,14 @@ function CollectionPageContent() {
         <code className="block text-xs break-all rounded-lg bg-gray-100 dark:bg-compass-bg p-3">{dropIndexName}</code>
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={() => setDropIndexName(null)}>Cancel</Button>
-          <Button variant="destructive" onClick={() => dropIndexMutation.mutate(dropIndexName)} disabled={writesDisabled || dropIndexMutation.isPending} title={writesDisabled ? writeDisabledReason : undefined}>{dropIndexMutation.isPending ? <Loader2 className="animate-spin" size={16} /> : <Trash2 size={16} />} Drop index</Button>
+          <Button variant="destructive" onClick={() => dropIndexMutation.mutate(dropIndexName)} disabled={dropIndexMutation.isPending}>{dropIndexMutation.isPending ? <Loader2 className="animate-spin" size={16} /> : <Trash2 size={16} />} Drop index</Button>
         </div>
       </Modal>}
 
       {deleteDocId && <Modal title="Delete Document?" onClose={() => setDeleteDocId(null)}>
         <div className="flex gap-3 rounded-lg bg-red-50 dark:bg-red-950/30 p-4 text-red-700 dark:text-red-300"><AlertTriangle size={22} /> This action cannot be undone.</div>
         <code className="block text-xs break-all rounded-lg bg-gray-100 dark:bg-compass-bg p-3">{deleteDocId}</code>
-        <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setDeleteDocId(null)}>Cancel</Button><Button variant="destructive" onClick={() => deleteMutation.mutate(deleteDocId)} disabled={writesDisabled || deleteMutation.isPending} title={writesDisabled ? writeDisabledReason : undefined}>Delete</Button></div>
+        <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setDeleteDocId(null)}>Cancel</Button><Button variant="destructive" onClick={() => deleteMutation.mutate(deleteDocId)} disabled={deleteMutation.isPending}>Delete</Button></div>
       </Modal>}
     </div>
   );

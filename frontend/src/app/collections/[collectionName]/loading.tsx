@@ -1,4 +1,4 @@
-import Sidebar from '@/src/components/custom/Sidebar';
+import Sidebar from '@/src/components/custom/Sidebar.tsx';
 
 export default function Loading() {
   return (
