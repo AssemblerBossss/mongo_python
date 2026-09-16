@@ -34,7 +34,6 @@ import {
     Plus,
     RefreshCw,
     Search,
-    ShieldCheck,
     Star,
     Table2,
     Trash2,
@@ -44,12 +43,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import {useParams, useRouter, useSearchParams} from "next/navigation";
-import {Suspense, useEffect, useMemo, useRef, useState} from "react";
+import {Suspense, useEffect, useRef, useState} from "react";
 import type {ChangeEvent, ReactNode} from "react";
 
 type JsonObject = Record<string, unknown>;
-type TabKey = "documents" | "aggregations" | "schema" | "indexes" | "explain" | "validation" | "stats";
-type ViewMode = "tree" | "json" | "table";
+type TabKey = "documents" | "aggregations" | "schema" | "indexes" | "explain" | "stats";
+type ViewMode = "tree" | "json";
 type BulkMode = "update" | "delete" | null;
 
 const tabs: { key: TabKey; label: string; icon: typeof FileJson }[] = [
@@ -58,7 +57,6 @@ const tabs: { key: TabKey; label: string; icon: typeof FileJson }[] = [
     {key: "schema", label: "Schema", icon: DatabaseZap},
     {key: "indexes", label: "Indexes", icon: Layers},
     {key: "explain", label: "Explain Plan", icon: BarChart3},
-    {key: "validation", label: "Validation", icon: ShieldCheck},
     {key: "stats", label: "Stats", icon: Table2},
 ];
 const tabKeys = new Set<TabKey>(tabs.map(({key}) => key));
@@ -220,35 +218,6 @@ function CollapsibleJsonView({value, dark = false}: { value: unknown; dark?: boo
     );
 }
 
-function TableView({documents}: { documents: JsonObject[] }) {
-    const columns = useMemo(() => {
-        const set = new Set<string>();
-        for (const doc of documents.slice(0, 25)) Object.keys(doc).slice(0, 20).forEach((key) => set.add(key));
-        return [...set];
-    }, [documents]);
-
-    return (
-        <div
-            className="overflow-auto rounded-xl border border-gray-200 dark:border-compass-border bg-white dark:bg-compass-bg">
-            <table className="min-w-full text-sm">
-                <thead className="bg-gray-100 dark:bg-compass-border/30 text-left">
-                <tr>{columns.map((column) => <th key={column}
-                                                 className="p-3 font-semibold text-gray-700 dark:text-compass-text whitespace-nowrap">{column}</th>)}</tr>
-                </thead>
-                <tbody>
-                {documents.map((doc) => (
-                    <tr key={String(doc._id)} className="border-t border-gray-100 dark:border-compass-border/50">
-                        {columns.map((column) => <td key={column}
-                                                     className="p-3 align-top font-mono text-xs max-w-[260px] truncate">
-                            <Value value={doc[column]}/></td>)}
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-        </div>
-    );
-}
-
 function CollectionPageContent() {
     const params = useParams();
     const router = useRouter();
@@ -287,7 +256,6 @@ function CollectionPageContent() {
     const [indexOptions, setIndexOptions] = useState('{\n  "name": "fieldName_1"\n}');
     const [schemaResult, setSchemaResult] = useState<unknown>(null);
     const [explainResult, setExplainResult] = useState<unknown>(null);
-    const [validationInput, setValidationInput] = useState("{}");
 
     useEffect(() => {
         setFilterInput(filter);
@@ -331,18 +299,6 @@ function CollectionPageContent() {
             const res = await fetch(`${apiCollectionPath}/stats`);
             const json = await res.json();
             if (!res.ok) throw new Error(json.error || "Failed to fetch stats");
-            return json;
-        },
-    });
-
-    const validationQuery = useQuery({
-        queryKey: ["validation", collectionName],
-        enabled: tab === "validation",
-        queryFn: async () => {
-            const res = await fetch(`${apiCollectionPath}/validation`);
-            const json = await res.json();
-            if (!res.ok) throw new Error(json.error || "Failed to fetch validation");
-            setValidationInput(pretty(json.validator ?? {}));
             return json;
         },
     });
@@ -563,25 +519,6 @@ function CollectionPageContent() {
         onError: (error) => toast.error((error as Error).message),
     });
 
-    const validationMutation = useMutation({
-        mutationFn: async () => {
-            const validator = parseJsonObject(validationInput, "Validator");
-            const res = await fetch(`${apiCollectionPath}/validation`, {
-                method: "PATCH",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({validator, validationLevel: "strict", validationAction: "error"}),
-            });
-            const json = await res.json();
-            if (!res.ok) throw new Error(json.error || "Validation update failed");
-            return json;
-        },
-        onSuccess: () => {
-            toast.success("Validation updated successfully.");
-            queryClient.invalidateQueries({queryKey: ["validation", collectionName]});
-        },
-        onError: (error) => toast.error((error as Error).message),
-    });
-
     function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -722,7 +659,7 @@ function CollectionPageContent() {
                                         className="dark:border-compass-border dark:hover:bg-compass-border/30">Reset</Button>
                             </div>
                             <div className="flex gap-2">
-                                {(["tree", "json", "table"] as ViewMode[]).map((mode) => <Button key={mode}
+                                {(["tree", "json"] as ViewMode[]).map((mode) => <Button key={mode}
                                                                                                  variant={viewMode === mode ? "default" : "outline"}
                                                                                                  onClick={() => setViewMode(mode)}
                                                                                                  className="capitalize dark:border-compass-border">{mode}</Button>)}
@@ -779,8 +716,7 @@ function CollectionPageContent() {
 
                             {documentsQuery.isLoading ?
                                 <LoaderBlock text="Loading documents…"/> : documentsQuery.error ? <ErrorBox
-                                    message={(documentsQuery.error as Error).message}/> : viewMode === "table" ?
-                                    <TableView documents={documents}/> : (
+                                    message={(documentsQuery.error as Error).message}/> : (
                                         <div className="space-y-4">
                                             {documents.map((doc) => (
                                                 <div key={String(doc._id)}
@@ -871,15 +807,6 @@ function CollectionPageContent() {
                         <p className="text-sm text-gray-500 dark:text-compass-muted">Uses the Filter / Project / Sort
                             bar above and returns execution stats.</p>
                         <ResultBlock value={explainResult} loading={explainMutation.isPending}/>
-                    </ToolPanel>}
-
-                    {tab === "validation" && <ToolPanel title="JSON Schema Validation"
-                                                        action={<Button onClick={() => validationMutation.mutate()}
-                                                                        disabled={validationMutation.isPending}><ShieldCheck
-                                                            size={16}/> Apply Validator</Button>}>
-                        {validationQuery.isLoading ? <LoaderBlock text="Loading validator…"/> : validationQuery.error ?
-                            <ErrorBox message={(validationQuery.error as Error).message}/> :
-                            <EditorBox value={validationInput} onChange={setValidationInput} height="320px"/>}
                     </ToolPanel>}
 
                     {tab === "stats" && <ToolPanel title="Collection Stats">
