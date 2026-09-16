@@ -17,13 +17,20 @@ class FieldInfo(BaseModel):
     types: list[str]
 
 
+class DocumentsPagination(BaseModel):
+    """Метаданные пагинации для страницы документов."""
+
+    total: int
+    pages: int
+    page: int
+    limit: int
+
+
 class DocumentsPage(BaseModel):
     """Страница документов с пагинацией."""
 
-    items: list[dict[str, Any]]
-    total: int
-    skip: int
-    limit: int
+    documents: list[dict[str, Any]]
+    pagination: DocumentsPagination
 
 
 class CreateCollectionRequest(BaseModel):

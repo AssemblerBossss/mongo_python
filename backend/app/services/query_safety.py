@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from app.errors import InvalidFilterError
@@ -60,3 +61,21 @@ def bounded_int(value: int | None, fallback: int, minimum: int, maximum: int) ->
     if value is None:
         return fallback
     return min(maximum, max(minimum, value))
+
+
+def parse_json_object(value: str | dict[str, Any] | None, label: str) -> dict[str, Any]:
+    """Раскладывает JSON-объект, приехавший строкой в query-параметре (как шлёт
+    портированный фронт: filter/project/sort), либо уже готовый dict."""
+    if value is None or value == "":
+        return {}
+    if isinstance(value, dict):
+        parsed = value
+    else:
+        try:
+            parsed = json.loads(value)
+        except json.JSONDecodeError as exc:
+            raise InvalidFilterError(f"{label}: некорректный JSON ({exc})") from exc
+    if not isinstance(parsed, dict):
+        raise InvalidFilterError(f"{label}: ожидается JSON-объект")
+    assert_no_dangerous_operators(parsed)
+    return parsed
