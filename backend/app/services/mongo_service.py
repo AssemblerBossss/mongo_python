@@ -14,6 +14,13 @@ from app.errors import (
 from app.repositories.mongo_repository import MongoRepository
 from app.schemas import CollectionInfo, FieldInfo, FilterField
 from app.services.filters import ENUM_THRESHOLD, build_field, merge_leaf_paths
+from app.services.query_safety import (
+    MAX_PAGE_SIZE,
+    MAX_SCHEMA_SAMPLE_SIZE,
+    MONGO_QUERY_MAX_TIME_MS,
+    bounded_int,
+    validate_pipeline,
+)
 from app.utils.serialization import serialize_document
 
 
@@ -67,6 +74,60 @@ class MongoService:
             },
         }
         return json.loads(json_util.dumps(payload))
+
+    def run_aggregation(
+        self, name: str, pipeline: list[dict], limit: int | None
+    ) -> dict[str, Any]:
+        if name not in self.repo.list_collection_names():
+            raise DocumentNotFoundError(f"Коллекция '{name}' не найдена")
+        validate_pipeline(pipeline)
+        bounded_limit = bounded_int(limit, 50, 1, MAX_PAGE_SIZE)
+        preview_pipeline = [*pipeline, {"$limit": bounded_limit}]
+        documents = [
+            serialize_document(doc)
+            for doc in self.repo.aggregate(
+                name, preview_pipeline, MONGO_QUERY_MAX_TIME_MS
+            )
+        ]
+        return {"documents": documents, "count": len(documents), "limit": bounded_limit}
+
+    def analyze_schema(self, name: str, sample_size: int | None) -> dict[str, Any]:
+        if name not in self.repo.list_collection_names():
+            raise DocumentNotFoundError(f"Коллекция '{name}' не найдена")
+        bounded_size = bounded_int(sample_size, 500, 1, MAX_SCHEMA_SAMPLE_SIZE)
+        docs = self.repo.sample_documents(name, bounded_size, MONGO_QUERY_MAX_TIME_MS)
+
+        fields: dict[str, dict[str, Any]] = {}
+
+        def collect(doc: Any, prefix: str = "") -> None:
+            if not isinstance(doc, dict):
+                return
+            for key, value in doc.items():
+                path = f"{prefix}.{key}" if prefix else key
+                value_type = "null" if value is None else type(value).__name__
+                info = fields.setdefault(
+                    path, {"path": path, "count": 0, "types": {}, "examples": []}
+                )
+                info["count"] += 1
+                info["types"][value_type] = info["types"].get(value_type, 0) + 1
+                if len(info["examples"]) < 5:
+                    info["examples"].append(value)
+                if isinstance(value, dict):
+                    collect(value, path)
+
+        for doc in docs:
+            collect(doc)
+
+        result = [
+            {
+                **info,
+                "presence": round(info["count"] / len(docs) * 100, 2) if docs else 0,
+            }
+            for info in sorted(fields.values(), key=lambda f: f["path"])
+        ]
+        return json.loads(
+            json_util.dumps({"sampleSize": len(docs), "fields": result})
+        )
 
     def infer_fields(self, collection: str, sample_size: int = 25) -> list[FieldInfo]:
         """Определяет набор полей и их типы по выборке документов."""

@@ -10,7 +10,6 @@ from pymongo.results import (
     UpdateResult,
 )
 
-
 class MongoRepository:
     """Инкапсулирует CRUD-операции pymongo над произвольной коллекцией."""
 
@@ -77,6 +76,20 @@ class MongoRepository:
             for doc in self.db[collection].aggregate(pipeline)
             if doc["_id"] is not None
         ]
+
+    def aggregate(
+        self, collection: str, pipeline: list[dict[str, Any]], max_time_ms: int
+    ) -> list[dict[str, Any]]:
+        return list(
+            self.db[collection].aggregate(
+                pipeline, maxTimeMS=max_time_ms, allowDiskUse=False
+            )
+        )
+
+    def sample_documents(
+        self, collection: str, size: int, max_time_ms: int
+    ) -> list[dict[str, Any]]:
+        return self.aggregate(collection, [{"$sample": {"size": size}}], max_time_ms)
 
     def find_one(self, collection: str, query: dict[str, Any]) -> dict[str, Any] | None:
         return self.db[collection].find_one(query)

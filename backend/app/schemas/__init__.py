@@ -9,6 +9,7 @@ from .common import (
     FilterField,
 )
 from .imports import ScanRecord, ImportPayload, AddressImportStats, ImportSummary
+from .query import AggregateRequest, SchemaAnalyzeRequest
 
 __all__ = [
     "CollectionInfo",
@@ -23,4 +24,6 @@ __all__ = [
     "ImportPayload",
     "AddressImportStats",
     "ImportSummary",
+    "AggregateRequest",
+    "SchemaAnalyzeRequest",
 ]
