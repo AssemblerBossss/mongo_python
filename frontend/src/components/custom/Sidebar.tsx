@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Database, Server, Settings, LayoutDashboard, LogOut, Menu, X } from 'lucide-react';
+import { Database, Server, LayoutDashboard, Menu, X } from 'lucide-react';
 import { useState, useEffect, memo } from 'react';
 import { cn } from '@/src/lib/utils';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/src/components/ui/button';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -12,25 +12,13 @@ const navItems = [
   { name: 'Dashboard',    icon: LayoutDashboard, href: '/'            },
   { name: 'Databases',    icon: Database,        href: '/databases'   },
   { name: 'Server Stats', icon: Server,          href: '/server-stats'},
-  { name: 'Settings',     icon: Settings,        href: '/settings'    },
 ];
 
 function SidebarComponent() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const router   = useRouter();
   const pathname = usePathname();
 
   useEffect(() => { setMobileOpen(false); }, [pathname]);
-
-  const handleLogout = async () => {
-    try {
-      // Call server-side logout to properly expire the cookie
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } finally {
-      router.push('/login');
-      router.refresh();
-    }
-  };
 
   return (
     <>
@@ -96,17 +84,6 @@ function SidebarComponent() {
             );
           })}
         </nav>
-
-        <div className="p-4 border-t border-gray-200 dark:border-compass-border">
-          <Button
-            variant="ghost"
-            className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30 justify-start gap-4 px-4 h-12 lg:h-11"
-            onClick={handleLogout}
-          >
-            <LogOut size={22} className="min-w-[22px]" />
-            <span>Logout</span>
-          </Button>
-        </div>
       </div>
     </>
   );
