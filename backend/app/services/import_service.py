@@ -6,6 +6,7 @@ from pydantic import ValidationError
 
 from app.errors import EmptyImportPayloadError, InvalidImportFileError
 from app.repositories.mongo_repository import MongoRepository
+from app.services.address_classifier import classify_address
 from app.schemas.imports import (
     AddressImportStats,
     ImportPayload,
@@ -52,7 +53,7 @@ class ImportService:
         except ValidationError as exc:
             raise InvalidImportFileError(f"Файл '{filename}': {exc}") from exc
 
-    def import_files(self, collection: str, files: dict[str, bytes]) -> ImportSummary:
+    def import_files(self, files: dict[str, bytes]) -> ImportSummary:
         """Разбирает набор файлов (имя -> содержимое) и импортирует их одной транзакцией записи."""
         payload_root: dict[str, list[ScanRecord]] = {}
         for filename, content in files.items():
@@ -60,9 +61,9 @@ class ImportService:
             for address, records in file_payload.root.items():
                 payload_root.setdefault(address, []).extend(records)
 
-        return self.import_records(collection, ImportPayload(payload_root))
+        return self.import_records(ImportPayload(payload_root))
 
-    def import_records(self, collection: str, payload: ImportPayload) -> ImportSummary:
+    def import_records(self, payload: ImportPayload) -> ImportSummary:
         """Фильтрует записи и раскладывает их по ip_addresses/domains/mac_addresses."""
         stats: list[AddressImportStats] = []
 
@@ -73,6 +74,7 @@ class ImportService:
             valid_records = [
                 record.model_dump() for record in records if self._is_valid(record)
             ]
+            collection = SCAN_COLLECTIONS[classify_address(address)]
             stats.append(
                 AddressImportStats(
                     address=address,
@@ -89,7 +91,6 @@ class ImportService:
                 "После фильтрации не осталось ни одной записи для импорта"
             )
 
-        # self.repo.create_index(collection, ADDRESS_FIELD, unique=True)
         for collection, by_address in pending.items():
             self.repo.create_index(collection, ADDRESS_FIELD, unique=True)
             for address, results in by_address.items():

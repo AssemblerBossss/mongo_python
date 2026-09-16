@@ -49,20 +49,18 @@ def test_filters_empty_data_and_non_empty_error(
         }
     )
 
-    summary = service.import_records("scan_results", payload)
+    summary = service.import_records(payload)
 
     assert summary.total_imported == 1
     assert summary.total_skipped == 2
     assert summary.addresses[0].address == "example.com"
+    assert summary.addresses[0].collection == "domains"
 
-    repo_mock.create_index.assert_called_once_with(
-        "scan_results", "address", unique=True
-    )
-    repo_mock.insert_many.assert_called_once()
+    repo_mock.create_index.assert_called_once_with("domains", "address", unique=True)
     repo_mock.upsert_results.assert_called_once_with(
-        "scan_results",
-        "example.com",
-        [
+        collection="domains",
+        address="example.com",
+        results=[
             {
                 "instance": "a",
                 "result": True,
@@ -92,7 +90,7 @@ def test_raises_when_nothing_left_after_filtering(
     )
 
     with pytest.raises(EmptyImportPayloadError):
-        service.import_records("scan_results", payload)
+        service.import_records(payload)
 
     repo_mock.upsert_results.assert_not_called()
 
@@ -119,7 +117,7 @@ def test_import_files_groups_by_address_from_content(
         ),
     }
 
-    summary = service.import_files("scan_results", files)
+    summary = service.import_files(files)
 
     assert summary.total_imported == 2
     assert summary.total_skipped == 0
@@ -141,13 +139,58 @@ def test_import_files_merges_same_address_from_different_files(
         ),
     }
 
-    summary = service.import_files("scan_results", files)
+    summary = service.import_files(files)
 
     assert summary.total_imported == 2
     assert repo_mock.upsert_results.call_count == 1
-    called_collection, called_address, called_results = (
-        repo_mock.upsert_results.call_args[0]
+    _, kwargs = repo_mock.upsert_results.call_args
+    assert kwargs["collection"] == "ip_addresses"
+    assert kwargs["address"] == "89.99.117.132"
+    assert {r["instance"] for r in kwargs["results"]} == {"a", "b"}
+
+
+def test_routes_different_address_types_to_different_collections(
+    service: ImportService, repo_mock: MagicMock
+) -> None:
+    payload = ImportPayload.model_validate(
+        {
+            "example.com": [
+                {
+                    "instance": "a",
+                    "result": True,
+                    "data_type": "domain",
+                    "data": {"x": 1},
+                }
+            ],
+            "1.2.3.4": [
+                {
+                    "instance": "b",
+                    "result": True,
+                    "data_type": "ipv4",
+                    "data": {"y": 2},
+                }
+            ],
+            "aa:bb:cc:dd:ee:ff": [
+                {
+                    "instance": "c",
+                    "result": True,
+                    "data_type": "mac",
+                    "data": {"z": 3},
+                }
+            ],
+        }
     )
-    assert called_collection == "scan_results"
-    assert called_address == "89.99.117.132"
-    assert {r["instance"] for r in called_results} == {"a", "b"}
+
+    summary = service.import_records(payload)
+
+    assert summary.total_imported == 3
+    by_address = {s.address: s.collection for s in summary.addresses}
+    assert by_address == {
+        "example.com": "domains",
+        "1.2.3.4": "ip_addresses",
+        "aa:bb:cc:dd:ee:ff": "mac_addresses",
+    }
+
+    created_indexes = {call.args[0] for call in repo_mock.create_index.call_args_list}
+    assert created_indexes == {"domains", "ip_addresses", "mac_addresses"}
+    assert repo_mock.upsert_results.call_count == 3
