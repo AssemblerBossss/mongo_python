@@ -21,6 +21,7 @@ class AddressImportStats(BaseModel):
     """Статистика импорта по одному адресу (ipv4/ipv6/домен/MAC)."""
 
     address: str
+    collection: str
     received: int
     imported: int
     skipped: int
