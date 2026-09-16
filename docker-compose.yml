@@ -35,7 +35,10 @@ services:
         condition: service_healthy
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        BACKEND_API_ORIGIN: http://backend:8000
     hostname: frontend
     ports:
       - 3000:3000

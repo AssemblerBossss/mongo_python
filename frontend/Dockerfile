@@ -6,6 +6,13 @@ COPY scripts ./scripts
 RUN npm ci
 
 COPY . .
+
+# next.config.mjs's rewrites() reads this at `next build` time and bakes the
+# result into the standalone build — it won't re-read it from the container's
+# runtime environment, so it must also be set here, not only in compose.
+ARG BACKEND_API_ORIGIN=http://backend:8000
+ENV BACKEND_API_ORIGIN=$BACKEND_API_ORIGIN
+
 RUN npm run build
 
 FROM node:22-slim AS runner
