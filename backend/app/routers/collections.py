@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import APIRouter
 
 from app.dependencies import MongoServiceDep
@@ -27,3 +29,8 @@ def drop_collection(name: str, service: MongoServiceDep) -> None:
 @router.get("/collections/{name}/fields", response_model=list[FieldInfo])
 def get_fields(name: str, service: MongoServiceDep) -> list[FieldInfo]:
     return service.infer_fields(name)
+
+
+@router.get("/collections/{name}/stats")
+def get_collection_stats(name: str, service: MongoServiceDep) -> dict[str, Any]:
+    return {"stats": service.collection_stats(name)}

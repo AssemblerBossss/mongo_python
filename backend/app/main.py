@@ -4,7 +4,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.errors import register_exception_handlers
 from app.logging_config import RequestIdMiddleware, setup_logging
-from app.routers import collection_router, document_router, health_router, import_router
+from app.routers import (
+    collection_router,
+    document_router,
+    health_router,
+    import_router,
+    server_router,
+)
 
 
 def create_app() -> FastAPI:
@@ -31,6 +37,7 @@ def create_app() -> FastAPI:
     app.include_router(collection_router)
     app.include_router(document_router)
     app.include_router(import_router)
+    app.include_router(server_router)
 
     return app
 

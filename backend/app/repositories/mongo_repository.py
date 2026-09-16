@@ -28,15 +28,26 @@ class MongoRepository:
     def drop_collection(self, name: str) -> None:
         self.db.drop_collection(name)
 
+    def collection_stats(self, name: str) -> dict[str, Any]:
+        return self.db.command("collStats", name)
+
+    def count_documents(self, collection: str, query: dict[str, Any]) -> int:
+        return self.db[collection].count_documents(query)
+
+    # ---------- Сервер ----------
+
+    def server_status(self) -> dict[str, Any]:
+        return self.db.client.admin.command("serverStatus")
+
+    def db_stats(self) -> dict[str, Any]:
+        return self.db.command("dbStats")
+
+    # ---------- Документы ----------
+
     def create_index(
         self, collection: str, keys: str | list[tuple[str, int]], **kwargs: Any
     ) -> str:
         return self.db[collection].create_index(keys, **kwargs)
-
-    # ---------- Документы ----------
-
-    def count_documents(self, collection: str, query: dict[str, Any]) -> int:
-        return self.db[collection].count_documents(query)
 
     def find(
         self,

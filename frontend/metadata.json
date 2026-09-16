@@ -1,0 +1,5 @@
+{
+  "name": "MongoDB GUI Modern",
+  "description": "A modern, performant, and secure web application for managing MongoDB databases, built with Next.js, Tailwind CSS, and Shadcn/UI.",
+  "requestFramePermissions": []
+}

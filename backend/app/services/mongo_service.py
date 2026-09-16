@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
-from bson import ObjectId
+from bson import ObjectId, json_util
 from bson.errors import InvalidId
 
 from app.errors import (
@@ -38,6 +39,34 @@ class MongoService:
         if name not in self.repo.list_collection_names():
             raise DocumentNotFoundError(f"Коллекция '{name}' не найдена")
         self.repo.drop_collection(name)
+
+    def collection_stats(self, name: str) -> dict[str, Any]:
+        if name not in self.repo.list_collection_names():
+            raise DocumentNotFoundError(f"Коллекция '{name}' не найдена")
+        raw = self.repo.collection_stats(name)
+        return json.loads(json_util.dumps(raw))
+
+    def server_stats(self) -> dict[str, Any]:
+        server_status = self.repo.server_status()
+        db_stats = self.repo.db_stats()
+        payload = {
+            "serverStatus": {
+                "version": server_status.get("version"),
+                "uptime": server_status.get("uptime"),
+                "connections": server_status.get("connections"),
+                "mem": server_status.get("mem"),
+                "opcounters": server_status.get("opcounters"),
+            },
+            "dbStats": {
+                "collections": db_stats.get("collections", 0),
+                "objects": db_stats.get("objects", 0),
+                "avgObjSize": db_stats.get("avgObjSize", 0),
+                "dataSize": db_stats.get("dataSize", 0),
+                "storageSize": db_stats.get("storageSize", 0),
+                "indexSize": db_stats.get("indexSize", 0),
+            },
+        }
+        return json.loads(json_util.dumps(payload))
 
     def infer_fields(self, collection: str, sample_size: int = 25) -> list[FieldInfo]:
         """Определяет набор полей и их типы по выборке документов."""

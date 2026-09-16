@@ -49,8 +49,12 @@ def get_documents(
 
 @router.post("/collections/{name}/documents", status_code=201)
 def create_document(
-    name: str, data: dict[str, Any], service: MongoServiceDep
+    name: str, data: dict[str, Any] | list[dict[str, Any]], service: MongoServiceDep
 ) -> dict[str, Any]:
+    if isinstance(data, list):
+        for doc in data:
+            service.insert(name, doc)
+        return {"success": True, "message": f"Imported {len(data)} document(s)"}
     return service.insert(name, data)
 
 

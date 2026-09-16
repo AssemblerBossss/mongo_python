@@ -1,16 +1,20 @@
-# React + Vite
+# Frontend (mongo_python)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Next.js UI ported from [mongo-gui-modern](https://github.com/Samuel-Community/mongo-gui). Only the
+UI layer (`src/app/*` pages, `src/components/*`, client-safe `src/lib/*`) was kept — the original
+project's Next.js API routes and server-side Mongo/SQLite/auth code were left out and are not part
+of this app anymore. The Python backend in `../backend` is meant to replace that server layer.
 
-Currently, two official plugins are available:
+`fetch("/api/...")` calls in the ported pages are proxied to the backend via `rewrites()` in
+`next.config.mjs`, controlled by `BACKEND_API_ORIGIN` (see `.env.example`).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+See `../unimplemented-endpoints.md` for the list of routes the UI expects that `backend/` does not
+implement yet, and `../reference/mongo-gui-nextjs-api/` for the original Next.js API route
+implementations kept as a porting reference.
 
-## React Compiler
+## Development
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+npm run dev
+```

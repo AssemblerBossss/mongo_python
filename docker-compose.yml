@@ -29,18 +29,21 @@ services:
       APP_MONGO_USERNAME: admin
       APP_MONGO_PASSWORD: admin
       APP_MONGO_DB: datasets
-      APP_CORS_ALLOW_ORIGINS: '["http://localhost:5173"]'
+      APP_CORS_ALLOW_ORIGINS: '["http://localhost:3000"]'
     depends_on:
       mongo:
         condition: service_healthy
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        BACKEND_API_ORIGIN: http://backend:8000
     hostname: frontend
     ports:
-      - 5173:5173
+      - 3000:3000
     environment:
-      VITE_API_BASE_URL: http://localhost:8000
+      BACKEND_API_ORIGIN: http://backend:8000
     depends_on:
       - backend
 
