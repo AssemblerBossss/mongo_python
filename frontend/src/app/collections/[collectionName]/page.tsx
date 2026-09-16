@@ -18,7 +18,6 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {
     AlertTriangle,
     ArrowLeft,
-    BarChart3,
     Check,
     ChevronDown,
     ChevronLeft,
@@ -47,7 +46,7 @@ import {Suspense, useEffect, useRef, useState} from "react";
 import type {ChangeEvent, ReactNode} from "react";
 
 type JsonObject = Record<string, unknown>;
-type TabKey = "documents" | "aggregations" | "schema" | "indexes" | "explain" | "stats";
+type TabKey = "documents" | "aggregations" | "schema" | "indexes" | "stats";
 type ViewMode = "tree" | "json";
 type BulkMode = "update" | "delete" | null;
 
@@ -56,7 +55,6 @@ const tabs: { key: TabKey; label: string; icon: typeof FileJson }[] = [
     {key: "aggregations", label: "Aggregations", icon: GitBranch},
     {key: "schema", label: "Schema", icon: DatabaseZap},
     {key: "indexes", label: "Indexes", icon: Layers},
-    {key: "explain", label: "Explain Plan", icon: BarChart3},
     {key: "stats", label: "Stats", icon: Table2},
 ];
 const tabKeys = new Set<TabKey>(tabs.map(({key}) => key));
@@ -255,7 +253,6 @@ function CollectionPageContent() {
     const [indexKeys, setIndexKeys] = useState('{\n  "fieldName": 1\n}');
     const [indexOptions, setIndexOptions] = useState('{\n  "name": "fieldName_1"\n}');
     const [schemaResult, setSchemaResult] = useState<unknown>(null);
-    const [explainResult, setExplainResult] = useState<unknown>(null);
 
     useEffect(() => {
         setFilterInput(filter);
@@ -497,24 +494,6 @@ function CollectionPageContent() {
         onSuccess: (result) => {
             toast.success("Schema analysis completed.");
             setSchemaResult(result);
-        },
-        onError: (error) => toast.error((error as Error).message),
-    });
-
-    const explainMutation = useMutation({
-        mutationFn: async () => {
-            const res = await fetch(`${apiCollectionPath}/explain`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({filter: filterInput, projection: projectInput, sort: sortInput, limit}),
-            });
-            const json = await res.json();
-            if (!res.ok) throw new Error(json.error || "Explain failed");
-            return json;
-        },
-        onSuccess: (result) => {
-            toast.success("Explain plan completed.");
-            setExplainResult(result);
         },
         onError: (error) => toast.error((error as Error).message),
     });
@@ -798,15 +777,6 @@ function CollectionPageContent() {
                                     </div>)}
                                 </div>
                             )}
-                    </ToolPanel>}
-
-                    {tab === "explain" && <ToolPanel title="Explain Plan"
-                                                     action={<Button onClick={() => explainMutation.mutate()}
-                                                                     disabled={explainMutation.isPending}><BarChart3
-                                                         size={16}/> Run Explain</Button>}>
-                        <p className="text-sm text-gray-500 dark:text-compass-muted">Uses the Filter / Project / Sort
-                            bar above and returns execution stats.</p>
-                        <ResultBlock value={explainResult} loading={explainMutation.isPending}/>
                     </ToolPanel>}
 
                     {tab === "stats" && <ToolPanel title="Collection Stats">

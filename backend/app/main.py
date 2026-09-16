@@ -19,6 +19,7 @@ from app.routers import (
 
 logger = logging.getLogger("timing")
 
+
 def create_app() -> FastAPI:
     settings = get_settings()
     setup_logging(settings.log_level)

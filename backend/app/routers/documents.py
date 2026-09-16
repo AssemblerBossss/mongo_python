@@ -7,6 +7,7 @@ from pydantic import TypeAdapter, ValidationError
 from app.dependencies import MongoServiceDep
 from app.errors import InvalidFilterError
 from app.schemas.common import DocumentsPage, FilterCondition, FilterField
+from app.schemas.query import AggregateRequest, SchemaAnalyzeRequest
 from app.services.filters import build_mongo_query
 
 router = APIRouter(prefix="/api")
@@ -80,3 +81,16 @@ def patch_document(
 @router.delete("/collections/{name}/documents/{doc_id}", status_code=204)
 def delete_document(name: str, doc_id: str, service: MongoServiceDep) -> None:
     service.delete(name, doc_id)
+
+@router.post("/collections/{name}/aggregate")
+def run_aggregation(
+    name: str, payload: AggregateRequest, service: MongoServiceDep
+) -> dict[str, Any]:
+    return service.run_aggregation(name, payload.pipeline, payload.limit)
+
+
+@router.post("/collections/{name}/schema")
+def analyze_schema(
+    name: str, payload: SchemaAnalyzeRequest, service: MongoServiceDep
+) -> dict[str, Any]:
+    return service.analyze_schema(name, payload.sampleSize)
