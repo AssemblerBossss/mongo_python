@@ -240,6 +240,7 @@ function CollectionPageContent() {
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const scanFileInputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
 
   const collectionName = params.collectionName as string;
@@ -372,6 +373,25 @@ function CollectionPageContent() {
     },
     onSuccess: (json) => {
       toast.success(json.message || "Import completed");
+      queryClient.invalidateQueries({ queryKey: ["documents", collectionName] });
+    },
+    onError: (error) => toast.error((error as Error).message),
+  });
+
+  const scanImportMutation = useMutation({
+    mutationFn: async (files: File[]) => {
+      const formData = new FormData();
+      for (const file of files) formData.append("files", file);
+      const res = await fetch(`${apiCollectionPath}/import/files`, {
+        method: "POST",
+        body: formData,
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.detail || "Scan import failed");
+      return json as { total_imported: number; total_skipped: number };
+    },
+    onSuccess: (json) => {
+      toast.success(`Imported ${json.total_imported}, skipped ${json.total_skipped}.`);
       queryClient.invalidateQueries({ queryKey: ["documents", collectionName] });
     },
     onError: (error) => toast.error((error as Error).message),
@@ -578,6 +598,13 @@ function CollectionPageContent() {
     e.target.value = "";
   }
 
+  function handleScanFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    scanImportMutation.mutate(Array.from(files));
+    e.target.value = "";
+  }
+
   function exportCurrent(format: "json" | "csv") {
     const content = format === "json" ? pretty(documents) : convertToCSV(documents);
     const blob = new Blob([content], { type: format === "json" ? "application/json" : "text/csv" });
@@ -651,6 +678,8 @@ function CollectionPageContent() {
                 <Button variant="outline" onClick={() => exportCurrent("csv")} className="dark:border-compass-border dark:hover:bg-compass-border/30"><Download size={16} /> CSV</Button>
                 <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={importMutation.isPending} className="dark:border-compass-border dark:hover:bg-compass-border/30"><Upload size={16} /> Import</Button>
                 <input ref={fileInputRef} type="file" accept=".json,application/json" onChange={handleFileChange} className="hidden" />
+                <Button variant="outline" onClick={() => scanFileInputRef.current?.click()} disabled={scanImportMutation.isPending} title="Import scan results grouped by address (address -> [results])" className="dark:border-compass-border dark:hover:bg-compass-border/30"><FileJson size={16} /> Import Scan Files</Button>
+                <input ref={scanFileInputRef} type="file" accept=".json,application/json" multiple onChange={handleScanFileChange} className="hidden" />
               </div>
             </div>
           </header>
