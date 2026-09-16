@@ -34,6 +34,14 @@ class MongoRepository:
     def count_documents(self, collection: str, query: dict[str, Any]) -> int:
         return self.db[collection].count_documents(query)
 
+    # ---------- Сервер ----------
+
+    def server_status(self) -> dict[str, Any]:
+        return self.db.client.admin.command("serverStatus")
+
+    def db_stats(self) -> dict[str, Any]:
+        return self.db.command("dbStats")
+
     # ---------- Документы ----------
 
     def create_index(

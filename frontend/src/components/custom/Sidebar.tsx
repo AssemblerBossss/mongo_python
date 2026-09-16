@@ -10,7 +10,6 @@ import {ThemeToggle} from './ThemeToggle';
 
 const navItems = [
     {name: 'Collections', icon: Database, href: '/'},
-    {name: 'Databases', icon: Database, href: '/databases'},
     {name: 'Server Stats', icon: Server, href: '/server-stats'},
 ];
 
