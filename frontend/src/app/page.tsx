@@ -4,7 +4,7 @@ import { useState } from "react";
 import { cn } from "@/src/lib/utils";
 import Sidebar from "@/src/components/custom/Sidebar";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Layers, ChevronRight, Trash2, AlertTriangle, X } from "lucide-react";
+import { Loader2, Layers, ChevronRight, Trash2, AlertTriangle, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
@@ -16,6 +16,9 @@ export default function CollectionsPage() {
   const [confirmName, setConfirmName] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [newCollectionName, setNewCollectionName] = useState("");
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const { data: collections, isLoading, error } = useQuery({
     queryKey: ["collections"],
@@ -50,6 +53,35 @@ export default function CollectionsPage() {
     }
   });
 
+  const createMutation = useMutation({
+    mutationFn: async (name: string) => {
+      const res = await fetch("/api/collections", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to create collection");
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["collections"] });
+      setIsCreating(false);
+      setNewCollectionName("");
+      setCreateError(null);
+    },
+    onError: (err: any) => {
+      setCreateError(err.message);
+    },
+  });
+
+  const confirmCreate = () => {
+    if (newCollectionName.trim()) {
+      createMutation.mutate(newCollectionName.trim());
+    }
+  };
+
   const handleDeleteClick = (e: React.MouseEvent, collectionName: string) => {
     e.preventDefault();
     e.stopPropagation();
@@ -69,9 +101,14 @@ export default function CollectionsPage() {
       <Sidebar />
       <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-20 lg:pt-8">
         <div className="max-w-5xl mx-auto">
-          <header className="mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-compass-text">Collections</h1>
-            <p className="text-gray-500 dark:text-compass-muted mt-2">Browse collections in the database.</p>
+          <header className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-compass-text">Collections</h1>
+              <p className="text-gray-500 dark:text-compass-muted mt-2">Browse collections in the database.</p>
+            </div>
+            <Button onClick={() => setIsCreating(true)} className="self-start sm:self-auto">
+              <Plus size={16} /> New Collection
+            </Button>
           </header>
 
           {isLoading ? (
@@ -120,6 +157,65 @@ export default function CollectionsPage() {
           )}
         </div>
       </main>
+
+      {/* Create Collection Modal */}
+      {isCreating && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-compass-bg text-gray-900 dark:text-compass-text w-full max-w-md rounded-lg shadow-2xl border border-gray-200 dark:border-compass-border overflow-hidden">
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-6">
+                <h2 className="text-2xl font-bold">New Collection</h2>
+                <button
+                  onClick={() => { setIsCreating(false); setNewCollectionName(""); setCreateError(null); }}
+                  className="text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <Label htmlFor="newCollectionName">Collection name</Label>
+                  <Input
+                    id="newCollectionName"
+                    value={newCollectionName}
+                    onChange={(e) => setNewCollectionName(e.target.value)}
+                    className="h-12"
+                    autoFocus
+                    onKeyDown={(e) => e.key === "Enter" && confirmCreate()}
+                  />
+                </div>
+
+                {createError && (
+                  <div className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-400 text-sm rounded">
+                    {createError}
+                  </div>
+                )}
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <Button
+                    variant="ghost"
+                    onClick={() => { setIsCreating(false); setNewCollectionName(""); setCreateError(null); }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={confirmCreate}
+                    disabled={!newCollectionName.trim() || createMutation.isPending}
+                    className="min-w-[120px]"
+                  >
+                    {createMutation.isPending ? (
+                      <Loader2 className="animate-spin" size={18} />
+                    ) : (
+                      "Create"
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Collection Confirmation Modal */}
       {collectionToDelete && (
