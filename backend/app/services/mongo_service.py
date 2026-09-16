@@ -125,9 +125,7 @@ class MongoService:
             }
             for info in sorted(fields.values(), key=lambda f: f["path"])
         ]
-        return json.loads(
-            json_util.dumps({"sampleSize": len(docs), "fields": result})
-        )
+        return json.loads(json_util.dumps({"sampleSize": len(docs), "fields": result}))
 
     def infer_fields(self, collection: str, sample_size: int = 25) -> list[FieldInfo]:
         """Определяет набор полей и их типы по выборке документов."""
@@ -167,16 +165,20 @@ class MongoService:
         self,
         collection: str,
         query: dict[str, Any] | None = None,
+        projection: dict[str, Any] | None = None,
+        sort: dict[str, Any] | None = None,
         skip: int = 0,
         limit: int = 20,
-        sort_by: str = "_id",
-        sort_dir: int = 1,
     ) -> tuple[list[dict[str, Any]], int]:
         query = query or {}
+        projection = projection or {}
+        sort_list = list((sort or {}).items())
         total = self.repo.count_documents(collection, query)
         documents = [
             serialize_document(doc)
-            for doc in self.repo.find(collection, query, sort_by, sort_dir, skip, limit)
+            for doc in self.repo.find(
+                collection, query, projection, sort_list, skip, limit
+            )
         ]
         return documents, total
 

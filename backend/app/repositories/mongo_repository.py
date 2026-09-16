@@ -10,6 +10,7 @@ from pymongo.results import (
     UpdateResult,
 )
 
+
 class MongoRepository:
     """Инкапсулирует CRUD-операции pymongo над произвольной коллекцией."""
 
@@ -52,18 +53,16 @@ class MongoRepository:
         self,
         collection: str,
         query: dict[str, Any],
-        sort_by: str,
-        sort_dir: int,
+        projection: dict[str, Any],
+        sort: list[tuple[str, int]],
         skip: int,
         limit: int,
     ) -> list[dict[str, Any]]:
         cursor = (
-            self.db[collection]
-            .find(query)
-            .sort(sort_by, sort_dir)
-            .skip(skip)
-            .limit(limit)
+            self.db[collection].find(query, projection or None).skip(skip).limit(limit)
         )
+        if sort:
+            cursor = cursor.sort(sort)
         return list(cursor)
 
     def find_sample(self, collection: str, limit: int) -> list[dict[str, Any]]:
