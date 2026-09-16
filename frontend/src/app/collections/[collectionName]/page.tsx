@@ -705,9 +705,7 @@ function CollectionPageContent() {
                                                 documents</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
-                                    <Button size="sm" variant="outline" onClick={() => exportCurrent("json")}
-                                            className="dark:border-compass-border dark:bg-compass-bg dark:text-compass-text"><Download
-                                        size={14}/> Export Data</Button>
+
                                     <Button size="sm" variant="outline" onClick={() => exportBulkCode("delete")}
                                             className="dark:border-compass-border dark:bg-compass-bg dark:text-compass-text"><FileJson
                                         size={14}/> Export Code</Button>
