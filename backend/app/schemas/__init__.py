@@ -7,6 +7,8 @@ from .common import (
     FilterOperator,
     FilterCondition,
     FilterField,
+    IndexInfo,
+    CreateIndexRequest,
 )
 from .imports import ScanRecord, ImportPayload, AddressImportStats, ImportSummary
 from .query import AggregateRequest, SchemaAnalyzeRequest
@@ -26,4 +28,6 @@ __all__ = [
     "ImportSummary",
     "AggregateRequest",
     "SchemaAnalyzeRequest",
+    "IndexInfo",
+    "CreateIndexRequest",
 ]

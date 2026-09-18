@@ -10,9 +10,10 @@ from app.errors import (
     CollectionExistsError,
     DocumentNotFoundError,
     InvalidObjectIdError,
+    IndexNotFoundError,
 )
 from app.repositories.mongo_repository import MongoRepository
-from app.schemas import CollectionInfo, FieldInfo, FilterField
+from app.schemas import CollectionInfo, FieldInfo, FilterField, IndexInfo
 from app.services.filters import ENUM_THRESHOLD, build_field, merge_leaf_paths
 from app.services.query_safety import (
     MAX_PAGE_SIZE,
@@ -30,6 +31,10 @@ class MongoService:
     def __init__(self, repo: MongoRepository) -> None:
         self.repo = repo
 
+    def _ensure_collection_exists(self, name: str) -> None:
+        if name not in self.repo.list_collection_names():
+            raise DocumentNotFoundError(f"Коллекция '{name}' не найдена")
+
     def list_collections(self) -> list[CollectionInfo]:
         names = sorted(self.repo.list_collection_names())
         return [
@@ -37,20 +42,53 @@ class MongoService:
             for name in names
         ]
 
-    def create_collection(self, name: str) -> None:
-        if name in self.repo.list_collection_names():
-            raise CollectionExistsError(f"Коллекция '{name}' уже существует")
-        self.repo.create_collection(name)
+    def create_collection(self, collection: str) -> None:
+        if collection in self.repo.list_collection_names():
+            raise CollectionExistsError(f"Коллекция '{collection}' уже существует")
+        self.repo.create_collection(collection)
 
-    def drop_collection(self, name: str) -> None:
-        if name not in self.repo.list_collection_names():
-            raise DocumentNotFoundError(f"Коллекция '{name}' не найдена")
-        self.repo.drop_collection(name)
+    def drop_collection(self, collection: str) -> None:
+        self._ensure_collection_exists(collection)
+        self.repo.drop_collection(collection)
 
-    def collection_stats(self, name: str) -> dict[str, Any]:
-        if name not in self.repo.list_collection_names():
-            raise DocumentNotFoundError(f"Коллекция '{name}' не найдена")
-        raw = self.repo.collection_stats(name)
+    def create_index(
+        self, collection: str, keys: dict[str, int], options: dict[str, Any]
+    ) -> str:
+        self._ensure_collection_exists(collection)
+
+        key_pairs = list(keys.items())
+        return self.repo.create_index(
+            collection=collection, keys=key_pairs, options=options
+        )
+
+    def list_indexes(self, collection: str) -> list[IndexInfo]:
+        self._ensure_collection_exists(collection)
+        raw_indexes = self.repo.list_indexes(collection)
+        return [
+            IndexInfo(
+                name=idx["name"],
+                key=idx["key"],
+                unique=bool(idx.get("unique", False)),
+                sparse=bool(idx.get("sparse", False)),
+                expireAfterSeconds=idx.get("expireAfterSeconds"),
+            )
+            for idx in raw_indexes
+        ]
+
+    def drop_index(self, collection: str, index_name: str) -> None:
+        self._ensure_collection_exists(collection)
+        exists_indexes = self.repo.list_indexes(collection)
+        indexes_names = {idx["name"] for idx in exists_indexes}
+        if index_name not in indexes_names:
+            raise IndexNotFoundError(
+                f"Индекс '{index_name}' не найден в коллекции '{collection}'"
+            )
+        self.repo.drop_index(collection=collection, index_name=index_name)
+
+    def collection_stats(self, collection: str) -> dict[str, Any]:
+        if collection not in self.repo.list_collection_names():
+            raise DocumentNotFoundError(f"Коллекция '{collection}' не найдена")
+        raw = self.repo.collection_stats(collection)
         return json.loads(json_util.dumps(raw))
 
     def server_stats(self) -> dict[str, Any]:
@@ -76,26 +114,32 @@ class MongoService:
         return json.loads(json_util.dumps(payload))
 
     def run_aggregation(
-        self, name: str, pipeline: list[dict], limit: int | None
+        self, collection: str, pipeline: list[dict], limit: int | None
     ) -> dict[str, Any]:
-        if name not in self.repo.list_collection_names():
-            raise DocumentNotFoundError(f"Коллекция '{name}' не найдена")
+        self._ensure_collection_exists(collection)
+
         validate_pipeline(pipeline)
         bounded_limit = bounded_int(limit, 50, 1, MAX_PAGE_SIZE)
         preview_pipeline = [*pipeline, {"$limit": bounded_limit}]
         documents = [
             serialize_document(doc)
             for doc in self.repo.aggregate(
-                name, preview_pipeline, MONGO_QUERY_MAX_TIME_MS
+                collection, preview_pipeline, MONGO_QUERY_MAX_TIME_MS
             )
         ]
         return {"documents": documents, "count": len(documents), "limit": bounded_limit}
 
-    def analyze_schema(self, name: str, sample_size: int | None) -> dict[str, Any]:
-        if name not in self.repo.list_collection_names():
-            raise DocumentNotFoundError(f"Коллекция '{name}' не найдена")
+    def analyze_schema(
+        self, collection: str, sample_size: int | None
+    ) -> dict[str, Any]:
+        self._ensure_collection_exists(collection)
+
         bounded_size = bounded_int(sample_size, 500, 1, MAX_SCHEMA_SAMPLE_SIZE)
-        docs = self.repo.sample_documents(name, bounded_size, MONGO_QUERY_MAX_TIME_MS)
+        docs = self.repo.sample_documents(
+            collection=collection,
+            size=bounded_size,
+            max_time_ms=MONGO_QUERY_MAX_TIME_MS,
+        )
 
         fields: dict[str, dict[str, Any]] = {}
 

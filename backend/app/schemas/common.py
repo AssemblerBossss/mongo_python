@@ -67,3 +67,18 @@ class FilterField(BaseModel):
     operators: list[FilterOperator]
     enumerable: bool
     values: list[Any] | None = None
+
+
+class IndexInfo(BaseModel):
+    """Информация об индексе коллекции."""
+
+    name: str
+    key: dict[str, Any]
+    unique: bool
+    sparse: bool = False
+    expireAfterSeconds: int | None = None
+
+
+class CreateIndexRequest(BaseModel):
+    keys: dict[str, int] = Field(min_length=1)
+    options: dict[str, Any] = Field(default_factory=dict)

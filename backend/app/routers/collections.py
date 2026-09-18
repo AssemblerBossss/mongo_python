@@ -3,6 +3,7 @@ from typing import Any
 from fastapi import APIRouter
 
 from app.dependencies import MongoServiceDep
+from app.schemas import CreateIndexRequest, IndexInfo
 from app.schemas.common import CollectionInfo, CreateCollectionRequest, FieldInfo
 
 router = APIRouter(prefix="/api")
@@ -24,6 +25,26 @@ def create_collection(
 @router.delete("/collections/{name}", status_code=204)
 def drop_collection(name: str, service: MongoServiceDep) -> None:
     service.drop_collection(name)
+
+
+@router.get("/collections/{name}/indexes", response_model=list[IndexInfo])
+def list_indexes(name: str, service: MongoServiceDep) -> list[IndexInfo]:
+    return service.list_indexes(name)
+
+
+@router.post("/collections/{name}/indexes", status_code=201)
+def create_index(
+    name: str, payload: CreateIndexRequest, service: MongoServiceDep
+) -> dict[str, str]:
+    index_name = service.create_index(
+        collection=name, keys=payload.keys, options=payload.options
+    )
+    return {"name": index_name}
+
+
+@router.delete("/collections/{name}/indexes/{index_name}", status_code=204)
+def drop_index(name: str, index_name: str, service: MongoServiceDep) -> None:
+    service.drop_index(collection=name, index_name=index_name)
 
 
 @router.get("/collections/{name}/fields", response_model=list[FieldInfo])
