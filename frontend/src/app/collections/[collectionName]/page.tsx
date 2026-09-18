@@ -750,7 +750,7 @@ function CollectionPageContent() {
                         {indexesQuery.isLoading ? <LoaderBlock text="Loading indexes…"/> : indexesQuery.error ?
                             <ErrorBox message={(indexesQuery.error as Error).message}/> : (
                                 <div className="space-y-2">
-                                    {(indexesQuery.data?.indexes ?? []).map((index: JsonObject) => <div
+                                    {(indexesQuery.data ?? []).map((index: JsonObject) => <div
                                         key={String(index.name)}
                                         className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-lg border border-gray-200 p-3">
                                         <div><b>{String(index.name)}</b>
