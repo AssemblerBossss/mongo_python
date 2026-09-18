@@ -71,7 +71,8 @@ class MongoService:
                 unique=bool(idx.get("unique", False)),
                 sparse=bool(idx.get("sparse", False)),
                 expireAfterSeconds=idx.get("expireAfterSeconds"),
-            ) for idx in raw_indexes
+            )
+            for idx in raw_indexes
         ]
 
     def drop_index(self, collection: str, index_name: str) -> None:
