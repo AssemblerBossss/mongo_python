@@ -49,6 +49,12 @@ class MongoRepository:
     ) -> str:
         return self.db[collection].create_index(keys, **kwargs)
 
+    def list_indexes(self, collection: str) -> list[dict[str, Any]]:
+        return list(self.db[collection].list_indexes())
+
+    def drop_index(self, collection: str, index_name: str) -> None:
+        self.db[collection].drop_index(index_name)
+
     def find(
         self,
         collection: str,
