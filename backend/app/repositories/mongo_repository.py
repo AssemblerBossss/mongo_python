@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import MutableMapping, Mapping
 from typing import Any
 
-from pymongo.database import Database
+from pymongo.asynchronous.database import AsyncDatabase
 from pymongo.results import (
     DeleteResult,
     InsertManyResult,
@@ -14,48 +15,49 @@ from pymongo.results import (
 class MongoRepository:
     """Инкапсулирует CRUD-операции pymongo над произвольной коллекцией."""
 
-    def __init__(self, db: Database) -> None:
+    def __init__(self, db: AsyncDatabase) -> None:
         self.db = db
 
     # ---------- Коллекции ----------
 
-    def list_collection_names(self) -> list[str]:
-        return self.db.list_collection_names()
+    async def list_collection_names(self) -> list[str]:
+        return await self.db.list_collection_names()
 
-    def create_collection(self, name: str) -> None:
-        self.db.create_collection(name)
+    async def create_collection(self, name: str) -> None:
+        await self.db.create_collection(name)
 
-    def drop_collection(self, name: str) -> None:
-        self.db.drop_collection(name)
+    async def drop_collection(self, name: str) -> None:
+        await self.db.drop_collection(name)
 
-    def collection_stats(self, name: str) -> dict[str, Any]:
-        return self.db.command("collStats", name)
+    async def collection_stats(self, name: str) -> dict[str, Any]:
+        return await self.db.command("collStats", name)
 
-    def count_documents(self, collection: str, query: dict[str, Any]) -> int:
-        return self.db[collection].count_documents(query)
+    async def count_documents(self, collection: str, query: dict[str, Any]) -> int:
+        return await self.db[collection].count_documents(query)
 
     # ---------- Сервер ----------
 
-    def server_status(self) -> dict[str, Any]:
-        return self.db.client.admin.command("serverStatus")
+    async def server_status(self) -> dict[str, Any]:
+        return await self.db.client.admin.command("serverStatus")
 
-    def db_stats(self) -> dict[str, Any]:
-        return self.db.command("dbStats")
+    async def db_stats(self) -> dict[str, Any]:
+        return await self.db.command("dbStats")
 
     # ---------- Документы ----------
 
-    def create_index(
+    async def create_index(
         self, collection: str, keys: str | list[tuple[str, int]], **kwargs: Any
     ) -> str:
-        return self.db[collection].create_index(keys, **kwargs)
+        return await self.db[collection].create_index(keys, **kwargs)
 
-    def list_indexes(self, collection: str) -> list[dict[str, Any]]:
-        return list(self.db[collection].list_indexes())
+    async def list_indexes(self, collection: str) -> list[MutableMapping[str, Any]]:
+        cursor = await self.db[collection].list_indexes()
+        return await cursor.to_list(length=None)
 
-    def drop_index(self, collection: str, index_name: str) -> None:
-        self.db[collection].drop_index(index_name)
+    async def drop_index(self, collection: str, index_name: str) -> None:
+        await self.db[collection].drop_index(index_name)
 
-    def find(
+    async def find(
         self,
         collection: str,
         query: dict[str, Any],
@@ -63,16 +65,17 @@ class MongoRepository:
         sort: list[tuple[str, int]],
         skip: int,
         limit: int,
-    ) -> list[dict[str, Any]]:
+    ) -> list[Mapping[str, Any]]:
         cursor = (
             self.db[collection].find(query, projection or None).skip(skip).limit(limit)
         )
         if sort:
             cursor = cursor.sort(sort)
-        return list(cursor)
+        return await cursor.to_list()
 
-    def find_sample(self, collection: str, limit: int) -> list[dict[str, Any]]:
-        return list(self.db[collection].find().limit(limit))
+    async def find_sample(self, collection: str, limit: int) -> list[Mapping[str, Any]]:
+        cursor = (self.db[collection].find().limit(limit))
+        return await cursor.to_list()
 
     def distinct_values(self, collection: str, field: str, limit: int) -> list[Any]:
         pipeline = [{"$group": {"_id": f"${field}"}}, {"$limit": limit}]
