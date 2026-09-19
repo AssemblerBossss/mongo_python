@@ -36,4 +36,4 @@ async def import_document_files(
     filenames = [file.filename or f"file_{index}" for index, file in enumerate(files)]
     files_by_name = dict(zip(filenames, contents))
 
-    return await asyncio.to_thread(service.import_files, files_by_name)
+    return await service.import_files(files_by_name)

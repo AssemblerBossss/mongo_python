@@ -31,10 +31,10 @@ def get_database() -> AsyncDatabase:
     return get_mongo_client()[settings.mongo_db]
 
 
-def ping(client: AsyncMongoClient) -> bool:
+async def ping(client: AsyncMongoClient) -> bool:
     """Проверяет доступность MongoDB (используется в /ready)."""
     try:
-        client.admin.command("ping")
+        await client.admin.command("ping")
         return True
     except PyMongoError:
         return False

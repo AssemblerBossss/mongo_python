@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -9,17 +9,17 @@ from app.services.import_service import ImportService
 
 
 @pytest.fixture
-def repo_mock() -> MagicMock:
-    return MagicMock(spec=MongoRepository)
+def repo_mock() -> AsyncMock:
+    return AsyncMock(spec=MongoRepository)
 
 
 @pytest.fixture
-def service(repo_mock: MagicMock) -> ImportService:
+def service(repo_mock: AsyncMock) -> ImportService:
     return ImportService(repo_mock)
 
 
-def test_filters_empty_data_and_non_empty_error(
-    service: ImportService, repo_mock: MagicMock
+async def test_filters_empty_data_and_non_empty_error(
+    service: ImportService, repo_mock: AsyncMock
 ) -> None:
     payload = ImportPayload.model_validate(
         {
@@ -49,7 +49,7 @@ def test_filters_empty_data_and_non_empty_error(
         }
     )
 
-    summary = service.import_records(payload)
+    summary = await service.import_records(payload)
 
     assert summary.total_imported == 1
     assert summary.total_skipped == 2
@@ -57,23 +57,24 @@ def test_filters_empty_data_and_non_empty_error(
     assert summary.addresses[0].collection == "domains"
 
     repo_mock.create_index.assert_called_once_with("domains", "address", unique=True)
-    repo_mock.upsert_results.assert_called_once_with(
-        collection="domains",
-        address="example.com",
-        results=[
-            {
-                "instance": "a",
-                "result": True,
-                "data_type": "ip",
-                "data": {"ip": "1.1.1.1"},
-                "error": None,
-            }
-        ],
+    repo_mock.upsert_results_bulk.assert_called_once_with(
+        "domains",
+        {
+            "example.com": [
+                {
+                    "instance": "a",
+                    "result": True,
+                    "data_type": "ip",
+                    "data": {"ip": "1.1.1.1"},
+                    "error": None,
+                }
+            ]
+        },
     )
 
 
-def test_raises_when_nothing_left_after_filtering(
-    service: ImportService, repo_mock: MagicMock
+async def test_raises_when_nothing_left_after_filtering(
+    service: ImportService, repo_mock: AsyncMock
 ) -> None:
     payload = ImportPayload.model_validate(
         {
@@ -90,23 +91,23 @@ def test_raises_when_nothing_left_after_filtering(
     )
 
     with pytest.raises(EmptyImportPayloadError):
-        service.import_records(payload)
+        await service.import_records(payload)
 
-    repo_mock.upsert_results.assert_not_called()
+    repo_mock.upsert_results_bulk.assert_not_called()
 
 
-def test_parse_file_rejects_invalid_json(service: ImportService) -> None:
+async def test_parse_file_rejects_invalid_json(service: ImportService) -> None:
     with pytest.raises(InvalidImportFileError):
         service.parse_file("example.com.json", b"not json")
 
 
-def test_parse_file_rejects_non_dict_payload(service: ImportService) -> None:
+async def test_parse_file_rejects_non_dict_payload(service: ImportService) -> None:
     with pytest.raises(InvalidImportFileError):
         service.parse_file("a1b2c3.json", b'[{"instance": "a"}]')
 
 
-def test_import_files_groups_by_address_from_content(
-    service: ImportService, repo_mock: MagicMock
+async def test_import_files_groups_by_address_from_content(
+    service: ImportService, repo_mock: AsyncMock
 ) -> None:
     files = {
         "9f8a1c.json": (
@@ -117,19 +118,19 @@ def test_import_files_groups_by_address_from_content(
         ),
     }
 
-    summary = service.import_files(files)
+    summary = await service.import_files(files)
 
     assert summary.total_imported == 2
     assert summary.total_skipped == 0
     assert {s.address for s in summary.addresses} == {"example.com", "1.2.3.4"}
-    assert repo_mock.upsert_results.call_count == 2
+    assert repo_mock.upsert_results_bulk.call_count == 2
 
 
-def test_import_files_merges_same_address_from_different_files(
-    service: ImportService, repo_mock: MagicMock
+async def test_import_files_merges_same_address_from_different_files(
+    service: ImportService, repo_mock: AsyncMock
 ) -> None:
     """Два файла с разными (хэш-подобными) именами, но одним адресом внутри —
-    должны схлопнуться в один вызов upsert_results с обоими результатами."""
+    должны схлопнуться в один вызов upsert_results_bulk с обоими результатами."""
     files = {
         "9f8a1c.json": (
             b'{"89.99.117.132": [{"instance": "a", "result": true, "data_type": "ipv4", "data": {"x": 1}}]}'
@@ -139,18 +140,18 @@ def test_import_files_merges_same_address_from_different_files(
         ),
     }
 
-    summary = service.import_files(files)
+    summary = await service.import_files(files)
 
     assert summary.total_imported == 2
-    assert repo_mock.upsert_results.call_count == 1
-    _, kwargs = repo_mock.upsert_results.call_args
-    assert kwargs["collection"] == "ip_addresses"
-    assert kwargs["address"] == "89.99.117.132"
-    assert {r["instance"] for r in kwargs["results"]} == {"a", "b"}
+    assert repo_mock.upsert_results_bulk.call_count == 1
+    args, _ = repo_mock.upsert_results_bulk.call_args
+    collection, by_address = args
+    assert collection == "ip_addresses"
+    assert {r["instance"] for r in by_address["89.99.117.132"]} == {"a", "b"}
 
 
-def test_routes_different_address_types_to_different_collections(
-    service: ImportService, repo_mock: MagicMock
+async def test_routes_different_address_types_to_different_collections(
+    service: ImportService, repo_mock: AsyncMock
 ) -> None:
     payload = ImportPayload.model_validate(
         {
@@ -181,7 +182,7 @@ def test_routes_different_address_types_to_different_collections(
         }
     )
 
-    summary = service.import_records(payload)
+    summary = await service.import_records(payload)
 
     assert summary.total_imported == 3
     by_address = {s.address: s.collection for s in summary.addresses}
@@ -193,4 +194,4 @@ def test_routes_different_address_types_to_different_collections(
 
     created_indexes = {call.args[0] for call in repo_mock.create_index.call_args_list}
     assert created_indexes == {"domains", "ip_addresses", "mac_addresses"}
-    assert repo_mock.upsert_results.call_count == 3
+    assert repo_mock.upsert_results_bulk.call_count == 3
