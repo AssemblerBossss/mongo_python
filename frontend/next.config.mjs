@@ -19,10 +19,6 @@ const nextConfig = {
 
   typescript: { ignoreBuildErrors: false },
 
-  // Proxies UI fetch("/api/...") calls to the Python backend, so pages
-  // ported from mongo-gui-main keep working once the backend implements
-  // matching routes. See ../filters-api-contract.md / unimplemented-endpoints
-  // list for the gap between what the UI expects and what backend/ exposes today.
   async rewrites() {
     const backendOrigin = process.env.BACKEND_API_ORIGIN || 'http://127.0.0.1:8000';
     return [{ source: '/api/:path*', destination: `${backendOrigin}/api/:path*` }];
@@ -36,6 +32,9 @@ const nextConfig = {
       '@radix-ui/react-label',
       '@radix-ui/react-slot',
     ],
+    // Тело запроса, проходящее через rewrites (/api/:path*), по умолчанию
+    // режется на 10MB — поднимаем лимит для загрузки крупных файлов импорта.
+    proxyClientMaxBodySize: '100mb',
   },
 
   async headers() {
