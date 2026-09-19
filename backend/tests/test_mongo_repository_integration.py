@@ -1,7 +1,9 @@
+import asyncio
 import os
 
 import pytest
-from pymongo import MongoClient
+from pymongo import AsyncMongoClient
+from pymongo.errors import PyMongoError
 
 from app.repositories.mongo_repository import MongoRepository
 
@@ -9,22 +11,25 @@ MONGO_URI = os.environ.get("TEST_MONGO_URI", "mongodb://admin:admin@localhost:27
 
 
 @pytest.fixture
-def repo():
-    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=2000)
+async def repo():
+    client = AsyncMongoClient(MONGO_URI, serverSelectionTimeoutMS=2000)
     try:
-        client.admin.command("ping")
-    except Exception:
+        await client.admin.command("ping")
+    except PyMongoError:
+        await client.close()
         pytest.skip("MongoDB недоступна для интеграционного теста")
 
     db = client["test_import_merge"]
-    db.drop_collection("scan_results")
+    await db.drop_collection("scan_results")
     yield MongoRepository(db)
-    client.drop_database("test_import_merge")
-    client.close()
+    await client.drop_database("test_import_merge")
+    await client.close()
 
 
-def test_new_service_result_appends_to_existing_document(repo: MongoRepository) -> None:
-    repo.create_index("scan_results", "address", unique=True)
+async def test_new_service_result_appends_to_existing_document(
+    repo: MongoRepository,
+) -> None:
+    await repo.create_index("scan_results", "address", unique=True)
 
     first = [
         {
@@ -35,7 +40,7 @@ def test_new_service_result_appends_to_existing_document(repo: MongoRepository) 
             "error": "",
         }
     ]
-    repo.upsert_results("scan_results", "89.99.117.132", first)
+    await repo.upsert_results("scan_results", "89.99.117.132", first)
 
     second = [
         {
@@ -46,9 +51,9 @@ def test_new_service_result_appends_to_existing_document(repo: MongoRepository) 
             "error": "",
         }
     ]
-    repo.upsert_results("scan_results", "89.99.117.132", second)
+    await repo.upsert_results("scan_results", "89.99.117.132", second)
 
-    doc = repo.find_one("scan_results", {"address": "89.99.117.132"})
+    doc = await repo.find_one("scan_results", {"address": "89.99.117.132"})
     assert doc is not None
     assert len(doc["results"]) == 2
     assert {r["instance"] for r in doc["results"]} == {
@@ -57,10 +62,10 @@ def test_new_service_result_appends_to_existing_document(repo: MongoRepository) 
     }
 
 
-def test_duplicate_result_from_same_service_is_not_added_twice(
+async def test_duplicate_result_from_same_service_is_not_added_twice(
     repo: MongoRepository,
 ) -> None:
-    repo.create_index("scan_results", "address", unique=True)
+    await repo.create_index("scan_results", "address", unique=True)
 
     record = [
         {
@@ -71,19 +76,17 @@ def test_duplicate_result_from_same_service_is_not_added_twice(
             "error": "",
         }
     ]
-    repo.upsert_results("scan_results", "89.99.117.132", record)
-    repo.upsert_results("scan_results", "89.99.117.132", record)
+    await repo.upsert_results("scan_results", "89.99.117.132", record)
+    await repo.upsert_results("scan_results", "89.99.117.132", record)
 
-    doc = repo.find_one("scan_results", {"address": "89.99.117.132"})
+    doc = await repo.find_one("scan_results", {"address": "89.99.117.132"})
     assert len(doc["results"]) == 1
 
 
-def test_concurrent_upsert_does_not_create_duplicate_documents(
+async def test_concurrent_upsert_does_not_create_duplicate_documents(
     repo: MongoRepository,
 ) -> None:
-    from concurrent.futures import ThreadPoolExecutor
-
-    repo.create_index("scan_results", "address", unique=True)
+    await repo.create_index("scan_results", "address", unique=True)
     record = [
         {
             "instance": "AbuseIPDBChecker",
@@ -94,14 +97,13 @@ def test_concurrent_upsert_does_not_create_duplicate_documents(
         }
     ]
 
-    with ThreadPoolExecutor(max_workers=8) as pool:
-        list(
-            pool.map(
-                lambda _: repo.upsert_results("scan_results", "89.99.117.132", record),
-                range(8),
-            )
+    await asyncio.gather(
+        *(
+            repo.upsert_results("scan_results", "89.99.117.132", record)
+            for _ in range(8)
         )
+    )
 
-    docs = list(repo.db["scan_results"].find({"address": "89.99.117.132"}))
+    docs = await repo.db["scan_results"].find({"address": "89.99.117.132"}).to_list()
     assert len(docs) == 1
     assert len(docs[0]["results"]) == 1

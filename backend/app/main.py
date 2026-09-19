@@ -1,11 +1,12 @@
 import logging
 import time
-
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
+from app.database import get_mongo_client
 from app.errors import register_exception_handlers
 from app.logging_config import RequestIdMiddleware, setup_logging
 from app.routers import (
@@ -20,6 +21,12 @@ from app.routers import (
 logger = logging.getLogger("timing")
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    await get_mongo_client().close()
+
+
 def create_app() -> FastAPI:
     settings = get_settings()
     setup_logging(settings.log_level)
@@ -27,6 +34,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="Mongo Admin API",
         description="Универсальный REST API для администрирования произвольных коллекций MongoDB",
+        lifespan=lifespan
     )
 
     app.add_middleware(

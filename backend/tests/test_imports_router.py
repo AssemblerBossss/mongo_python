@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 from fastapi.testclient import TestClient
@@ -10,18 +10,18 @@ from app.services.import_service import ImportService
 
 
 @pytest.fixture
-def import_service_mock() -> MagicMock:
-    return MagicMock(spec=ImportService)
+def import_service_mock() -> AsyncMock:
+    return AsyncMock(spec=ImportService)
 
 
 @pytest.fixture
-def client(import_service_mock: MagicMock) -> TestClient:
+def client(import_service_mock: AsyncMock) -> TestClient:
     app = create_app()
     app.dependency_overrides[get_import_service] = lambda: import_service_mock
     return TestClient(app)
 
 
-def test_import_documents(client: TestClient, import_service_mock: MagicMock) -> None:
+def test_import_documents(client: TestClient, import_service_mock: AsyncMock) -> None:
     import_service_mock.import_records.return_value = ImportSummary(
         addresses=[
             AddressImportStats(
@@ -64,7 +64,7 @@ def test_import_documents(client: TestClient, import_service_mock: MagicMock) ->
     assert response.json()["addresses"][0]["collection"] == "domains"
 
 
-def test_import_files(client: TestClient, import_service_mock: MagicMock) -> None:
+def test_import_files(client: TestClient, import_service_mock: AsyncMock) -> None:
     import_service_mock.import_files.return_value = ImportSummary(
         addresses=[
             AddressImportStats(

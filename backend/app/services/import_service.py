@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 
 from pydantic import ValidationError
@@ -53,17 +54,21 @@ class ImportService:
         except ValidationError as exc:
             raise InvalidImportFileError(f"Файл '{filename}': {exc}") from exc
 
-    def import_files(self, files: dict[str, bytes]) -> ImportSummary:
-        """Разбирает набор файлов (имя -> содержимое) и импортирует их одной транзакцией записи."""
+    def _merge_files(self, files: dict[str, bytes]) -> ImportPayload:
+        """Синхронное слияние файлов в один payload (CPU-bound, без I/O)."""
         payload_root: dict[str, list[ScanRecord]] = {}
         for filename, content in files.items():
             file_payload = self.parse_file(filename, content)
             for address, records in file_payload.root.items():
                 payload_root.setdefault(address, []).extend(records)
+        return ImportPayload(payload_root)
 
-        return self.import_records(ImportPayload(payload_root))
+    async def import_files(self, files: dict[str, bytes]) -> ImportSummary:
+        """Разбирает набор файлов (имя -> содержимое) и импортирует их одной транзакцией записи."""
+        payload = await asyncio.to_thread(self._merge_files, files)
+        return await self.import_records(payload)
 
-    def import_records(self, payload: ImportPayload) -> ImportSummary:
+    async def import_records(self, payload: ImportPayload) -> ImportSummary:
         """Фильтрует записи и раскладывает их по ip_addresses/domains/mac_addresses."""
         stats: list[AddressImportStats] = []
 
@@ -91,15 +96,21 @@ class ImportService:
                 "После фильтрации не осталось ни одной записи для импорта"
             )
 
-        for collection, by_address in pending.items():
-            self.repo.create_index(collection, ADDRESS_FIELD, unique=True)
-            for address, results in by_address.items():
-                self.repo.upsert_results(
-                    collection=collection, address=address, results=results
-                )
+        await asyncio.gather(
+            *(
+                self._import_collection(collection, by_address)
+                for collection, by_address in pending.items()
+            )
+        )
 
         return ImportSummary(
             addresses=stats,
             total_imported=sum(s.imported for s in stats),
             total_skipped=sum(s.skipped for s in stats),
         )
+
+    async def _import_collection(
+        self, collection: str, by_address: dict[str, list[dict]]
+    ) -> None:
+        await self.repo.create_index(collection, ADDRESS_FIELD, unique=True)
+        await self.repo.upsert_results_bulk(collection, by_address)

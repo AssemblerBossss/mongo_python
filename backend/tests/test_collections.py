@@ -1,11 +1,11 @@
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock
 
 from fastapi.testclient import TestClient
 
 from app.schemas.common import CollectionInfo
 
 
-def test_list_collections(client: TestClient, mongo_service_mock: MagicMock) -> None:
+def test_list_collections(client: TestClient, mongo_service_mock: AsyncMock) -> None:
     mongo_service_mock.list_collections.return_value = [
         CollectionInfo(name="sample", count=3),
     ]

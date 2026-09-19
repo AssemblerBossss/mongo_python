@@ -10,10 +10,10 @@ router = APIRouter(prefix="/api")
 
 
 @router.post("/imports", response_model=ImportSummary, status_code=201)
-def import_documents(
+async def import_documents(
     payload: ImportPayload, service: ImportServiceDep
 ) -> ImportSummary:
-    return service.import_records(payload)
+    return await service.import_records(payload)
 
 
 @router.post("/imports/files", response_model=ImportSummary, status_code=201)
@@ -36,4 +36,4 @@ async def import_document_files(
     filenames = [file.filename or f"file_{index}" for index, file in enumerate(files)]
     files_by_name = dict(zip(filenames, contents))
 
-    return await asyncio.to_thread(service.import_files, files_by_name)
+    return await service.import_files(files_by_name)
