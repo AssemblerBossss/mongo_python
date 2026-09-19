@@ -74,42 +74,41 @@ class MongoRepository:
         return await cursor.to_list()
 
     async def find_sample(self, collection: str, limit: int) -> list[Mapping[str, Any]]:
-        cursor = (self.db[collection].find().limit(limit))
+        cursor = self.db[collection].find().limit(limit)
         return await cursor.to_list()
 
-    def distinct_values(self, collection: str, field: str, limit: int) -> list[Any]:
+    async def distinct_values(
+        self, collection: str, field: str, limit: int
+    ) -> list[Any]:
         pipeline = [{"$group": {"_id": f"${field}"}}, {"$limit": limit}]
-        return [
-            doc["_id"]
-            for doc in self.db[collection].aggregate(pipeline)
-            if doc["_id"] is not None
-        ]
+        cursor = await self.db[collection].aggregate(pipeline)
+        docs = await cursor.to_list()
+        return [doc["_id"] for doc in docs if doc["_id"] is not None]
 
-    def aggregate(
+    async def aggregate(
         self, collection: str, pipeline: list[dict[str, Any]], max_time_ms: int
     ) -> list[dict[str, Any]]:
-        return list(
-            self.db[collection].aggregate(
-                pipeline, maxTimeMS=max_time_ms, allowDiskUse=False
-            )
+        cursor = await self.db[collection].aggregate(
+            pipeline, maxTimeMS=max_time_ms, allowDiskUse=False
         )
+        return await cursor.to_list()
 
-    def sample_documents(
+    async def sample_documents(
         self, collection: str, size: int, max_time_ms: int
     ) -> list[dict[str, Any]]:
-        return self.aggregate(collection, [{"$sample": {"size": size}}], max_time_ms)
+        return await self.aggregate(collection, [{"$sample": {"size": size}}], max_time_ms)
 
-    def find_one(self, collection: str, query: dict[str, Any]) -> dict[str, Any] | None:
-        return self.db[collection].find_one(query)
+    async def find_one(self, collection: str, query: dict[str, Any]) -> Mapping[str, Any] | None:
+        return await self.db[collection].find_one(query)
 
-    def insert_one(self, collection: str, document: dict[str, Any]) -> Any:
-        result: InsertOneResult = self.db[collection].insert_one(document)
+    async def insert_one(self, collection: str, document: dict[str, Any]) -> Any:
+        result: InsertOneResult = await self.db[collection].insert_one(document)
         return result.inserted_id
 
-    def upsert_results(
+    async def upsert_results(
         self, collection: str, address: str, results: list[dict[str, Any]]
     ) -> None:
-        self.db[collection].update_one(
+        await self.db[collection].update_one(
             {"address": address},
             {
                 "$setOnInsert": {"address": address},
@@ -123,18 +122,18 @@ class MongoRepository:
     ) -> None:
         pass
 
-    def replace_one(
+    async def replace_one(
         self, collection: str, query: dict[str, Any], document: dict[str, Any]
     ) -> int:
-        result: UpdateResult = self.db[collection].replace_one(query, document)
+        result: UpdateResult = await self.db[collection].replace_one(query, document)
         return result.matched_count
 
-    def update_one(
+    async def update_one(
         self, collection: str, query: dict[str, Any], update: dict[str, Any]
     ) -> int:
-        result: UpdateResult = self.db[collection].update_one(query, update)
+        result: UpdateResult = await self.db[collection].update_one(query, update)
         return result.matched_count
 
-    def delete_one(self, collection: str, query: dict[str, Any]) -> int:
-        result: DeleteResult = self.db[collection].delete_one(query)
+    async def delete_one(self, collection: str, query: dict[str, Any]) -> int:
+        result: DeleteResult = await self.db[collection].delete_one(query)
         return result.deleted_count
