@@ -155,17 +155,18 @@ export default function CollectionsPage() {
                             <p className="text-gray-500 mt-2">Browse collections in the
                                 database.</p>
                         </div>
-                        <Button onClick={() => setIsCreating(true)} className="self-start sm:self-auto">
-                            <Plus size={16}/> New Collection
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => scanFileInputRef.current?.click()}
-                            disabled={scanImportMutation.isPending}
-                            className="self-start sm:self-auto"
-                        >
-                            <Upload size={16}/> Import Scan Data
-                        </Button>
+                        <div className="flex flex-col sm:flex-row gap-2 self-start sm:self-auto">
+                            <Button
+                                variant="outline"
+                                onClick={() => scanFileInputRef.current?.click()}
+                                disabled={scanImportMutation.isPending}
+                            >
+                                <Upload size={16}/> Import Scan Data
+                            </Button>
+                            <Button onClick={() => setIsCreating(true)}>
+                                <Plus size={16}/> New Collection
+                            </Button>
+                        </div>
                         <input
                             ref={scanFileInputRef}
                             type="file"
