@@ -49,22 +49,12 @@ function SidebarComponent() {
                 'flex flex-col h-screen bg-white border-r border-gray-200 transition-all duration-300 fixed lg:relative z-40 w-72',
                 mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
             )}>
-                <div
-                    className="flex items-center justify-between p-4 border-b border-gray-200 h-16">
-                    <Link href="/" className="flex items-center gap-3 min-w-0">
-                        <img src="/favicon-96x96.png" alt="MongoGUI" className="h-9 w-9 rounded-xl shadow-sm"/>
-                        <span
-                            className="font-bold text-xl text-blue-700 truncate">MongoGUI</span>
-                    </Link>
-                    <div className="flex items-center gap-1">
-                        <button
-                            onClick={() => setMobileOpen(false)}
-                            className="lg:hidden p-1.5 hover:bg-gray-200 rounded-lg text-gray-500"
-                        >
-                            <X size={22}/>
-                        </button>
-                    </div>
-                </div>
+                <button
+                    onClick={() => setMobileOpen(false)}
+                    className="lg:hidden absolute top-4 right-4 p-1.5 hover:bg-gray-200 rounded-lg text-gray-500"
+                >
+                    <X size={22}/>
+                </button>
 
                 <nav className="flex-1 overflow-y-auto py-6">
                     {navItems.map((item) => {
