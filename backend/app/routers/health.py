@@ -12,7 +12,7 @@ def health() -> dict[str, str]:
 
 
 @router.get("/ready")
-def ready(client: MongoClientDep) -> dict[str, str]:
-    if not ping(client):
+async def ready(client: MongoClientDep) -> dict[str, str]:
+    if not await ping(client):
         raise HTTPException(status_code=503, detail="MongoDB недоступна")
     return {"status": "ok"}
