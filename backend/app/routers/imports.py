@@ -10,10 +10,10 @@ router = APIRouter(prefix="/api")
 
 
 @router.post("/imports", response_model=ImportSummary, status_code=201)
-def import_documents(
+async def import_documents(
     payload: ImportPayload, service: ImportServiceDep
 ) -> ImportSummary:
-    return service.import_records(payload)
+    return await service.import_records(payload)
 
 
 @router.post("/imports/files", response_model=ImportSummary, status_code=201)
