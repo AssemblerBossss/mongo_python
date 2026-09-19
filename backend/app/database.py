@@ -1,7 +1,7 @@
 from functools import lru_cache
 
-from pymongo import MongoClient
-from pymongo.database import Database
+from pymongo import AsyncMongoClient
+from pymongo.asynchronous.database import AsyncDatabase
 from pymongo.errors import PyMongoError
 
 from app.config import get_settings
@@ -19,22 +19,22 @@ def _build_connection_string(settings) -> str:
 
 
 @lru_cache
-def get_mongo_client() -> MongoClient:
+def get_mongo_client() -> AsyncMongoClient:
     settings = get_settings()
-    return MongoClient(
+    return AsyncMongoClient(
         _build_connection_string(settings), serverSelectionTimeoutMS=5000
     )
 
 
-def get_database() -> Database:
+def get_database() -> AsyncDatabase:
     settings = get_settings()
     return get_mongo_client()[settings.mongo_db]
 
 
-def ping(client: MongoClient) -> bool:
+async def ping(client: AsyncMongoClient) -> bool:
     """Проверяет доступность MongoDB (используется в /ready)."""
     try:
-        client.admin.command("ping")
+        await client.admin.command("ping")
         return True
     except PyMongoError:
         return False

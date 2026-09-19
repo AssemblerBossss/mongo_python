@@ -38,6 +38,10 @@ class InvalidImportFileError(Exception):
     """Загруженный файл не является валидным JSON со списком результатов сканирования."""
 
 
+class IndexNotFoundError(Exception):
+    """Индекс с таким именем не найден в коллекции."""
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(InvalidObjectIdError)
     async def handle_invalid_object_id(
@@ -72,6 +76,12 @@ def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(DocumentNotFoundError)
     async def handle_not_found(
         request: Request, exc: DocumentNotFoundError
+    ) -> JSONResponse:
+        return _error_response(request, 404, str(exc))
+
+    @app.exception_handler(IndexNotFoundError)
+    async def handle_index_not_found(
+        request: Request, exc: IndexNotFoundError
     ) -> JSONResponse:
         return _error_response(request, 404, str(exc))
 

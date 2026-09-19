@@ -8,5 +8,5 @@ router = APIRouter(prefix="/api")
 
 
 @router.get("/server-stats")
-def get_server_stats(service: MongoServiceDep) -> dict[str, Any]:
-    return service.server_stats()
+async def get_server_stats(service: MongoServiceDep) -> dict[str, Any]:
+    return await service.server_stats()

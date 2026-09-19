@@ -17,13 +17,20 @@ class FieldInfo(BaseModel):
     types: list[str]
 
 
+class DocumentsPagination(BaseModel):
+    """Метаданные пагинации для страницы документов."""
+
+    total: int
+    pages: int
+    page: int
+    limit: int
+
+
 class DocumentsPage(BaseModel):
     """Страница документов с пагинацией."""
 
-    items: list[dict[str, Any]]
-    total: int
-    skip: int
-    limit: int
+    documents: list[dict[str, Any]]
+    pagination: DocumentsPagination
 
 
 class CreateCollectionRequest(BaseModel):
@@ -60,3 +67,18 @@ class FilterField(BaseModel):
     operators: list[FilterOperator]
     enumerable: bool
     values: list[Any] | None = None
+
+
+class IndexInfo(BaseModel):
+    """Информация об индексе коллекции."""
+
+    name: str
+    key: dict[str, Any]
+    unique: bool
+    sparse: bool = False
+    expireAfterSeconds: int | None = None
+
+
+class CreateIndexRequest(BaseModel):
+    keys: dict[str, int] = Field(min_length=1)
+    options: dict[str, Any] = Field(default_factory=dict)

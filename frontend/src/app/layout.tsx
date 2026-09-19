@@ -36,7 +36,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const nonce = (await headers()).get('x-nonce') ?? undefined;
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body className="font-sans">
         <Providers nonce={nonce}>{children}</Providers>
       </body>
