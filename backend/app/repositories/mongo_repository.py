@@ -1,12 +1,13 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from collections.abc import MutableMapping, Mapping
 from typing import Any
 
+
+from pymongo import UpdateOne
 from pymongo.asynchronous.database import AsyncDatabase
 from pymongo.results import (
     DeleteResult,
-    InsertManyResult,
     InsertOneResult,
     UpdateResult,
 )
@@ -43,7 +44,7 @@ class MongoRepository:
     async def db_stats(self) -> dict[str, Any]:
         return await self.db.command("dbStats")
 
-    # ---------- Документы ----------
+    # ---------- Индексы ----------
 
     async def create_index(
         self, collection: str, keys: str | list[tuple[str, int]], **kwargs: Any
@@ -56,6 +57,8 @@ class MongoRepository:
 
     async def drop_index(self, collection: str, index_name: str) -> None:
         await self.db[collection].drop_index(index_name)
+
+    # ---------- Документы ----------
 
     async def find(
         self,
@@ -96,9 +99,13 @@ class MongoRepository:
     async def sample_documents(
         self, collection: str, size: int, max_time_ms: int
     ) -> list[dict[str, Any]]:
-        return await self.aggregate(collection, [{"$sample": {"size": size}}], max_time_ms)
+        return await self.aggregate(
+            collection, [{"$sample": {"size": size}}], max_time_ms
+        )
 
-    async def find_one(self, collection: str, query: dict[str, Any]) -> Mapping[str, Any] | None:
+    async def find_one(
+        self, collection: str, query: dict[str, Any]
+    ) -> Mapping[str, Any] | None:
         return await self.db[collection].find_one(query)
 
     async def insert_one(self, collection: str, document: dict[str, Any]) -> Any:
@@ -117,10 +124,22 @@ class MongoRepository:
             upsert=True,
         )
 
-    def upsert_results_bulk(
-        self, collection: str, address: str, results: list[dict[str, Any]]
+    async def upsert_results_bulk(
+        self, collection: str, by_address: dict[str, list[dict[str, Any]]]
     ) -> None:
-        pass
+        operations = [
+            UpdateOne(
+                {"address": address},
+                {
+                    "$setOnInsert": {"address": address},
+                    "$addToSet": {"results": {"$each": results}},
+                },
+                upsert=True,
+            )
+            for address, results in by_address.items()
+        ]
+        if operations:
+            await self.db[collection].bulk_write(operations, ordered=False)
 
     async def replace_one(
         self, collection: str, query: dict[str, Any], document: dict[str, Any]
