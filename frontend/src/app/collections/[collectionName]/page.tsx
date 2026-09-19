@@ -3,12 +3,6 @@
 import Sidebar from "@/src/components/custom/Sidebar.tsx";
 import Editor from "@/src/components/custom/MonacoEditorLazy.tsx";
 import {Button} from "@/src/components/ui/button.tsx";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu.tsx";
 import {Input} from "@/src/components/ui/input.tsx";
 import {useToast} from "@/src/components/ui/toast.tsx";
 import {cn} from "@/src/lib/utils.ts";
@@ -19,7 +13,6 @@ import {
     AlertTriangle,
     ArrowLeft,
     Check,
-    ChevronDown,
     ChevronLeft,
     ChevronRight,
     Copy,
@@ -33,7 +26,6 @@ import {
     Plus,
     RefreshCw,
     Search,
-    Star,
     Table2,
     Trash2,
     Upload,
@@ -48,7 +40,6 @@ import type {ChangeEvent, ReactNode} from "react";
 type JsonObject = Record<string, unknown>;
 type TabKey = "documents" | "aggregations" | "schema" | "indexes" | "stats";
 type ViewMode = "tree" | "json";
-type BulkMode = "update" | "delete" | null;
 
 const tabs: { key: TabKey; label: string; icon: typeof FileJson }[] = [
     {key: "documents", label: "Documents", icon: FileJson},
@@ -243,10 +234,6 @@ function CollectionPageContent() {
     const [jsonError, setJsonError] = useState<string | null>(null);
     const [deleteDocId, setDeleteDocId] = useState<string | null>(null);
     const [dropIndexName, setDropIndexName] = useState<string | null>(null);
-    const [bulkMode, setBulkMode] = useState<BulkMode>(null);
-    const [bulkUpdateInput, setBulkUpdateInput] = useState('{\n  "$set": {\n    \n  }\n}');
-    const [bulkConfirmInput, setBulkConfirmInput] = useState("");
-    const [bulkConfirmStep, setBulkConfirmStep] = useState(false);
 
     const [pipelineInput, setPipelineInput] = useState('[\n  { "$match": {} }\n]');
     const [aggregationResult, setAggregationResult] = useState<unknown>(null);
@@ -385,47 +372,6 @@ function CollectionPageContent() {
         onError: (error) => toast.error((error as Error).message),
     });
 
-    const bulkUpdateMutation = useMutation({
-        mutationFn: async () => {
-            const update = parseJsonObject(bulkUpdateInput, "Bulk update");
-            const res = await fetch(`${apiCollectionPath}/documents/bulk`, {
-                method: "PATCH",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({filter, update}),
-            });
-            const json = await res.json();
-            if (!res.ok) throw new Error(json.error || "Bulk update failed");
-            return json;
-        },
-        onSuccess: (json) => {
-            toast.success(json.message || "Bulk update completed");
-            setBulkMode(null);
-            queryClient.invalidateQueries({queryKey: ["documents", collectionName]});
-        },
-        onError: (error) => toast.error((error as Error).message),
-    });
-
-    const bulkDeleteMutation = useMutation({
-        mutationFn: async () => {
-            const res = await fetch(`${apiCollectionPath}/documents/bulk`, {
-                method: "DELETE",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({filter, confirm: bulkConfirmInput}),
-            });
-            const json = await res.json();
-            if (!res.ok) throw new Error(json.error || "Bulk delete failed");
-            return json;
-        },
-        onSuccess: (json) => {
-            toast.success(json.message || "Bulk delete completed");
-            setBulkMode(null);
-            setBulkConfirmStep(false);
-            setBulkConfirmInput("");
-            queryClient.invalidateQueries({queryKey: ["documents", collectionName]});
-        },
-        onError: (error) => toast.error((error as Error).message),
-    });
-
     const aggregateMutation = useMutation({
         mutationFn: async () => {
             const pipeline = parseJsonArray(pipelineInput, "Pipeline");
@@ -528,36 +474,6 @@ function CollectionPageContent() {
         a.remove();
         URL.revokeObjectURL(url);
         toast.success(`${format.toUpperCase()} export started.`);
-    }
-
-    function openBulk(mode: Exclude<BulkMode, null>) {
-        setBulkMode(mode);
-        setBulkConfirmStep(false);
-        setBulkConfirmInput("");
-        setJsonError(null);
-    }
-
-    function closeBulk() {
-        setBulkMode(null);
-        setBulkConfirmStep(false);
-        setBulkConfirmInput("");
-    }
-
-    function exportBulkCode(mode: "update" | "delete") {
-        const command = mode === "update"
-            ? `db.${collectionName}.updateMany(${filter}, ${bulkUpdateInput})`
-            : `db.${collectionName}.deleteMany(${filter})`;
-        const blob = new Blob([command], {type: "text/plain"});
-        const url = URL.createObjectURL(blob);
-        const a = Object.assign(document.createElement("a"), {
-            href: url,
-            download: `${collectionName}-bulk-${mode}.js`
-        });
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-        toast.success(`${mode === "update" ? "Bulk update" : "Bulk delete"} command exported.`);
     }
 
     function saveEditor() {
@@ -664,19 +580,6 @@ function CollectionPageContent() {
                                     <Button size="sm"
                                             onClick={() => fileInputRef.current?.click()}><Plus size={14}/> Add
                                         Data</Button>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button size="sm" variant="outline"><Layers
-                                                size={14}/> Bulk <ChevronDown size={14}/></Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="start">
-                                            <DropdownMenuItem onClick={() => openBulk("update")}>Bulk update
-                                                documents</DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => openBulk("delete")}
-                                                              className="text-red-600">Bulk delete
-                                                documents</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
                                 </div>
                             </div>
 
@@ -799,116 +702,6 @@ function CollectionPageContent() {
                     </div>
                 </div>
             </Modal>}
-
-            {bulkMode === "update" && <Modal title={`Update ${pagination.total} documents`} onClose={closeBulk}>
-                <p className="text-sm text-gray-500"><b>{collectionName}</b></p>
-                <div className="space-y-2">
-                    <div
-                        className="flex items-center gap-2 text-sm font-semibold text-gray-700">Filter <span
-                        className="rounded-full bg-gray-200 px-2 py-0.5 text-xs">applied</span>
-                    </div>
-                    <code
-                        className="block rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs">{filter === "{}" ? "None" : filter}</code>
-                </div>
-                <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-2">
-                        <h3 className="font-semibold text-gray-900">Update</h3>
-                        <Button variant="outline" size="sm" onClick={() => exportBulkCode("update")}><FileJson
-                            size={14}/> Export command</Button>
-                    </div>
-                    <EditorBox value={bulkUpdateInput} onChange={(value) => {
-                        setBulkUpdateInput(value);
-                        try {
-                            parseJsonObject(value, "Bulk update");
-                            setJsonError(null);
-                        } catch (error) {
-                            setJsonError((error as Error).message);
-                        }
-                    }} height="280px"/>
-                    {jsonError ? <ErrorBox message={jsonError}/> :
-                        <div className="flex items-center gap-2 text-sm text-emerald-600"><Check size={16}/> Valid
-                            update JSON</div>}
-                </div>
-                <div className="flex flex-col sm:flex-row sm:justify-between gap-2 pt-4">
-                    <Button variant="outline" onClick={() => toast.info({
-                        title: "Saved operations are coming soon",
-                        description: "Bulk operation presets will be added in a later version."
-                    })}><Star size={16}/> Save</Button>
-                    <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={closeBulk}>Cancel</Button>
-                        <Button onClick={() => bulkUpdateMutation.mutate()}
-                                disabled={!!jsonError || bulkUpdateMutation.isPending}>{bulkUpdateMutation.isPending ?
-                            <Loader2 className="animate-spin" size={16}/> :
-                            <Check size={16}/>} Update {pagination.total} documents</Button>
-                    </div>
-                </div>
-            </Modal>}
-
-            {bulkMode === "delete" &&
-                <Modal title={bulkConfirmStep ? "Are you absolutely sure?" : `Delete ${pagination.total} documents`}
-                       onClose={closeBulk}>
-                    {!bulkConfirmStep ? (
-                        <>
-                            <p className="text-sm text-gray-500"><b>{collectionName}</b></p>
-                            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-end">
-                                <div className="space-y-2">
-                                    <div
-                                        className="flex items-center gap-2 text-sm font-semibold text-gray-700">Filter <span
-                                        className="rounded-full bg-gray-200 px-2 py-0.5 text-xs">applied</span>
-                                    </div>
-                                    <code
-                                        className="block rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs">{filter === "{}" ? "None" : filter}</code>
-                                </div>
-                                <Button variant="outline" onClick={() => exportBulkCode("delete")}><FileJson
-                                    size={16}/> Export</Button>
-                            </div>
-                            <div className="space-y-3">
-                                <h3 className="font-semibold text-gray-900">Preview sample
-                                    of {Math.min(5, documents.length)} documents</h3>
-                                <div
-                                    className="max-h-[360px] overflow-auto rounded-xl border border-gray-200 bg-white p-4">
-                                    {documents.slice(0, 5).length ? documents.slice(0, 5).map((doc) => <div
-                                            key={String(doc._id)}
-                                            className="mb-4 border-b border-gray-200 pb-4 last:mb-0 last:border-0 last:pb-0">
-                                            <CollapsibleJsonView value={doc}/></div>) :
-                                        <EmptyBox text="No preview available."/>}
-                                </div>
-                            </div>
-                            <div className="flex justify-end gap-2 pt-4">
-                                <Button variant="outline" onClick={closeBulk}>Cancel</Button>
-                                <Button variant="destructive" onClick={() => setBulkConfirmStep(true)}><Trash2
-                                    size={16}/> Delete {pagination.total} documents</Button>
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div
-                                className="flex gap-3 rounded-lg bg-red-50 p-4 text-red-700">
-                                <AlertTriangle size={22}/> This action cannot be undone. This will permanently
-                                delete {pagination.total} documents.
-                            </div>
-                            <div
-                                className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
-                                The document list and count may not always reflect the latest updates in real time. This
-                                action applies to all documents matching the current filter, including documents not
-                                currently visible.
-                            </div>
-                            <div className="space-y-2">
-                                <label
-                                    className="text-sm font-semibold text-gray-700">Type <code>{collectionName}</code> to
-                                    confirm</label>
-                                <Input value={bulkConfirmInput} onChange={(e) => setBulkConfirmInput(e.target.value)}/>
-                            </div>
-                            <div className="flex justify-end gap-2 pt-4">
-                                <Button variant="outline" onClick={() => setBulkConfirmStep(false)}>Cancel</Button>
-                                <Button variant="destructive" onClick={() => bulkDeleteMutation.mutate()}
-                                        disabled={bulkConfirmInput !== collectionName || bulkDeleteMutation.isPending}>{bulkDeleteMutation.isPending ?
-                                    <Loader2 className="animate-spin" size={16}/> :
-                                    <Trash2 size={16}/>} Delete {pagination.total} documents</Button>
-                            </div>
-                        </>
-                    )}
-                </Modal>}
 
             {dropIndexName && <Modal title="Drop Index?" onClose={() => setDropIndexName(null)} maxWidth="max-w-xl">
                 <div className="flex gap-3 rounded-lg bg-red-50 p-4 text-red-700">
