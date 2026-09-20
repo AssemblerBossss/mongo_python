@@ -16,7 +16,6 @@ import {
     ChevronLeft,
     ChevronRight,
     Copy,
-    DatabaseZap,
     Download,
     Edit3,
     FileJson,
@@ -37,12 +36,11 @@ import {Suspense, useEffect, useRef, useState} from "react";
 import type {ChangeEvent, ReactNode} from "react";
 
 type JsonObject = Record<string, unknown>;
-type TabKey = "documents" | "schema" | "indexes" | "stats";
+type TabKey = "documents" | "indexes" | "stats";
 type ViewMode = "tree" | "json";
 
 const tabs: { key: TabKey; label: string; icon: typeof FileJson }[] = [
     {key: "documents", label: "Documents", icon: FileJson},
-    {key: "schema", label: "Schema", icon: DatabaseZap},
     {key: "indexes", label: "Indexes", icon: Layers},
     {key: "stats", label: "Stats", icon: Table2},
 ];
@@ -191,9 +189,9 @@ function CollapsibleJsonNode({
     );
 }
 
-function CollapsibleJsonView({value, dark = false}: { value: unknown; dark?: boolean }) {
+function CollapsibleJsonView({value}: { value: unknown }) {
     return (
-        <div className={cn("font-mono text-xs", dark ? "text-gray-100" : "text-gray-800")}>
+        <div className="font-mono text-xs text-gray-800">
             <CollapsibleJsonNode value={value}/>
         </div>
     );
@@ -234,7 +232,6 @@ function CollectionPageContent() {
 
     const [indexKeys, setIndexKeys] = useState('{\n  "fieldName": 1\n}');
     const [indexOptions, setIndexOptions] = useState('{\n  "name": "fieldName_1"\n}');
-    const [schemaResult, setSchemaResult] = useState<unknown>(null);
 
     useEffect(() => {
         setFilterInput(filter);
@@ -432,24 +429,6 @@ function CollectionPageContent() {
             toast.success("Index dropped successfully.");
             setDropIndexName(null);
             queryClient.invalidateQueries({queryKey: ["indexes", collectionName]});
-        },
-        onError: (error) => toast.error((error as Error).message),
-    });
-
-    const schemaMutation = useMutation({
-        mutationFn: async () => {
-            const res = await fetch(`${apiCollectionPath}/schema`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({sampleSize: 500}),
-            });
-            const json = await res.json();
-            if (!res.ok) throw new Error(json.error || "Schema analysis failed");
-            return json;
-        },
-        onSuccess: (result) => {
-            toast.success("Schema analysis completed.");
-            setSchemaResult(result);
         },
         onError: (error) => toast.error((error as Error).message),
     });
@@ -658,15 +637,6 @@ function CollectionPageContent() {
                         </section>
                     )}
 
-                    {tab === "schema" && <ToolPanel title="Schema Analyzer"
-                                                    action={<Button onClick={() => schemaMutation.mutate()}
-                                                                    disabled={schemaMutation.isPending}><DatabaseZap
-                                                        size={16}/> Analyze Sample</Button>}>
-                        <p className="text-sm text-gray-500">Analyze a random sample of
-                            documents and show detected fields, types, presence, and examples.</p>
-                        <ResultBlock value={schemaResult} loading={schemaMutation.isPending}/>
-                    </ToolPanel>}
-
                     {tab === "indexes" && <ToolPanel title="Indexes"
                                                      action={<Button onClick={() => createIndexMutation.mutate()}
                                                                      disabled={createIndexMutation.isPending}><Plus
@@ -792,14 +762,6 @@ function ToolPanel({title, action, children}: { title: string; action?: ReactNod
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><h2
             className="text-xl font-bold text-gray-900">{title}</h2>{action}</div>
         {children}</section>;
-}
-
-function ResultBlock({value, loading}: { value: unknown; loading?: boolean }) {
-    if (loading) return <LoaderBlock text="Running…"/>;
-    if (!value) return <EmptyBox text="No result yet."/>;
-    return <div
-        className="max-h-[520px] overflow-auto rounded-xl border border-gray-200 bg-gray-950 p-4">
-        <CollapsibleJsonView value={value} dark/></div>;
 }
 
 type CollectionStats = {

@@ -8,7 +8,6 @@ from .common import (
     CollectionStats,
 )
 from .imports import ScanRecord, ImportPayload, AddressImportStats, ImportSummary
-from .query import SchemaAnalyzeRequest
 
 __all__ = [
     "CollectionInfo",
@@ -19,7 +18,6 @@ __all__ = [
     "ImportPayload",
     "AddressImportStats",
     "ImportSummary",
-    "SchemaAnalyzeRequest",
     "IndexInfo",
     "CreateIndexRequest",
     "CollectionStats",
