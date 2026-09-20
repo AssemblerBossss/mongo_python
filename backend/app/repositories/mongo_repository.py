@@ -80,14 +80,6 @@ class MongoRepository:
         cursor = self.db[collection].find().limit(limit)
         return await cursor.to_list()
 
-    async def distinct_values(
-        self, collection: str, field: str, limit: int
-    ) -> list[Any]:
-        pipeline = [{"$group": {"_id": f"${field}"}}, {"$limit": limit}]
-        cursor = await self.db[collection].aggregate(pipeline)
-        docs = await cursor.to_list()
-        return [doc["_id"] for doc in docs if doc["_id"] is not None]
-
     async def aggregate(
         self, collection: str, pipeline: list[dict[str, Any]], max_time_ms: int
     ) -> list[dict[str, Any]]:

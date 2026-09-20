@@ -17,11 +17,9 @@ from app.repositories.mongo_repository import MongoRepository
 from app.schemas import (
     CollectionInfo,
     FieldInfo,
-    FilterField,
     IndexInfo,
     CollectionStats,
 )
-from app.services.filters import ENUM_THRESHOLD, build_field, merge_leaf_paths
 from app.services.query_safety import (
     MAX_SCHEMA_SAMPLE_SIZE,
     MONGO_QUERY_MAX_TIME_MS,
@@ -176,28 +174,6 @@ class MongoService:
         return [
             FieldInfo(name=name, types=sorted(types)) for name, types in fields.items()
         ]
-
-    async def list_filter_fields(
-        self, collection: str, sample_size: int = 200
-    ) -> list[FilterField]:
-        """Поля, доступные для фильтра: путь, типы, операторы, готовые значения для кнопок."""
-        samples = await self.repo.find_sample(collection, sample_size)
-        leaf_paths = merge_leaf_paths(samples)
-
-        import asyncio
-
-        paths_sorted = sorted(leaf_paths.items())
-        distinct_lists = await asyncio.gather(
-            *(
-                self.repo.distinct_values(collection, path, ENUM_THRESHOLD + 1)
-                for path, _ in paths_sorted
-            )
-        )
-        fields = [
-            build_field(path, types, distinct_values)
-            for (path, types), distinct_values in zip(paths_sorted, distinct_lists)
-        ]
-        return fields
 
     @staticmethod
     def _to_object_id(doc_id: str) -> ObjectId:
