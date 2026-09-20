@@ -5,7 +5,7 @@ from fastapi import APIRouter, Query
 
 from app.dependencies import MongoServiceDep
 from app.schemas.common import DocumentsPage, DocumentsPagination, FilterField
-from app.schemas.query import AggregateRequest, SchemaAnalyzeRequest
+from app.schemas.query import SchemaAnalyzeRequest
 from app.services.query_safety import parse_json_object
 
 router = APIRouter(prefix="/api")
@@ -81,15 +81,6 @@ async def patch_document(
 @router.delete("/collections/{name}/documents/{doc_id}", status_code=204)
 async def delete_document(name: str, doc_id: str, service: MongoServiceDep) -> None:
     await service.delete(collection=name, doc_id=doc_id)
-
-
-@router.post("/collections/{name}/aggregate")
-async def run_aggregation(
-    name: str, payload: AggregateRequest, service: MongoServiceDep
-) -> dict[str, Any]:
-    return await service.run_aggregation(
-        collection=name, pipeline=payload.pipeline, limit=payload.limit
-    )
 
 
 @router.post("/collections/{name}/schema")

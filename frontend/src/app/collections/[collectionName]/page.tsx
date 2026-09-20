@@ -7,7 +7,7 @@ import {Input} from "@/src/components/ui/input.tsx";
 import {useToast} from "@/src/components/ui/toast.tsx";
 import {cn} from "@/src/lib/utils.ts";
 import {convertToCSV} from "@/src/lib/data-utils.ts";
-import {parseQueryArray, parseQueryObject} from "@/src/lib/query-parser.ts";
+import {parseQueryObject} from "@/src/lib/query-parser.ts";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {
     AlertTriangle,
@@ -20,7 +20,6 @@ import {
     Download,
     Edit3,
     FileJson,
-    GitBranch,
     Layers,
     Loader2,
     Plus,
@@ -38,12 +37,11 @@ import {Suspense, useEffect, useRef, useState} from "react";
 import type {ChangeEvent, ReactNode} from "react";
 
 type JsonObject = Record<string, unknown>;
-type TabKey = "documents" | "aggregations" | "schema" | "indexes" | "stats";
+type TabKey = "documents" | "schema" | "indexes" | "stats";
 type ViewMode = "tree" | "json";
 
 const tabs: { key: TabKey; label: string; icon: typeof FileJson }[] = [
     {key: "documents", label: "Documents", icon: FileJson},
-    {key: "aggregations", label: "Aggregations", icon: GitBranch},
     {key: "schema", label: "Schema", icon: DatabaseZap},
     {key: "indexes", label: "Indexes", icon: Layers},
     {key: "stats", label: "Stats", icon: Table2},
@@ -62,10 +60,6 @@ function pretty(value: unknown) {
 
 function parseJsonObject(value: string, label: string) {
     return parseQueryObject(value, label);
-}
-
-function parseJsonArray(value: string, label: string) {
-    return parseQueryArray(value, label);
 }
 
 function Value({value}: { value: unknown }) {
@@ -233,8 +227,6 @@ function CollectionPageContent() {
     const [deleteDocId, setDeleteDocId] = useState<string | null>(null);
     const [dropIndexName, setDropIndexName] = useState<string | null>(null);
 
-    const [pipelineInput, setPipelineInput] = useState('[\n  { "$match": {} }\n]');
-    const [aggregationResult, setAggregationResult] = useState<unknown>(null);
     const [indexKeys, setIndexKeys] = useState('{\n  "fieldName": 1\n}');
     const [indexOptions, setIndexOptions] = useState('{\n  "name": "fieldName_1"\n}');
     const [schemaResult, setSchemaResult] = useState<unknown>(null);
@@ -366,25 +358,6 @@ function CollectionPageContent() {
             setDeleteDocId(null);
             setEditingDoc(null);
             queryClient.invalidateQueries({queryKey: ["documents", collectionName]});
-        },
-        onError: (error) => toast.error((error as Error).message),
-    });
-
-    const aggregateMutation = useMutation({
-        mutationFn: async () => {
-            const pipeline = parseJsonArray(pipelineInput, "Pipeline");
-            const res = await fetch(`${apiCollectionPath}/aggregate`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({pipeline, limit: 100}),
-            });
-            const json = await res.json();
-            if (!res.ok) throw new Error(json.error || "Aggregation failed");
-            return json;
-        },
-        onSuccess: (result) => {
-            toast.success("Aggregation completed.");
-            setAggregationResult(result);
         },
         onError: (error) => toast.error((error as Error).message),
     });
@@ -618,14 +591,6 @@ function CollectionPageContent() {
                                     )}
                         </section>
                     )}
-
-                    {tab === "aggregations" && <ToolPanel title="Aggregation Pipeline Builder"
-                                                          action={<Button onClick={() => aggregateMutation.mutate()}
-                                                                          disabled={aggregateMutation.isPending}><GitBranch
-                                                              size={16}/> Run Pipeline</Button>}>
-                        <EditorBox value={pipelineInput} onChange={setPipelineInput} height="260px"/>
-                        <ResultBlock value={aggregationResult} loading={aggregateMutation.isPending}/>
-                    </ToolPanel>}
 
                     {tab === "schema" && <ToolPanel title="Schema Analyzer"
                                                     action={<Button onClick={() => schemaMutation.mutate()}
