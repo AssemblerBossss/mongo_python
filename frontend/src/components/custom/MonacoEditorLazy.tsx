@@ -3,7 +3,6 @@
 import dynamic from 'next/dynamic';
 import { Loader2 } from 'lucide-react';
 import { loader } from '@monaco-editor/react';
-import type { ComponentProps } from 'react';
 
 /**
  * Monaco Editor configured for Next.js.
@@ -34,7 +33,5 @@ const MonacoEditor = dynamic(
     ),
   }
 );
-
-export type MonacoEditorLazyProps = ComponentProps<typeof MonacoEditor>;
 
 export default MonacoEditor;

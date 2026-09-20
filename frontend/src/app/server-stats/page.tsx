@@ -4,7 +4,6 @@ import Sidebar from "@/src/components/custom/Sidebar";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, Activity, Cpu, Database, HardDrive, Users, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function ServerStatsPage() {
   const { data: stats, isLoading, error } = useQuery({
