@@ -76,21 +76,6 @@ class MongoRepository:
             cursor = cursor.sort(sort)
         return await cursor.to_list()
 
-    async def aggregate(
-        self, collection: str, pipeline: list[dict[str, Any]], max_time_ms: int
-    ) -> list[dict[str, Any]]:
-        cursor = await self.db[collection].aggregate(
-            pipeline, maxTimeMS=max_time_ms, allowDiskUse=False
-        )
-        return await cursor.to_list()
-
-    async def sample_documents(
-        self, collection: str, size: int, max_time_ms: int
-    ) -> list[dict[str, Any]]:
-        return await self.aggregate(
-            collection, [{"$sample": {"size": size}}], max_time_ms
-        )
-
     async def find_one(
         self, collection: str, query: dict[str, Any]
     ) -> Mapping[str, Any] | None:

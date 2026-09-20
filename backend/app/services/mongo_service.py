@@ -19,11 +19,6 @@ from app.schemas import (
     IndexInfo,
     CollectionStats,
 )
-from app.services.query_safety import (
-    MAX_SCHEMA_SAMPLE_SIZE,
-    MONGO_QUERY_MAX_TIME_MS,
-    bounded_int,
-)
 from app.utils.serialization import serialize_document
 
 
@@ -119,48 +114,6 @@ class MongoService:
             },
         }
         return json.loads(json_util.dumps(payload))
-
-    async def analyze_schema(
-        self, collection: str, sample_size: int | None
-    ) -> dict[str, Any]:
-        await self._ensure_collection_exists(collection)
-
-        bounded_size = bounded_int(sample_size, 500, 1, MAX_SCHEMA_SAMPLE_SIZE)
-        docs = await self.repo.sample_documents(
-            collection=collection,
-            size=bounded_size,
-            max_time_ms=MONGO_QUERY_MAX_TIME_MS,
-        )
-
-        fields: dict[str, dict[str, Any]] = {}
-
-        def collect(doc: Any, prefix: str = "") -> None:
-            if not isinstance(doc, dict):
-                return
-            for key, value in doc.items():
-                path = f"{prefix}.{key}" if prefix else key
-                value_type = "null" if value is None else type(value).__name__
-                info = fields.setdefault(
-                    path, {"path": path, "count": 0, "types": {}, "examples": []}
-                )
-                info["count"] += 1
-                info["types"][value_type] = info["types"].get(value_type, 0) + 1
-                if len(info["examples"]) < 5:
-                    info["examples"].append(value)
-                if isinstance(value, dict):
-                    collect(value, path)
-
-        for doc in docs:
-            collect(doc)
-
-        result = [
-            {
-                **info,
-                "presence": round(info["count"] / len(docs) * 100, 2) if docs else 0,
-            }
-            for info in sorted(fields.values(), key=lambda f: f["path"])
-        ]
-        return json.loads(json_util.dumps({"sampleSize": len(docs), "fields": result}))
 
     @staticmethod
     def _to_object_id(doc_id: str) -> ObjectId:

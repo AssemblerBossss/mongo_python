@@ -5,9 +5,6 @@ from typing import Any
 
 from app.errors import InvalidFilterError
 
-MAX_SCHEMA_SAMPLE_SIZE = 1_000
-MONGO_QUERY_MAX_TIME_MS = 5_000
-
 # Операторы, позволяющие выполнять произвольный JS на сервере Mongo.
 BLOCKED_OPERATORS = {"$where", "$function", "$accumulator"}
 DANGEROUS_KEYS = {"__proto__", "prototype", "constructor"}
@@ -31,12 +28,6 @@ def assert_no_dangerous_operators(value: Any) -> None:
                 f"Оператор '{key}' запрещён из соображений безопасности"
             )
         assert_no_dangerous_operators(child)
-
-
-def bounded_int(value: int | None, fallback: int, minimum: int, maximum: int) -> int:
-    if value is None:
-        return fallback
-    return min(maximum, max(minimum, value))
 
 
 def parse_json_object(value: str | dict[str, Any] | None, label: str) -> dict[str, Any]:
