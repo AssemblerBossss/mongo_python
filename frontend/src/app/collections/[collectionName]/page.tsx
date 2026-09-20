@@ -217,6 +217,7 @@ function CollectionPageContent() {
     const project = searchParams.get("project") ?? "{}";
     const sort = searchParams.get("sort") ?? "{}";
     const address = searchParams.get("address") ?? "";
+    const searched = searchParams.get("searched") === "1";
 
     const hasAdvancedQuery = filter !== "{}" || project !== "{}" || sort !== "{}";
     const [searchMode, setSearchMode] = useState<"simple" | "advanced">(hasAdvancedQuery ? "advanced" : "simple");
@@ -251,6 +252,7 @@ function CollectionPageContent() {
 
     const documentsQuery = useQuery({
         queryKey: ["documents", collectionName, page, limit, filter, project, sort, address],
+        enabled: searched,
         queryFn: async () => {
             const p = new URLSearchParams({page: String(page), limit: String(limit)});
             if (address) {
@@ -310,7 +312,7 @@ function CollectionPageContent() {
             updateUrl({
                 tab: "documents", page: 1,
                 filter: filterInput, project: projectInput, sort: sortInput,
-                address: "",
+                address: "", searched: "1",
             });
         } catch (error) {
             toast.error((error as Error).message);
@@ -321,17 +323,26 @@ function CollectionPageContent() {
         setFilterInput("{}");
         setProjectInput("{}");
         setSortInput("{}");
-        updateUrl({tab: "documents", page: 1, limit: 20, filter: "{}", project: "{}", sort: "{}", address: ""});
+        updateUrl({
+            tab: "documents", page: 1, limit: 20,
+            filter: "{}", project: "{}", sort: "{}", address: "", searched: "",
+        });
     }
 
     function runAddressSearch() {
         const value = addressInput.trim();
-        updateUrl({tab: "documents", page: 1, address: value, filter: "{}", project: "{}", sort: "{}"});
+        updateUrl({
+            tab: "documents", page: 1, address: value,
+            filter: "{}", project: "{}", sort: "{}", searched: "1",
+        });
     }
 
     function resetAddressSearch() {
         setAddressInput("");
-        updateUrl({tab: "documents", page: 1, limit: 20, address: "", filter: "{}", project: "{}", sort: "{}"});
+        updateUrl({
+            tab: "documents", page: 1, limit: 20, address: "",
+            filter: "{}", project: "{}", sort: "{}", searched: "",
+        });
     }
 
     const importMutation = useMutation({
@@ -506,7 +517,7 @@ function CollectionPageContent() {
                             </div>
                             <div className="flex flex-wrap gap-2">
                                 <Button variant="outline" onClick={() => documentsQuery.refetch()}
-                                        disabled={documentsQuery.isFetching}>
+                                        disabled={!searched || documentsQuery.isFetching}>
                                     <RefreshCw size={16}
                                                className={cn(documentsQuery.isFetching && "animate-spin")}/> Reload
                                 </Button>
@@ -567,12 +578,6 @@ function CollectionPageContent() {
                                 </div>
                                 <Button onClick={runAddressSearch}><Search size={16}/> Search</Button>
                                 <Button variant="outline" onClick={resetAddressSearch}>Clear</Button>
-                                {address && documentsQuery.data?.address_type && (
-                                    <span
-                                        className="px-2 py-2 rounded-md bg-blue-50 text-blue-700 text-xs font-semibold uppercase self-center">
-                                        {documentsQuery.data.address_type}
-                                    </span>
-                                )}
                             </div>
                         ) : (
                             <>
@@ -592,25 +597,30 @@ function CollectionPageContent() {
 
                     {tab === "documents" && (
                         <section className="space-y-4">
-                            <div className="flex flex-col gap-3 text-sm text-gray-500">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                    <span>Showing <b
-                                        className="text-gray-900">{documents.length}</b> of <b
-                                        className="text-gray-900">{pagination.total}</b> documents</span>
-                                    <div className="flex items-center gap-2">
-                                        <Button variant="outline" size="icon" disabled={page <= 1}
-                                                onClick={() => updateUrl({page: page - 1})}><ChevronLeft
-                                            size={16}/></Button>
-                                        <span
-                                            className="px-3 py-2 rounded-lg border border-gray-200 bg-white">Page {page} / {pagination.pages}</span>
-                                        <Button variant="outline" size="icon" disabled={page >= pagination.pages}
-                                                onClick={() => updateUrl({page: page + 1})}><ChevronRight
-                                            size={16}/></Button>
+                            {searched && (
+                                <div className="flex flex-col gap-3 text-sm text-gray-500">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                        <span>Showing <b
+                                            className="text-gray-900">{documents.length}</b> of <b
+                                            className="text-gray-900">{pagination.total}</b> documents</span>
+                                        <div className="flex items-center gap-2">
+                                            <Button variant="outline" size="icon" disabled={page <= 1}
+                                                    onClick={() => updateUrl({page: page - 1})}><ChevronLeft
+                                                size={16}/></Button>
+                                            <span
+                                                className="px-3 py-2 rounded-lg border border-gray-200 bg-white">Page {page} / {pagination.pages}</span>
+                                            <Button variant="outline" size="icon" disabled={page >= pagination.pages}
+                                                    onClick={() => updateUrl({page: page + 1})}><ChevronRight
+                                                size={16}/></Button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
 
-                            {documentsQuery.isLoading ?
+                            {!searched ? (
+                                <EmptyBox
+                                    text="Use Search (Simple) or Find (Advanced) above to load documents."/>
+                            ) : documentsQuery.isLoading ?
                                 <LoaderBlock text="Loading documents…"/> : documentsQuery.error ? <ErrorBox
                                     message={(documentsQuery.error as Error).message}/> : (
                                         <div className="space-y-4">
