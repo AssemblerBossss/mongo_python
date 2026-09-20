@@ -47,29 +47,6 @@ class ErrorResponse(BaseModel):
     request_id: str | None = None
 
 
-FilterOperator = Literal[
-    "eq", "ne", "in", "contains", "exists", "gt", "gte", "lt", "lte", "between"
-]
-
-
-class FilterCondition(BaseModel):
-    """Одно условие фильтра: поле (dot-path) + оператор + значение."""
-
-    field: str
-    operator: FilterOperator
-    value: Any
-
-
-class FilterField(BaseModel):
-    """Описание одного поля, доступного для фильтра, для построения UI."""
-
-    field: str
-    types: list[str]
-    operators: list[FilterOperator]
-    enumerable: bool
-    values: list[Any] | None = None
-
-
 class IndexInfo(BaseModel):
     """Информация об индексе коллекции."""
 

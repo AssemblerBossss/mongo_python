@@ -5,18 +5,13 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Query
 
 from app.dependencies import MongoServiceDep
-from app.schemas.common import DocumentsPage, DocumentsPagination, FilterField
+from app.schemas.common import DocumentsPage, DocumentsPagination
 from app.schemas.query import SchemaAnalyzeRequest
 from app.services.address_classifier import classify_address
 from app.services.import_service import ADDRESS_FIELD
 from app.services.query_safety import parse_json_object
 
 router = APIRouter(prefix="/api")
-
-
-@router.get("/collections/{name}/filters", response_model=list[FilterField])
-async def get_filter_fields(name: str, service: MongoServiceDep) -> list[FilterField]:
-    return await service.list_filter_fields(name)
 
 
 @router.get("/collections/{name}/documents", response_model=DocumentsPage)
