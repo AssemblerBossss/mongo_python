@@ -70,13 +70,6 @@ async def get_document(
     return await service.get(name, doc_id)
 
 
-@router.put("/collections/{name}/documents/{doc_id}")
-async def replace_document(
-    name: str, doc_id: str, data: dict[str, Any], service: MongoServiceDep
-) -> dict[str, Any]:
-    return await service.replace(collection=name, doc_id=doc_id, data=data)
-
-
 @router.patch("/collections/{name}/documents/{doc_id}")
 async def patch_document(
     name: str, doc_id: str, data: dict[str, Any], service: MongoServiceDep

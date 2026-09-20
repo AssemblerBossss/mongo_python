@@ -14,10 +14,6 @@ class DocumentNotFoundError(Exception):
     """Документ или коллекция не найдены."""
 
 
-class CollectionNotFoundError(DocumentNotFoundError):
-    """Коллекция не найдена (специализация DocumentNotFoundError)."""
-
-
 class InvalidObjectIdError(Exception):
     """Некорректный формат идентификатора документа."""
 

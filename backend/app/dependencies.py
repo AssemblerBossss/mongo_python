@@ -4,21 +4,13 @@ from fastapi import Depends
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.database import AsyncDatabase
 
-from app.config import Settings, get_settings
 from app.database import get_database, get_mongo_client
 from app.repositories.mongo_repository import MongoRepository
 from app.services.import_service import ImportService
 from app.services.mongo_service import MongoService
 
 
-def get_settings_dep() -> Settings:
-    return get_settings()
-
-
-SettingsDep = Annotated[Settings, Depends(get_settings_dep)]
-
-
-def get_db(settings: SettingsDep) -> AsyncDatabase:
+def get_db() -> AsyncDatabase:
     return get_database()
 
 

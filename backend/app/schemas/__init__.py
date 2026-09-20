@@ -1,6 +1,5 @@
 from .common import (
     CollectionInfo,
-    FieldInfo,
     DocumentsPage,
     CreateCollectionRequest,
     ErrorResponse,
@@ -13,7 +12,6 @@ from .query import SchemaAnalyzeRequest
 
 __all__ = [
     "CollectionInfo",
-    "FieldInfo",
     "DocumentsPage",
     "CreateCollectionRequest",
     "ErrorResponse",

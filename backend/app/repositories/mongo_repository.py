@@ -76,10 +76,6 @@ class MongoRepository:
             cursor = cursor.sort(sort)
         return await cursor.to_list()
 
-    async def find_sample(self, collection: str, limit: int) -> list[Mapping[str, Any]]:
-        cursor = self.db[collection].find().limit(limit)
-        return await cursor.to_list()
-
     async def aggregate(
         self, collection: str, pipeline: list[dict[str, Any]], max_time_ms: int
     ) -> list[dict[str, Any]]:
@@ -104,18 +100,6 @@ class MongoRepository:
         result: InsertOneResult = await self.db[collection].insert_one(document)
         return result.inserted_id
 
-    async def upsert_results(
-        self, collection: str, address: str, results: list[dict[str, Any]]
-    ) -> None:
-        await self.db[collection].update_one(
-            {"address": address},
-            {
-                "$setOnInsert": {"address": address},
-                "$addToSet": {"results": {"$each": results}},
-            },
-            upsert=True,
-        )
-
     async def upsert_results_bulk(
         self, collection: str, by_address: dict[str, list[dict[str, Any]]]
     ) -> None:
@@ -132,12 +116,6 @@ class MongoRepository:
         ]
         if operations:
             await self.db[collection].bulk_write(operations, ordered=False)
-
-    async def replace_one(
-        self, collection: str, query: dict[str, Any], document: dict[str, Any]
-    ) -> int:
-        result: UpdateResult = await self.db[collection].replace_one(query, document)
-        return result.matched_count
 
     async def update_one(
         self, collection: str, query: dict[str, Any], update: dict[str, Any]

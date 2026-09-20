@@ -16,7 +16,6 @@ from app.errors import (
 from app.repositories.mongo_repository import MongoRepository
 from app.schemas import (
     CollectionInfo,
-    FieldInfo,
     IndexInfo,
     CollectionStats,
 )
@@ -163,18 +162,6 @@ class MongoService:
         ]
         return json.loads(json_util.dumps({"sampleSize": len(docs), "fields": result}))
 
-    async def infer_fields(
-        self, collection: str, sample_size: int = 25
-    ) -> list[FieldInfo]:
-        """Определяет набор полей и их типы по выборке документов."""
-        fields: dict[str, set[str]] = {}
-        for doc in await self.repo.find_sample(collection, sample_size):
-            for key, value in doc.items():
-                fields.setdefault(key, set()).add(type(value).__name__)
-        return [
-            FieldInfo(name=name, types=sorted(types)) for name, types in fields.items()
-        ]
-
     @staticmethod
     def _to_object_id(doc_id: str) -> ObjectId:
         try:
@@ -217,19 +204,6 @@ class MongoService:
         data.pop("_id", None)
         inserted_id = await self.repo.insert_one(collection, data)
         return await self.get(collection, str(inserted_id))
-
-    async def replace(
-        self, collection: str, doc_id: str, data: dict[str, Any]
-    ) -> dict[str, Any]:
-        object_id = self._to_object_id(doc_id)
-        data = dict(data)
-        data.pop("_id", None)
-        matched_count = await self.repo.replace_one(
-            collection, {"_id": object_id}, data
-        )
-        if matched_count == 0:
-            raise DocumentNotFoundError(f"Документ {doc_id} не найден")
-        return await self.get(collection, doc_id)
 
     async def patch(
         self, collection: str, doc_id: str, data: dict[str, Any]

@@ -20,7 +20,6 @@ class Settings(BaseSettings):
     cors_allow_origins: list[str] = ["http://localhost:5173"]
 
     log_level: str = "INFO"
-    environment: str = "local"
 
 
 @lru_cache
