@@ -40,7 +40,7 @@ async def test_new_service_result_appends_to_existing_document(
             "error": "",
         }
     ]
-    await repo.upsert_results("scan_results", "89.99.117.132", first)
+    await repo.upsert_results_bulk("scan_results", {"89.99.117.132": first})
 
     second = [
         {
@@ -51,7 +51,7 @@ async def test_new_service_result_appends_to_existing_document(
             "error": "",
         }
     ]
-    await repo.upsert_results("scan_results", "89.99.117.132", second)
+    await repo.upsert_results_bulk("scan_results", {"89.99.117.132": second})
 
     doc = await repo.find_one("scan_results", {"address": "89.99.117.132"})
     assert doc is not None
@@ -76,8 +76,8 @@ async def test_duplicate_result_from_same_service_is_not_added_twice(
             "error": "",
         }
     ]
-    await repo.upsert_results("scan_results", "89.99.117.132", record)
-    await repo.upsert_results("scan_results", "89.99.117.132", record)
+    await repo.upsert_results_bulk("scan_results", {"89.99.117.132": record})
+    await repo.upsert_results_bulk("scan_results", {"89.99.117.132": record})
 
     doc = await repo.find_one("scan_results", {"address": "89.99.117.132"})
     assert len(doc["results"]) == 1
@@ -99,7 +99,7 @@ async def test_concurrent_upsert_does_not_create_duplicate_documents(
 
     await asyncio.gather(
         *(
-            repo.upsert_results("scan_results", "89.99.117.132", record)
+            repo.upsert_results_bulk("scan_results", {"89.99.117.132": record})
             for _ in range(8)
         )
     )

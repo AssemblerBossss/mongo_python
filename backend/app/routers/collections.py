@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from app.dependencies import MongoServiceDep
 from app.schemas import CreateIndexRequest, IndexInfo, CollectionStats
-from app.schemas.common import CollectionInfo, CreateCollectionRequest, FieldInfo
+from app.schemas.common import CollectionInfo, CreateCollectionRequest
 
 router = APIRouter(prefix="/api")
 
@@ -43,11 +43,6 @@ async def create_index(
 @router.delete("/collections/{name}/indexes/{index_name}", status_code=204)
 async def drop_index(name: str, index_name: str, service: MongoServiceDep) -> None:
     await service.drop_index(collection=name, index_name=index_name)
-
-
-@router.get("/collections/{name}/fields", response_model=list[FieldInfo])
-async def get_fields(name: str, service: MongoServiceDep) -> list[FieldInfo]:
-    return await service.infer_fields(name)
 
 
 @router.get("/collections/{name}/stats", response_model=CollectionStats)

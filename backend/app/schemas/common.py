@@ -10,13 +10,6 @@ class CollectionInfo(BaseModel):
     count: int
 
 
-class FieldInfo(BaseModel):
-    """Информация о поле документа, выведенная по выборке данных."""
-
-    name: str
-    types: list[str]
-
-
 class DocumentsPagination(BaseModel):
     """Метаданные пагинации для страницы документов."""
 
