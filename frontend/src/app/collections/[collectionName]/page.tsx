@@ -81,7 +81,7 @@ function Value({value}: { value: unknown }) {
 
 function TreeNode({label, value}: { label: string; value: unknown }) {
     const expandable = value !== null && typeof value === "object";
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const keys = expandable ? Object.keys(value as JsonObject) : [];
     return (
         <div className="py-0.5">
@@ -128,16 +128,14 @@ function CollapsibleJsonNode({
                                  value,
                                  depth = 0,
                                  isLast = true,
-                                 defaultOpen = false,
                              }: {
     name?: string;
     value: unknown;
     depth?: number;
     isLast?: boolean;
-    defaultOpen?: boolean;
 }) {
     const expandable = value !== null && typeof value === "object";
-    const [open, setOpen] = useState(defaultOpen || depth === 0);
+    const [open, setOpen] = useState(true);
     const isArray = Array.isArray(value);
     const entries = expandable ? Object.entries(value as JsonObject) : [];
     const opener = isArray ? "[" : "{";
