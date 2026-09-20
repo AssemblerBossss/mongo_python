@@ -1,11 +1,14 @@
 import asyncio
+import re
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Query
 
 from app.dependencies import MongoServiceDep
 from app.schemas.common import DocumentsPage, DocumentsPagination, FilterField
-from app.schemas.query import AggregateRequest, SchemaAnalyzeRequest
+from app.schemas.query import SchemaAnalyzeRequest
+from app.services.address_classifier import classify_address
+from app.services.import_service import ADDRESS_FIELD
 from app.services.query_safety import parse_json_object
 
 router = APIRouter(prefix="/api")
@@ -23,10 +26,17 @@ async def get_documents(
     filter: Annotated[str, Query()] = "{}",
     project: Annotated[str, Query()] = "{}",
     sort: Annotated[str, Query()] = "{}",
+    address: Annotated[str | None, Query()] = None,
     page: Annotated[int, Query(ge=1)] = 1,
     limit: Annotated[int, Query(ge=1, le=200)] = 20,
 ) -> DocumentsPage:
-    query = parse_json_object(filter, "Filter")
+    address_type: str | None = None
+    if address is not None and address.strip():
+        address = address.strip()
+        address_type = classify_address(address)
+        query = {ADDRESS_FIELD: {"$regex": re.escape(address), "$options": "i"}}
+    else:
+        query = parse_json_object(filter, "Filter")
     projection = parse_json_object(project, "Project")
     sort_obj = parse_json_object(sort, "Sort")
     skip = (page - 1) * limit
@@ -41,6 +51,7 @@ async def get_documents(
     pages = max(1, -(-total // limit))
     return DocumentsPage(
         documents=documents,
+        address_type=address_type,
         pagination=DocumentsPagination(
             total=total, pages=pages, page=page, limit=limit
         ),
@@ -81,15 +92,6 @@ async def patch_document(
 @router.delete("/collections/{name}/documents/{doc_id}", status_code=204)
 async def delete_document(name: str, doc_id: str, service: MongoServiceDep) -> None:
     await service.delete(collection=name, doc_id=doc_id)
-
-
-@router.post("/collections/{name}/aggregate")
-async def run_aggregation(
-    name: str, payload: AggregateRequest, service: MongoServiceDep
-) -> dict[str, Any]:
-    return await service.run_aggregation(
-        collection=name, pipeline=payload.pipeline, limit=payload.limit
-    )
 
 
 @router.post("/collections/{name}/schema")

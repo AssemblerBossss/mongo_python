@@ -17,11 +17,9 @@ from app.repositories.mongo_repository import MongoRepository
 from app.schemas import CollectionInfo, FieldInfo, FilterField, IndexInfo
 from app.services.filters import ENUM_THRESHOLD, build_field, merge_leaf_paths
 from app.services.query_safety import (
-    MAX_PAGE_SIZE,
     MAX_SCHEMA_SAMPLE_SIZE,
     MONGO_QUERY_MAX_TIME_MS,
     bounded_int,
-    validate_pipeline,
 )
 from app.utils.serialization import serialize_document
 
@@ -114,22 +112,6 @@ class MongoService:
             },
         }
         return json.loads(json_util.dumps(payload))
-
-    async def run_aggregation(
-        self, collection: str, pipeline: list[dict], limit: int | None
-    ) -> dict[str, Any]:
-        await self._ensure_collection_exists(collection)
-
-        validate_pipeline(pipeline)
-        bounded_limit = bounded_int(limit, 50, 1, MAX_PAGE_SIZE)
-        preview_pipeline = [*pipeline, {"$limit": bounded_limit}]
-        documents = [
-            serialize_document(doc)
-            for doc in await self.repo.aggregate(
-                collection, preview_pipeline, MONGO_QUERY_MAX_TIME_MS
-            )
-        ]
-        return {"documents": documents, "count": len(documents), "limit": bounded_limit}
 
     async def analyze_schema(
         self, collection: str, sample_size: int | None

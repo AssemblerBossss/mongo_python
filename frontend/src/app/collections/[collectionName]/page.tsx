@@ -7,7 +7,7 @@ import {Input} from "@/src/components/ui/input.tsx";
 import {useToast} from "@/src/components/ui/toast.tsx";
 import {cn} from "@/src/lib/utils.ts";
 import {convertToCSV} from "@/src/lib/data-utils.ts";
-import {parseQueryArray, parseQueryObject} from "@/src/lib/query-parser.ts";
+import {parseQueryObject} from "@/src/lib/query-parser.ts";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {
     AlertTriangle,
@@ -20,7 +20,6 @@ import {
     Download,
     Edit3,
     FileJson,
-    GitBranch,
     Layers,
     Loader2,
     Plus,
@@ -38,12 +37,11 @@ import {Suspense, useEffect, useRef, useState} from "react";
 import type {ChangeEvent, ReactNode} from "react";
 
 type JsonObject = Record<string, unknown>;
-type TabKey = "documents" | "aggregations" | "schema" | "indexes" | "stats";
+type TabKey = "documents" | "schema" | "indexes" | "stats";
 type ViewMode = "tree" | "json";
 
 const tabs: { key: TabKey; label: string; icon: typeof FileJson }[] = [
     {key: "documents", label: "Documents", icon: FileJson},
-    {key: "aggregations", label: "Aggregations", icon: GitBranch},
     {key: "schema", label: "Schema", icon: DatabaseZap},
     {key: "indexes", label: "Indexes", icon: Layers},
     {key: "stats", label: "Stats", icon: Table2},
@@ -64,10 +62,6 @@ function parseJsonObject(value: string, label: string) {
     return parseQueryObject(value, label);
 }
 
-function parseJsonArray(value: string, label: string) {
-    return parseQueryArray(value, label);
-}
-
 function Value({value}: { value: unknown }) {
     if (value === null) return <span className="text-gray-400">null</span>;
     if (typeof value === "boolean") return <span
@@ -81,7 +75,7 @@ function Value({value}: { value: unknown }) {
 
 function TreeNode({label, value}: { label: string; value: unknown }) {
     const expandable = value !== null && typeof value === "object";
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const keys = expandable ? Object.keys(value as JsonObject) : [];
     return (
         <div className="py-0.5">
@@ -128,16 +122,14 @@ function CollapsibleJsonNode({
                                  value,
                                  depth = 0,
                                  isLast = true,
-                                 defaultOpen = false,
                              }: {
     name?: string;
     value: unknown;
     depth?: number;
     isLast?: boolean;
-    defaultOpen?: boolean;
 }) {
     const expandable = value !== null && typeof value === "object";
-    const [open, setOpen] = useState(defaultOpen || depth === 0);
+    const [open, setOpen] = useState(true);
     const isArray = Array.isArray(value);
     const entries = expandable ? Object.entries(value as JsonObject) : [];
     const opener = isArray ? "[" : "{";
@@ -224,7 +216,11 @@ function CollectionPageContent() {
     const filter = searchParams.get("filter") ?? "{}";
     const project = searchParams.get("project") ?? "{}";
     const sort = searchParams.get("sort") ?? "{}";
+    const address = searchParams.get("address") ?? "";
 
+    const hasAdvancedQuery = filter !== "{}" || project !== "{}" || sort !== "{}";
+    const [searchMode, setSearchMode] = useState<"simple" | "advanced">(hasAdvancedQuery ? "advanced" : "simple");
+    const [addressInput, setAddressInput] = useState(address);
     const [filterInput, setFilterInput] = useState(filter);
     const [projectInput, setProjectInput] = useState(project);
     const [sortInput, setSortInput] = useState(sort);
@@ -235,8 +231,6 @@ function CollectionPageContent() {
     const [deleteDocId, setDeleteDocId] = useState<string | null>(null);
     const [dropIndexName, setDropIndexName] = useState<string | null>(null);
 
-    const [pipelineInput, setPipelineInput] = useState('[\n  { "$match": {} }\n]');
-    const [aggregationResult, setAggregationResult] = useState<unknown>(null);
     const [indexKeys, setIndexKeys] = useState('{\n  "fieldName": 1\n}');
     const [indexOptions, setIndexOptions] = useState('{\n  "name": "fieldName_1"\n}');
     const [schemaResult, setSchemaResult] = useState<unknown>(null);
@@ -245,7 +239,8 @@ function CollectionPageContent() {
         setFilterInput(filter);
         setProjectInput(project);
         setSortInput(sort);
-    }, [filter, project, sort]);
+        setAddressInput(address);
+    }, [filter, project, sort, address]);
     useEffect(() => {
         if (!editingDoc) return;
         const {_id, ...rest} = editingDoc;
@@ -255,9 +250,16 @@ function CollectionPageContent() {
     }, [editingDoc]);
 
     const documentsQuery = useQuery({
-        queryKey: ["documents", collectionName, page, limit, filter, project, sort],
+        queryKey: ["documents", collectionName, page, limit, filter, project, sort, address],
         queryFn: async () => {
-            const p = new URLSearchParams({page: String(page), limit: String(limit), filter, project, sort});
+            const p = new URLSearchParams({page: String(page), limit: String(limit)});
+            if (address) {
+                p.set("address", address);
+            } else {
+                p.set("filter", filter);
+                p.set("project", project);
+                p.set("sort", sort);
+            }
             const res = await fetch(`${apiCollectionPath}/documents?${p}`);
             const json = await res.json();
             if (!res.ok) throw new Error(json.error || "Failed to fetch documents");
@@ -305,7 +307,11 @@ function CollectionPageContent() {
             parseJsonObject(filterInput, "Filter");
             parseJsonObject(projectInput, "Project");
             parseJsonObject(sortInput, "Sort");
-            updateUrl({tab: "documents", page: 1, filter: filterInput, project: projectInput, sort: sortInput});
+            updateUrl({
+                tab: "documents", page: 1,
+                filter: filterInput, project: projectInput, sort: sortInput,
+                address: "",
+            });
         } catch (error) {
             toast.error((error as Error).message);
         }
@@ -315,7 +321,17 @@ function CollectionPageContent() {
         setFilterInput("{}");
         setProjectInput("{}");
         setSortInput("{}");
-        updateUrl({tab: "documents", page: 1, limit: 20, filter: "{}", project: "{}", sort: "{}"});
+        updateUrl({tab: "documents", page: 1, limit: 20, filter: "{}", project: "{}", sort: "{}", address: ""});
+    }
+
+    function runAddressSearch() {
+        const value = addressInput.trim();
+        updateUrl({tab: "documents", page: 1, address: value, filter: "{}", project: "{}", sort: "{}"});
+    }
+
+    function resetAddressSearch() {
+        setAddressInput("");
+        updateUrl({tab: "documents", page: 1, limit: 20, address: "", filter: "{}", project: "{}", sort: "{}"});
     }
 
     const importMutation = useMutation({
@@ -368,25 +384,6 @@ function CollectionPageContent() {
             setDeleteDocId(null);
             setEditingDoc(null);
             queryClient.invalidateQueries({queryKey: ["documents", collectionName]});
-        },
-        onError: (error) => toast.error((error as Error).message),
-    });
-
-    const aggregateMutation = useMutation({
-        mutationFn: async () => {
-            const pipeline = parseJsonArray(pipelineInput, "Pipeline");
-            const res = await fetch(`${apiCollectionPath}/aggregate`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({pipeline, limit: 100}),
-            });
-            const json = await res.json();
-            if (!res.ok) throw new Error(json.error || "Aggregation failed");
-            return json;
-        },
-        onSuccess: (result) => {
-            toast.success("Aggregation completed.");
-            setAggregationResult(result);
         },
         onError: (error) => toast.error((error as Error).message),
     });
@@ -537,16 +534,16 @@ function CollectionPageContent() {
 
                     <section
                         className="rounded-xl border border-gray-200 bg-white p-4 space-y-3 shadow-sm">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                            <LabeledEditor label="Filter" value={filterInput} onChange={setFilterInput}/>
-                            <LabeledEditor label="Project" value={projectInput} onChange={setProjectInput}/>
-                            <LabeledEditor label="Sort" value={sortInput} onChange={setSortInput}/>
-                        </div>
-                        <div className="flex flex-wrap gap-2 justify-between">
-                            <div className="flex gap-2">
-                                <Button onClick={runFind}><Search
-                                    size={16}/> Find</Button>
-                                <Button variant="outline" onClick={resetQuery}>Reset</Button>
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
+                                <button type="button" onClick={() => setSearchMode("simple")}
+                                        className={cn("px-3 py-1.5 rounded-md text-sm font-medium transition-colors", searchMode === "simple" ? "bg-white shadow-sm text-gray-900" : "text-gray-500 hover:text-gray-700")}>
+                                    Simple
+                                </button>
+                                <button type="button" onClick={() => setSearchMode("advanced")}
+                                        className={cn("px-3 py-1.5 rounded-md text-sm font-medium transition-colors", searchMode === "advanced" ? "bg-white shadow-sm text-gray-900" : "text-gray-500 hover:text-gray-700")}>
+                                    Advanced
+                                </button>
                             </div>
                             <div className="flex gap-2">
                                 {(["tree", "json"] as ViewMode[]).map((mode) => <Button key={mode}
@@ -555,6 +552,40 @@ function CollectionPageContent() {
                                                                                                  className="capitalize">{mode}</Button>)}
                             </div>
                         </div>
+
+                        {searchMode === "simple" ? (
+                            <div className="flex flex-wrap items-end gap-2">
+                                <div className="flex-1 min-w-[240px] space-y-1">
+                                    <label
+                                        className="text-xs font-medium text-gray-500">Search by MAC / IP / Domain</label>
+                                    <Input value={addressInput}
+                                           onChange={(e: ChangeEvent<HTMLInputElement>) => setAddressInput(e.target.value)}
+                                           onKeyDown={(e) => e.key === "Enter" && runAddressSearch()}
+                                           placeholder="e.g. 192.168.1.1, AA:BB:CC:DD:EE:FF, example.com"/>
+                                </div>
+                                <Button onClick={runAddressSearch}><Search size={16}/> Search</Button>
+                                <Button variant="outline" onClick={resetAddressSearch}>Clear</Button>
+                                {address && documentsQuery.data?.address_type && (
+                                    <span
+                                        className="px-2 py-2 rounded-md bg-blue-50 text-blue-700 text-xs font-semibold uppercase self-center">
+                                        {documentsQuery.data.address_type}
+                                    </span>
+                                )}
+                            </div>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                                    <LabeledEditor label="Filter" value={filterInput} onChange={setFilterInput}/>
+                                    <LabeledEditor label="Project" value={projectInput} onChange={setProjectInput}/>
+                                    <LabeledEditor label="Sort" value={sortInput} onChange={setSortInput}/>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button onClick={runFind}><Search
+                                        size={16}/> Find</Button>
+                                    <Button variant="outline" onClick={resetQuery}>Reset</Button>
+                                </div>
+                            </>
+                        )}
                     </section>
 
                     {tab === "documents" && (
@@ -620,14 +651,6 @@ function CollectionPageContent() {
                                     )}
                         </section>
                     )}
-
-                    {tab === "aggregations" && <ToolPanel title="Aggregation Pipeline Builder"
-                                                          action={<Button onClick={() => aggregateMutation.mutate()}
-                                                                          disabled={aggregateMutation.isPending}><GitBranch
-                                                              size={16}/> Run Pipeline</Button>}>
-                        <EditorBox value={pipelineInput} onChange={setPipelineInput} height="260px"/>
-                        <ResultBlock value={aggregationResult} loading={aggregateMutation.isPending}/>
-                    </ToolPanel>}
 
                     {tab === "schema" && <ToolPanel title="Schema Analyzer"
                                                     action={<Button onClick={() => schemaMutation.mutate()}
