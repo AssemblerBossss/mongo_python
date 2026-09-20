@@ -216,7 +216,11 @@ function CollectionPageContent() {
     const filter = searchParams.get("filter") ?? "{}";
     const project = searchParams.get("project") ?? "{}";
     const sort = searchParams.get("sort") ?? "{}";
+    const address = searchParams.get("address") ?? "";
 
+    const hasAdvancedQuery = filter !== "{}" || project !== "{}" || sort !== "{}";
+    const [searchMode, setSearchMode] = useState<"simple" | "advanced">(hasAdvancedQuery ? "advanced" : "simple");
+    const [addressInput, setAddressInput] = useState(address);
     const [filterInput, setFilterInput] = useState(filter);
     const [projectInput, setProjectInput] = useState(project);
     const [sortInput, setSortInput] = useState(sort);
@@ -235,7 +239,8 @@ function CollectionPageContent() {
         setFilterInput(filter);
         setProjectInput(project);
         setSortInput(sort);
-    }, [filter, project, sort]);
+        setAddressInput(address);
+    }, [filter, project, sort, address]);
     useEffect(() => {
         if (!editingDoc) return;
         const {_id, ...rest} = editingDoc;
@@ -245,9 +250,16 @@ function CollectionPageContent() {
     }, [editingDoc]);
 
     const documentsQuery = useQuery({
-        queryKey: ["documents", collectionName, page, limit, filter, project, sort],
+        queryKey: ["documents", collectionName, page, limit, filter, project, sort, address],
         queryFn: async () => {
-            const p = new URLSearchParams({page: String(page), limit: String(limit), filter, project, sort});
+            const p = new URLSearchParams({page: String(page), limit: String(limit)});
+            if (address) {
+                p.set("address", address);
+            } else {
+                p.set("filter", filter);
+                p.set("project", project);
+                p.set("sort", sort);
+            }
             const res = await fetch(`${apiCollectionPath}/documents?${p}`);
             const json = await res.json();
             if (!res.ok) throw new Error(json.error || "Failed to fetch documents");
@@ -295,7 +307,11 @@ function CollectionPageContent() {
             parseJsonObject(filterInput, "Filter");
             parseJsonObject(projectInput, "Project");
             parseJsonObject(sortInput, "Sort");
-            updateUrl({tab: "documents", page: 1, filter: filterInput, project: projectInput, sort: sortInput});
+            updateUrl({
+                tab: "documents", page: 1,
+                filter: filterInput, project: projectInput, sort: sortInput,
+                address: "",
+            });
         } catch (error) {
             toast.error((error as Error).message);
         }
@@ -305,7 +321,17 @@ function CollectionPageContent() {
         setFilterInput("{}");
         setProjectInput("{}");
         setSortInput("{}");
-        updateUrl({tab: "documents", page: 1, limit: 20, filter: "{}", project: "{}", sort: "{}"});
+        updateUrl({tab: "documents", page: 1, limit: 20, filter: "{}", project: "{}", sort: "{}", address: ""});
+    }
+
+    function runAddressSearch() {
+        const value = addressInput.trim();
+        updateUrl({tab: "documents", page: 1, address: value, filter: "{}", project: "{}", sort: "{}"});
+    }
+
+    function resetAddressSearch() {
+        setAddressInput("");
+        updateUrl({tab: "documents", page: 1, limit: 20, address: "", filter: "{}", project: "{}", sort: "{}"});
     }
 
     const importMutation = useMutation({
@@ -508,16 +534,16 @@ function CollectionPageContent() {
 
                     <section
                         className="rounded-xl border border-gray-200 bg-white p-4 space-y-3 shadow-sm">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                            <LabeledEditor label="Filter" value={filterInput} onChange={setFilterInput}/>
-                            <LabeledEditor label="Project" value={projectInput} onChange={setProjectInput}/>
-                            <LabeledEditor label="Sort" value={sortInput} onChange={setSortInput}/>
-                        </div>
-                        <div className="flex flex-wrap gap-2 justify-between">
-                            <div className="flex gap-2">
-                                <Button onClick={runFind}><Search
-                                    size={16}/> Find</Button>
-                                <Button variant="outline" onClick={resetQuery}>Reset</Button>
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
+                                <button type="button" onClick={() => setSearchMode("simple")}
+                                        className={cn("px-3 py-1.5 rounded-md text-sm font-medium transition-colors", searchMode === "simple" ? "bg-white shadow-sm text-gray-900" : "text-gray-500 hover:text-gray-700")}>
+                                    Simple
+                                </button>
+                                <button type="button" onClick={() => setSearchMode("advanced")}
+                                        className={cn("px-3 py-1.5 rounded-md text-sm font-medium transition-colors", searchMode === "advanced" ? "bg-white shadow-sm text-gray-900" : "text-gray-500 hover:text-gray-700")}>
+                                    Advanced
+                                </button>
                             </div>
                             <div className="flex gap-2">
                                 {(["tree", "json"] as ViewMode[]).map((mode) => <Button key={mode}
@@ -526,6 +552,40 @@ function CollectionPageContent() {
                                                                                                  className="capitalize">{mode}</Button>)}
                             </div>
                         </div>
+
+                        {searchMode === "simple" ? (
+                            <div className="flex flex-wrap items-end gap-2">
+                                <div className="flex-1 min-w-[240px] space-y-1">
+                                    <label
+                                        className="text-xs font-medium text-gray-500">Search by MAC / IP / Domain</label>
+                                    <Input value={addressInput}
+                                           onChange={(e: ChangeEvent<HTMLInputElement>) => setAddressInput(e.target.value)}
+                                           onKeyDown={(e) => e.key === "Enter" && runAddressSearch()}
+                                           placeholder="e.g. 192.168.1.1, AA:BB:CC:DD:EE:FF, example.com"/>
+                                </div>
+                                <Button onClick={runAddressSearch}><Search size={16}/> Search</Button>
+                                <Button variant="outline" onClick={resetAddressSearch}>Clear</Button>
+                                {address && documentsQuery.data?.address_type && (
+                                    <span
+                                        className="px-2 py-2 rounded-md bg-blue-50 text-blue-700 text-xs font-semibold uppercase self-center">
+                                        {documentsQuery.data.address_type}
+                                    </span>
+                                )}
+                            </div>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                                    <LabeledEditor label="Filter" value={filterInput} onChange={setFilterInput}/>
+                                    <LabeledEditor label="Project" value={projectInput} onChange={setProjectInput}/>
+                                    <LabeledEditor label="Sort" value={sortInput} onChange={setSortInput}/>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button onClick={runFind}><Search
+                                        size={16}/> Find</Button>
+                                    <Button variant="outline" onClick={resetQuery}>Reset</Button>
+                                </div>
+                            </>
+                        )}
                     </section>
 
                     {tab === "documents" && (

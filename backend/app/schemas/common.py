@@ -31,6 +31,7 @@ class DocumentsPage(BaseModel):
 
     documents: list[dict[str, Any]]
     pagination: DocumentsPagination
+    address_type: Literal["ip", "mac", "domain"] | None = None
 
 
 class CreateCollectionRequest(BaseModel):
