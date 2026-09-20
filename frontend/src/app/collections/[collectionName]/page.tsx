@@ -375,9 +375,10 @@ function CollectionPageContent() {
     const deleteMutation = useMutation({
         mutationFn: async (id: string) => {
             const res = await fetch(`${apiCollectionPath}/documents/${encodeURIComponent(id)}`, {method: "DELETE"});
-            const json = await res.json();
-            if (!res.ok) throw new Error(json.error || "Delete failed");
-            return json;
+            if (!res.ok) {
+                const json = await res.json().catch(() => ({}));
+                throw new Error(json.error || "Delete failed");
+            }
         },
         onSuccess: () => {
             toast.success("Document deleted successfully.");
@@ -411,9 +412,10 @@ function CollectionPageContent() {
     const dropIndexMutation = useMutation({
         mutationFn: async (name: string) => {
             const res = await fetch(`${apiCollectionPath}/indexes/${encodeURIComponent(name)}`, {method: "DELETE"});
-            const json = await res.json();
-            if (!res.ok) throw new Error(json.error || "Drop index failed");
-            return json;
+            if (!res.ok) {
+                const json = await res.json().catch(() => ({}));
+                throw new Error(json.error || "Drop index failed");
+            }
         },
         onSuccess: () => {
             toast.success("Index dropped successfully.");
@@ -605,12 +607,6 @@ function CollectionPageContent() {
                                                 onClick={() => updateUrl({page: page + 1})}><ChevronRight
                                             size={16}/></Button>
                                     </div>
-                                </div>
-                                <div
-                                    className="flex flex-wrap items-center gap-2 rounded-xl border border-gray-200 bg-white p-2">
-                                    <Button size="sm"
-                                            onClick={() => fileInputRef.current?.click()}><Plus size={14}/> Add
-                                        Data</Button>
                                 </div>
                             </div>
 
