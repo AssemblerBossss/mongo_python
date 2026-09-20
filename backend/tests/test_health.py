@@ -16,7 +16,10 @@ def test_health_ok() -> None:
 
 
 def test_ready_ok(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(health_router, "ping", lambda _client: True)
+    async def fake_ping(_client: object) -> bool:
+        return True
+
+    monkeypatch.setattr(health_router, "ping", fake_ping)
     app = create_app()
     app.dependency_overrides[get_mongo_client] = lambda: MagicMock()
     client = TestClient(app)
@@ -26,7 +29,10 @@ def test_ready_ok(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_ready_fails(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(health_router, "ping", lambda _client: False)
+    async def fake_ping(_client: object) -> bool:
+        return False
+
+    monkeypatch.setattr(health_router, "ping", fake_ping)
     app = create_app()
     app.dependency_overrides[get_mongo_client] = lambda: MagicMock()
     client = TestClient(app)

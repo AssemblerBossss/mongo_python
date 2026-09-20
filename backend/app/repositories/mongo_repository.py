@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import MutableMapping, Mapping
 from typing import Any
 
-from pymongo.database import Database
+
+from pymongo import UpdateOne
+from pymongo.asynchronous.database import AsyncDatabase
 from pymongo.results import (
     DeleteResult,
-    InsertManyResult,
     InsertOneResult,
     UpdateResult,
 )
@@ -14,106 +16,98 @@ from pymongo.results import (
 class MongoRepository:
     """Инкапсулирует CRUD-операции pymongo над произвольной коллекцией."""
 
-    def __init__(self, db: Database) -> None:
+    def __init__(self, db: AsyncDatabase) -> None:
         self.db = db
 
     # ---------- Коллекции ----------
 
-    def list_collection_names(self) -> list[str]:
-        return self.db.list_collection_names()
+    async def list_collection_names(self) -> list[str]:
+        return await self.db.list_collection_names()
 
-    def create_collection(self, name: str) -> None:
-        self.db.create_collection(name)
+    async def create_collection(self, name: str) -> None:
+        await self.db.create_collection(name)
 
-    def drop_collection(self, name: str) -> None:
-        self.db.drop_collection(name)
+    async def drop_collection(self, name: str) -> None:
+        await self.db.drop_collection(name)
 
-    def collection_stats(self, name: str) -> dict[str, Any]:
-        return self.db.command("collStats", name)
+    async def collection_stats(self, name: str) -> dict[str, Any]:
+        return await self.db.command("collStats", name)
 
-    def count_documents(self, collection: str, query: dict[str, Any]) -> int:
-        return self.db[collection].count_documents(query)
+    async def count_documents(self, collection: str, query: dict[str, Any]) -> int:
+        return await self.db[collection].count_documents(query)
 
     # ---------- Сервер ----------
 
-    def server_status(self) -> dict[str, Any]:
-        return self.db.client.admin.command("serverStatus")
+    async def server_status(self) -> dict[str, Any]:
+        return await self.db.client.admin.command("serverStatus")
 
-    def db_stats(self) -> dict[str, Any]:
-        return self.db.command("dbStats")
+    async def db_stats(self) -> dict[str, Any]:
+        return await self.db.command("dbStats")
+
+    # ---------- Индексы ----------
+
+    async def create_index(
+        self, collection: str, keys: str | list[tuple[str, int]], **kwargs: Any
+    ) -> str:
+        return await self.db[collection].create_index(keys, **kwargs)
+
+    async def list_indexes(self, collection: str) -> list[MutableMapping[str, Any]]:
+        cursor = await self.db[collection].list_indexes()
+        return await cursor.to_list(length=None)
+
+    async def drop_index(self, collection: str, index_name: str) -> None:
+        await self.db[collection].drop_index(index_name)
 
     # ---------- Документы ----------
 
-    def create_index(
-        self, collection: str, keys: str | list[tuple[str, int]], **kwargs: Any
-    ) -> str:
-        return self.db[collection].create_index(keys, **kwargs)
-
-    def find(
+    async def find(
         self,
         collection: str,
         query: dict[str, Any],
-        sort_by: str,
-        sort_dir: int,
+        projection: dict[str, Any],
+        sort: list[tuple[str, int]],
         skip: int,
         limit: int,
-    ) -> list[dict[str, Any]]:
+    ) -> list[Mapping[str, Any]]:
         cursor = (
-            self.db[collection]
-            .find(query)
-            .sort(sort_by, sort_dir)
-            .skip(skip)
-            .limit(limit)
+            self.db[collection].find(query, projection or None).skip(skip).limit(limit)
         )
-        return list(cursor)
+        if sort:
+            cursor = cursor.sort(sort)
+        return await cursor.to_list()
 
-    def find_sample(self, collection: str, limit: int) -> list[dict[str, Any]]:
-        return list(self.db[collection].find().limit(limit))
+    async def find_one(
+        self, collection: str, query: dict[str, Any]
+    ) -> Mapping[str, Any] | None:
+        return await self.db[collection].find_one(query)
 
-    def distinct_values(self, collection: str, field: str, limit: int) -> list[Any]:
-        pipeline = [{"$group": {"_id": f"${field}"}}, {"$limit": limit}]
-        return [
-            doc["_id"]
-            for doc in self.db[collection].aggregate(pipeline)
-            if doc["_id"] is not None
-        ]
-
-    def find_one(self, collection: str, query: dict[str, Any]) -> dict[str, Any] | None:
-        return self.db[collection].find_one(query)
-
-    def insert_one(self, collection: str, document: dict[str, Any]) -> Any:
-        result: InsertOneResult = self.db[collection].insert_one(document)
+    async def insert_one(self, collection: str, document: dict[str, Any]) -> Any:
+        result: InsertOneResult = await self.db[collection].insert_one(document)
         return result.inserted_id
 
-    def upsert_results(
-        self, collection: str, address: str, results: list[dict[str, Any]]
+    async def upsert_results_bulk(
+        self, collection: str, by_address: dict[str, list[dict[str, Any]]]
     ) -> None:
-        self.db[collection].update_one(
-            {"address": address},
-            {
-                "$setOnInsert": {"address": address},
-                "$addToSet": {"results": {"$each": results}},
-            },
-            upsert=True,
-        )
+        operations = [
+            UpdateOne(
+                {"address": address},
+                {
+                    "$setOnInsert": {"address": address},
+                    "$addToSet": {"results": {"$each": results}},
+                },
+                upsert=True,
+            )
+            for address, results in by_address.items()
+        ]
+        if operations:
+            await self.db[collection].bulk_write(operations, ordered=False)
 
-    def upsert_results_bulk(
-        self, collection: str, address: str, results: list[dict[str, Any]]
-    ) -> None:
-        pass
-
-    def replace_one(
-        self, collection: str, query: dict[str, Any], document: dict[str, Any]
-    ) -> int:
-        result: UpdateResult = self.db[collection].replace_one(query, document)
-        return result.matched_count
-
-    def update_one(
+    async def update_one(
         self, collection: str, query: dict[str, Any], update: dict[str, Any]
     ) -> int:
-        result: UpdateResult = self.db[collection].update_one(query, update)
+        result: UpdateResult = await self.db[collection].update_one(query, update)
         return result.matched_count
 
-    def delete_one(self, collection: str, query: dict[str, Any]) -> int:
-        result: DeleteResult = self.db[collection].delete_one(query)
+    async def delete_one(self, collection: str, query: dict[str, Any]) -> int:
+        result: DeleteResult = await self.db[collection].delete_one(query)
         return result.deleted_count

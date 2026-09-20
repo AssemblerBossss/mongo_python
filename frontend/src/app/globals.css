@@ -1,28 +1,11 @@
 @import "tailwindcss";
 
-@variant dark (&:where(.dark, .dark *));
-
-@theme {
-  --color-compass-bg:      #001e2b;
-  --color-compass-sidebar: #001e2b;
-  --color-compass-border:  #3d4f58;
-  --color-compass-green:   #00ed64;
-  --color-compass-text:    #e8edeb;
-  --color-compass-muted:   #889397;
-}
-
 @layer base {
   body {
     background-color: #f1f5f9;
     color: #0f172a;
   }
 }
-
-.dark body {
-  background-color: var(--color-compass-bg);
-  color: var(--color-compass-text);
-}
-
 
 @layer utilities {
   .toast-enter {

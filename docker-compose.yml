@@ -11,6 +11,7 @@ services:
     volumes:
       - mongo_data:/data/db
       - ./datasets:/var/opt/mongo/datasets
+    command: mongod --quiet --logpath /dev/null
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
       interval: 10s

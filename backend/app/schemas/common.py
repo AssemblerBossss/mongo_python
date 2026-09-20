@@ -10,20 +10,21 @@ class CollectionInfo(BaseModel):
     count: int
 
 
-class FieldInfo(BaseModel):
-    """Информация о поле документа, выведенная по выборке данных."""
+class DocumentsPagination(BaseModel):
+    """Метаданные пагинации для страницы документов."""
 
-    name: str
-    types: list[str]
+    total: int
+    pages: int
+    page: int
+    limit: int
 
 
 class DocumentsPage(BaseModel):
     """Страница документов с пагинацией."""
 
-    items: list[dict[str, Any]]
-    total: int
-    skip: int
-    limit: int
+    documents: list[dict[str, Any]]
+    pagination: DocumentsPagination
+    address_type: Literal["ip", "mac", "domain"] | None = None
 
 
 class CreateCollectionRequest(BaseModel):
@@ -39,24 +40,32 @@ class ErrorResponse(BaseModel):
     request_id: str | None = None
 
 
-FilterOperator = Literal[
-    "eq", "ne", "in", "contains", "exists", "gt", "gte", "lt", "lte", "between"
-]
+class IndexInfo(BaseModel):
+    """Информация об индексе коллекции."""
+
+    name: str
+    key: dict[str, Any]
+    unique: bool
+    sparse: bool = False
+    expireAfterSeconds: int | None = None
 
 
-class FilterCondition(BaseModel):
-    """Одно условие фильтра: поле (dot-path) + оператор + значение."""
-
-    field: str
-    operator: FilterOperator
-    value: Any
+class CreateIndexRequest(BaseModel):
+    keys: dict[str, int] = Field(min_length=1)
+    options: dict[str, Any] = Field(default_factory=dict)
 
 
-class FilterField(BaseModel):
-    """Описание одного поля, доступного для фильтра, для построения UI."""
+class CollectionStats(BaseModel):
+    """Ключевые метрики коллекции"""
 
-    field: str
-    types: list[str]
-    operators: list[FilterOperator]
-    enumerable: bool
-    values: list[Any] | None = None
+    count: int
+    size: int
+    avgObjSize: int = 0
+    storageSize: int
+    totalIndexSize: int
+    totalSize: int
+    nindexes: int
+    capped: bool = False
+    sharded: bool = False  # приходит только в шардированном кластере
+    numOrphanDocs: int = 0  # приходит только в шардированном кластере
+    indexSizes: dict[str, int] = Field(default_factory=dict)

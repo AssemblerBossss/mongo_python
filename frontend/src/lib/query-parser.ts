@@ -28,19 +28,3 @@ export function parseQueryObject(value: string, label = 'Query'): JsonObject {
 
   return parsed as JsonObject;
 }
-
-export function parseQueryArray(value: string, label = 'Query'): unknown[] {
-  let parsed: unknown;
-
-  try {
-    parsed = JSON5.parse(value);
-  } catch (error) {
-    throw formatParseError(error, label);
-  }
-
-  if (!Array.isArray(parsed)) {
-    throw new Error(`${label} must be an array.`);
-  }
-
-  return parsed;
-}
