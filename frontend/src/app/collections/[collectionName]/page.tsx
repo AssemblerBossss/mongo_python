@@ -701,7 +701,7 @@ function CollectionPageContent() {
                     {tab === "stats" && <ToolPanel title="Collection Stats">
                         {statsQuery.isLoading ? <LoaderBlock text="Loading stats…"/> : statsQuery.error ?
                             <ErrorBox message={(statsQuery.error as Error).message}/> :
-                            <ResultBlock value={statsQuery.data?.stats}/>}
+                            <StatsGrid stats={statsQuery.data}/>}
                     </ToolPanel>}
                 </div>
             </main>
@@ -800,6 +800,75 @@ function ResultBlock({value, loading}: { value: unknown; loading?: boolean }) {
     return <div
         className="max-h-[520px] overflow-auto rounded-xl border border-gray-200 bg-gray-950 p-4">
         <CollapsibleJsonView value={value} dark/></div>;
+}
+
+type CollectionStats = {
+    count: number;
+    size: number;
+    avgObjSize: number;
+    storageSize: number;
+    totalIndexSize: number;
+    totalSize: number;
+    nindexes: number;
+    capped: boolean;
+    sharded: boolean;
+    numOrphanDocs: number;
+    indexSizes: Record<string, number>;
+};
+type StatKind = "number" | "bytes" | "bool";
+
+const statMetrics: { key: Exclude<keyof CollectionStats, "indexSizes">; label: string; hint: string; kind: StatKind }[] = [
+    {key: "count", label: "Documents", hint: "Total documents", kind: "number"},
+    {key: "size", label: "Data size", hint: "Uncompressed size of all documents", kind: "bytes"},
+    {key: "avgObjSize", label: "Avg document size", hint: "Average size of one document", kind: "bytes"},
+    {key: "storageSize", label: "Storage size", hint: "Space allocated on disk", kind: "bytes"},
+    {key: "totalIndexSize", label: "Indexes size", hint: "Space used by all indexes", kind: "bytes"},
+    {key: "totalSize", label: "Total size", hint: "Storage + indexes", kind: "bytes"},
+    {key: "nindexes", label: "Indexes", hint: "Number of indexes", kind: "number"},
+    {key: "capped", label: "Capped", hint: "Fixed-size collection", kind: "bool"},
+    {key: "sharded", label: "Sharded", hint: "Distributed across shards", kind: "bool"},
+    {key: "numOrphanDocs", label: "Orphan docs", hint: "Documents left after chunk migration", kind: "number"},
+];
+
+function formatBytes(bytes: number) {
+    if (!bytes) return "0 B";
+    const units = ["B", "KB", "MB", "GB", "TB"];
+    const i = Math.min(units.length - 1, Math.floor(Math.log(bytes) / Math.log(1024)));
+    return `${parseFloat((bytes / 1024 ** i).toFixed(2))} ${units[i]}`;
+}
+
+function formatStat(value: unknown, kind: StatKind) {
+    if (value === undefined || value === null) return "—";
+    if (kind === "bool") return value ? "Yes" : "No";
+    const num = Number(value);
+    if (!Number.isFinite(num)) return "—";
+    return kind === "bytes" ? formatBytes(num) : num.toLocaleString();
+}
+
+function StatsGrid({stats}: { stats?: CollectionStats }) {
+    if (!stats) return <EmptyBox text="No stats available."/>;
+    const indexSizes = Object.entries(stats.indexSizes ?? {});
+    return <div className="space-y-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
+            {statMetrics.map(({key, label, hint, kind}) => <div key={key} title={hint}
+                                                                className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                <div className="text-[11px] font-bold uppercase tracking-wide text-gray-500">{label}</div>
+                <div className="mt-1 text-2xl font-bold text-gray-900">{formatStat(stats[key], kind)}</div>
+                {kind === "bytes" &&
+                    <div className="text-xs text-gray-400">{Number(stats[key]).toLocaleString()} bytes</div>}
+            </div>)}
+        </div>
+        {indexSizes.length > 0 && <div>
+            <h3 className="font-semibold mb-2">Index sizes</h3>
+            <div className="divide-y divide-gray-100 rounded-xl border border-gray-200">
+                {indexSizes.map(([name, size]) => <div key={name}
+                                                       className="flex items-center justify-between px-4 py-2 text-sm">
+                    <code className="text-gray-700">{name}</code>
+                    <span className="font-mono text-gray-500">{formatBytes(size)}</span>
+                </div>)}
+            </div>
+        </div>}
+    </div>;
 }
 
 function LoaderBlock({text}: { text: string }) {

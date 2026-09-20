@@ -9,6 +9,7 @@ from .common import (
     FilterField,
     IndexInfo,
     CreateIndexRequest,
+    CollectionStats,
 )
 from .imports import ScanRecord, ImportPayload, AddressImportStats, ImportSummary
 from .query import SchemaAnalyzeRequest
@@ -29,4 +30,5 @@ __all__ = [
     "SchemaAnalyzeRequest",
     "IndexInfo",
     "CreateIndexRequest",
+    "CollectionStats",
 ]

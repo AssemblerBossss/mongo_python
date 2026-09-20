@@ -14,7 +14,13 @@ from app.errors import (
     IndexNotFoundError,
 )
 from app.repositories.mongo_repository import MongoRepository
-from app.schemas import CollectionInfo, FieldInfo, FilterField, IndexInfo
+from app.schemas import (
+    CollectionInfo,
+    FieldInfo,
+    FilterField,
+    IndexInfo,
+    CollectionStats,
+)
 from app.services.filters import ENUM_THRESHOLD, build_field, merge_leaf_paths
 from app.services.query_safety import (
     MAX_SCHEMA_SAMPLE_SIZE,
@@ -84,10 +90,14 @@ class MongoService:
             )
         await self.repo.drop_index(collection=collection, index_name=index_name)
 
-    async def collection_stats(self, collection: str) -> dict[str, Any]:
+    async def collection_stats(self, collection: str) -> CollectionStats:
         await self._ensure_collection_exists(collection)
         raw = await self.repo.collection_stats(collection)
-        return json.loads(json_util.dumps(raw))
+
+        raw.setdefault(
+            "totalSize", raw.get("storageSize", 0) + raw.get("totalIndexSize", 0)
+        )
+        return CollectionStats.model_validate(raw)
 
     async def server_stats(self) -> dict[str, Any]:
         server_status, db_stats = await asyncio.gather(
