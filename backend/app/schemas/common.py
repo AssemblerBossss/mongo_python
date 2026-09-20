@@ -83,3 +83,19 @@ class IndexInfo(BaseModel):
 class CreateIndexRequest(BaseModel):
     keys: dict[str, int] = Field(min_length=1)
     options: dict[str, Any] = Field(default_factory=dict)
+
+
+class CollectionStats(BaseModel):
+    """Ключевые метрики коллекции"""
+
+    count: int
+    size: int
+    avgObjSize: int = 0
+    storageSize: int
+    totalIndexSize: int
+    totalSize: int
+    nindexes: int
+    capped: bool = False
+    sharded: bool = False  # приходит только в шардированном кластере
+    numOrphanDocs: int = 0  # приходит только в шардированном кластере
+    indexSizes: dict[str, int] = Field(default_factory=dict)

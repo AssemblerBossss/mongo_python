@@ -1,9 +1,7 @@
-from typing import Any
-
 from fastapi import APIRouter
 
 from app.dependencies import MongoServiceDep
-from app.schemas import CreateIndexRequest, IndexInfo
+from app.schemas import CreateIndexRequest, IndexInfo, CollectionStats
 from app.schemas.common import CollectionInfo, CreateCollectionRequest, FieldInfo
 
 router = APIRouter(prefix="/api")
@@ -52,6 +50,6 @@ async def get_fields(name: str, service: MongoServiceDep) -> list[FieldInfo]:
     return await service.infer_fields(name)
 
 
-@router.get("/collections/{name}/stats")
-async def get_collection_stats(name: str, service: MongoServiceDep) -> dict[str, Any]:
-    return {"stats": await service.collection_stats(name)}
+@router.get("/collections/{name}/stats", response_model=CollectionStats)
+async def get_collection_stats(name: str, service: MongoServiceDep) -> CollectionStats:
+    return await service.collection_stats(name)

@@ -34,7 +34,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="Mongo Admin API",
         description="Универсальный REST API для администрирования произвольных коллекций MongoDB",
-        lifespan=lifespan
+        lifespan=lifespan,
     )
 
     app.add_middleware(
