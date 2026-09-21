@@ -1,18 +1,38 @@
 import asyncio
 from typing import Annotated
 
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, Request, File, UploadFile
 
 from app.dependencies import ImportServiceDep
-from app.schemas.imports import ImportPayload, ImportSummary
+from app.schemas.imports import ImportSummary, ImportPayload
 
 router = APIRouter(prefix="/api")
 
 
-@router.post("/imports", response_model=ImportSummary, status_code=201)
+def _import_request_schema() -> dict:
+    """JSON-схема тела /imports для Swagger (сам разбор идёт вручную через parse_file)."""
+    schema = ImportPayload.model_json_schema()
+    defs = schema.pop("$defs")
+    schema["additionalProperties"]["items"] = defs["ScanRecord"]
+    return schema
+
+
+@router.post(
+    "/imports",
+    response_model=ImportSummary,
+    status_code=201,
+    openapi_extra={
+        "requestBody": {
+            "required": True,
+            "content": {"application/json": {"schema": _import_request_schema()}},
+        }
+    },
+)
 async def import_documents(
-    payload: ImportPayload, service: ImportServiceDep
+    request: Request, service: ImportServiceDep
 ) -> ImportSummary:
+    body = await request.body()
+    payload = await asyncio.to_thread(service.parse_file, "тело запроса", body)
     return await service.import_records(payload)
 
 

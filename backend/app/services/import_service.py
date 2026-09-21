@@ -14,6 +14,7 @@ from app.schemas.imports import (
     ImportSummary,
     ScanRecord,
 )
+from app.utils.serialization import int64_safe_int
 
 ADDRESS_FIELD = "address"
 
@@ -39,7 +40,7 @@ class ImportService:
     def parse_file(self, filename: str, content: bytes) -> ImportPayload:
         """Разбирает один загруженный файл: JSON-объект {адрес: [результаты]}, как в /import."""
         try:
-            raw = json.loads(content)
+            raw = json.loads(content, parse_int=int64_safe_int)
         except json.JSONDecodeError as exc:
             raise InvalidImportFileError(
                 f"Файл '{filename}': некорректный JSON ({exc})"
