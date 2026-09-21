@@ -2,8 +2,6 @@ from typing import Any
 
 from pydantic import BaseModel, RootModel, field_validator, model_validator
 
-from app.utils.serialization import stringify_big_ints
-
 
 DEFAULT_INSTANSE = "Unknown Service"
 DEFAULT_DATA_TYPE = "Unknown data_type"
@@ -21,10 +19,9 @@ class ScanRecord(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def _normalize_keys(cls, values: Any) -> Any:
-        """Чинит опечатки в ключах и подставляет значения по умолчанию.
-
-        Отсутствующие или null instance/data_type
-        заменяются на DEFAULT_* (иначе null дал бы None вместо значения по умолчанию).
+        """
+        Чинит опечатки в ключах и подставляет значения по умолчанию.
+        Отсутствующие или null instance/data_type заменяются на DEFAULT_*.
         """
         if not isinstance(values, dict):
             return values
@@ -41,12 +38,11 @@ class ScanRecord(BaseModel):
 
     @field_validator("data", mode="after")
     @classmethod
-    def _bson_safe_ints(cls, data: Any) -> Any:
-        """Целые вне int64 (например simhash) -> строки, иначе MongoDB не запишет."""
+    def _empty_data_to_dict(cls, data: Any) -> Any:
+        """Строка или null вместо data -> пустой dict (запись потом отфильтруется)."""
         if isinstance(data, str) or data is None:
             return {}
-
-        return stringify_big_ints(data)
+        return data
 
 
 class ImportPayload(RootModel[dict[str, list[ScanRecord]]]):

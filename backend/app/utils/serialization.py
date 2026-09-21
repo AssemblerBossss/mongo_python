@@ -26,19 +26,13 @@ INT64_MIN = -(2**63)
 INT64_MAX = 2**63 - 1
 
 
-def stringify_big_ints(value: Any) -> Any:
-    """Рекурсивно заменяет целые вне диапазона int64 на строки.
+def int64_safe_int(literal: str) -> int | str:
+    """Хук для json.loads(parse_int=...): целое вне int64 -> строка.
 
-    MongoDB (BSON) хранит целые максимум в 64 бита со знаком, поэтому значения
-    вроде 64-битного simhash (uint64) при записи падают с OverflowError.
-    Строка сохраняет точное значение без потерь.
+    MongoDB (BSON) хранит целые максимум в 64 бита со знаком, поэтому
+    значения вроде 64-битного simhash (uint64) при записи падают с
+    OverflowError.
+    Вызывается на лету во время разбора JSON, отдельного обхода дерева нет.
     """
-    if isinstance(value, bool):
-        return value
-    if isinstance(value, int):
-        return str(value) if not INT64_MIN <= value <= INT64_MAX else value
-    if isinstance(value, list):
-        return [stringify_big_ints(v) for v in value]
-    if isinstance(value, dict):
-        return {key: stringify_big_ints(v) for key, v in value.items()}
-    return value
+    value = int(literal)
+    return value if INT64_MIN <= value <= INT64_MAX else literal
