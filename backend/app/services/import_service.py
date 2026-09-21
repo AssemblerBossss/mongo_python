@@ -33,8 +33,8 @@ class ImportService:
 
     @staticmethod
     def _is_valid(record: ScanRecord) -> bool:
-        """Запись валидна, если есть непустые данные и нет ошибки."""
-        return bool(record.data) and not record.error
+        """Проверяет, есть ли у записи валидные данные."""
+        return bool(record.result and record.data and not record.error)
 
     def parse_file(self, filename: str, content: bytes) -> ImportPayload:
         """Разбирает один загруженный файл: JSON-объект {адрес: [результаты]}, как в /import."""
