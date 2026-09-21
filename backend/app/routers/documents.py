@@ -4,6 +4,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Query
 
+from app.config import get_settings
 from app.dependencies import MongoServiceDep
 from app.schemas.common import DocumentsPage, DocumentsPagination
 from app.services.address_classifier import classify_address
@@ -32,6 +33,11 @@ async def get_documents(
     else:
         query = parse_json_object(filter, "Filter")
     projection = parse_json_object(project, "Project")
+    hidden_fields: list[str] = []
+    if not projection:
+        # Проекцию пользователя не трогаем; иначе скрываем тяжёлые поля на уровне БД.
+        hidden_fields = list(get_settings().list_hidden_fields)
+        projection = {field: 0 for field in hidden_fields}
     sort_obj = parse_json_object(sort, "Sort")
     skip = (page - 1) * limit
     documents, total = await service.find(
@@ -46,6 +52,7 @@ async def get_documents(
     return DocumentsPage(
         documents=documents,
         address_type=address_type,
+        hidden_fields=hidden_fields,
         pagination=DocumentsPagination(
             total=total, pages=pages, page=page, limit=limit
         ),
