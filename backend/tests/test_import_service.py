@@ -195,3 +195,37 @@ async def test_routes_different_address_types_to_different_collections(
     created_indexes = {call.args[0] for call in repo_mock.create_index.call_args_list}
     assert created_indexes == {"domains", "ip_addresses", "mac_addresses"}
     assert repo_mock.upsert_results_bulk.call_count == 3
+
+
+def test_parse_file_accepts_instanse_typo(service: ImportService) -> None:
+    payload = service.parse_file(
+        "a.json",
+        b'{"example.com": [{"instanse": "a", "result": true, "data_type": "ip", "data": {"x": 1}}]}',
+    )
+
+    assert payload.root["example.com"][0].instance == "a"
+
+
+def test_parse_file_prefers_correct_key_over_typo(service: ImportService) -> None:
+    payload = service.parse_file(
+        "a.json",
+        b'{"example.com": [{"instance": "ok", "instanse": "typo", "result": true, "data_type": "ip", "data": {"x": 1}}]}',
+    )
+
+    assert payload.root["example.com"][0].instance == "ok"
+
+
+def test_parse_file_stringifies_ints_beyond_int64(service: ImportService) -> None:
+    big = 2**64 - 1
+    content = (
+        b'{"example.com": [{"instance": "a", "result": true, "data_type": "ip", '
+        b'"data": {"l1": {"l2": {"l3": {"simhash": %d, "small": 5, "list": [%d, 1]}}}}}]}'
+        % (big, -(2**63) - 1)
+    )
+
+    data = service.parse_file("a.json", content).root["example.com"][0].data
+
+    inner = data["l1"]["l2"]["l3"]
+    assert inner["simhash"] == str(big)
+    assert inner["small"] == 5
+    assert inner["list"] == [str(-(2**63) - 1), 1]
