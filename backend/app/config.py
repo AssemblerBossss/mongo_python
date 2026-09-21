@@ -21,6 +21,10 @@ class Settings(BaseSettings):
 
     log_level: str = "INFO"
 
+    # Тяжёлые поля, которые не отдаются в списке документов (пути через точку).
+    # Полный документ доступен через GET /collections/{name}/documents/{id}.
+    list_hidden_fields: list[str] = ["results.data"]
+
 
 @lru_cache
 def get_settings() -> Settings:
