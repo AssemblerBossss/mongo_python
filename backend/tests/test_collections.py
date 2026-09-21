@@ -65,4 +65,3 @@ async def test_service_collection_stats_drops_extra_fields_and_computes_total() 
     assert stats.totalSize == 61440
     assert stats.sharded is False
     assert set(stats.model_dump()) == set(CollectionStats.model_fields)
-
