@@ -229,6 +229,11 @@ function CollectionPageContent() {
     const [jsonError, setJsonError] = useState<string | null>(null);
     const [deleteDocId, setDeleteDocId] = useState<string | null>(null);
     const [dropIndexName, setDropIndexName] = useState<string | null>(null);
+    // Полные версии документов, подгруженные по запросу (в списке тяжёлые поля скрыты).
+    // Привязаны к загруженным данным списка: при новой странице/обновлении сбрасываются.
+    const [fullDocsState, setFullDocsState] = useState<{ source: unknown; docs: Record<string, JsonObject> }>(
+        {source: null, docs: {}});
+    const [loadingDocId, setLoadingDocId] = useState<string | null>(null);
 
     const [indexKeys, setIndexKeys] = useState('{\n  "fieldName": 1\n}');
     const [indexOptions, setIndexOptions] = useState('{\n  "name": "fieldName_1"\n}');
@@ -250,6 +255,10 @@ function CollectionPageContent() {
     const documentsQuery = useQuery({
         queryKey: ["documents", collectionName, page, limit, filter, project, sort, address],
         enabled: searched,
+        // При листании показываем текущую страницу, пока грузится следующая (без «Loading…»).
+        // Данные другой коллекции не переиспользуем.
+        placeholderData: (previousData, previousQuery) =>
+            previousQuery?.queryKey[1] === collectionName ? previousData : undefined,
         queryFn: async () => {
             const p = new URLSearchParams({page: String(page), limit: String(limit)});
             if (address) {
@@ -289,6 +298,49 @@ function CollectionPageContent() {
     });
 
     const documents: JsonObject[] = documentsQuery.data?.documents ?? [];
+    const hiddenFields: string[] = documentsQuery.data?.hidden_fields ?? [];
+
+    const fullDocs: Record<string, JsonObject> =
+        fullDocsState.source === documentsQuery.data ? fullDocsState.docs : {};
+
+    async function resolveFullDocument(doc: JsonObject): Promise<JsonObject | null> {
+        const id = String(doc._id);
+        if (fullDocs[id]) return fullDocs[id];
+        if (hiddenFields.length === 0) return doc;
+        setLoadingDocId(id);
+        try {
+            const res = await fetch(`${apiCollectionPath}/documents/${encodeURIComponent(id)}`);
+            const json = await res.json();
+            if (!res.ok) throw new Error(json.detail || json.error || "Failed to load document");
+            const source = documentsQuery.data;
+            setFullDocsState((prev) => ({
+                source,
+                docs: {...(prev.source === source ? prev.docs : {}), [id]: json},
+            }));
+            return json as JsonObject;
+        } catch (error) {
+            toast.error((error as Error).message);
+            return null;
+        } finally {
+            setLoadingDocId(null);
+        }
+    }
+
+    async function cloneDocument(doc: JsonObject) {
+        const full = await resolveFullDocument(doc);
+        if (!full) return;
+        const {_id, ...clone} = full;
+        void _id;
+        navigator.clipboard?.writeText(pretty(clone));
+        toast.success("Document JSON copied.");
+    }
+
+    async function openEditor(doc: JsonObject) {
+        // В редактор всегда попадает полный документ: иначе при сохранении скрытые
+        // поля были бы перезаписаны урезанными данными.
+        const full = await resolveFullDocument(doc);
+        if (full) setEditingDoc(full);
+    }
     const pagination = documentsQuery.data?.pagination ?? {total: 0, pages: 1, page, limit};
 
     function updateUrl(next: Record<string, string | number>) {
@@ -581,7 +633,8 @@ function CollectionPageContent() {
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                         <span>Showing <b
                                             className="text-gray-900">{documents.length}</b> of <b
-                                            className="text-gray-900">{pagination.total}</b> documents</span>
+                                            className="text-gray-900">{pagination.total}</b> documents{hiddenFields.length > 0 &&
+                                            <span className="ml-2 text-xs text-gray-400">(hidden in list: {hiddenFields.join(", ")})</span>}</span>
                                         <div className="flex items-center gap-2">
                                             <Button variant="outline" size="icon" disabled={page <= 1}
                                                     onClick={() => updateUrl({page: page - 1})}><ChevronLeft
@@ -611,14 +664,22 @@ function CollectionPageContent() {
                                                         <code
                                                             className="text-xs truncate text-gray-600">_id: {String(doc._id)}</code>
                                                         <div className="flex gap-2">
-                                                            <Button variant="outline" size="sm" onClick={() => {
-                                                                const {_id, ...clone} = doc;
-                                                                void _id;
-                                                                navigator.clipboard?.writeText(pretty(clone));
-                                                                toast.success("Document JSON copied.");
-                                                            }}><Copy size={14}/> Clone JSON</Button>
+                                                            {hiddenFields.length > 0 && !fullDocs[String(doc._id)] && (
+                                                                <Button variant="outline" size="sm"
+                                                                        disabled={loadingDocId === String(doc._id)}
+                                                                        title={`Hidden in list: ${hiddenFields.join(", ")}`}
+                                                                        onClick={() => void resolveFullDocument(doc)}>
+                                                                    {loadingDocId === String(doc._id) ?
+                                                                        <Loader2 className="animate-spin" size={14}/> :
+                                                                        <FileJson size={14}/>} Show full</Button>
+                                                            )}
                                                             <Button variant="outline" size="sm"
-                                                                    onClick={() => setEditingDoc(doc)}><Edit3
+                                                                    disabled={loadingDocId === String(doc._id)}
+                                                                    onClick={() => void cloneDocument(doc)}><Copy
+                                                                size={14}/> Clone JSON</Button>
+                                                            <Button variant="outline" size="sm"
+                                                                    disabled={loadingDocId === String(doc._id)}
+                                                                    onClick={() => void openEditor(doc)}><Edit3
                                                                 size={14}/> Edit</Button>
                                                             <Button variant="outline" size="sm"
                                                                     onClick={() => setDeleteDocId(String(doc._id))}
@@ -627,8 +688,8 @@ function CollectionPageContent() {
                                                     </div>
                                                     <div
                                                         className="p-4 overflow-x-auto bg-white">{viewMode === "json" ?
-                                                        <CollapsibleJsonView value={doc}/> :
-                                                        <DocumentTree doc={doc}/>}</div>
+                                                        <CollapsibleJsonView value={fullDocs[String(doc._id)] ?? doc}/> :
+                                                        <DocumentTree doc={fullDocs[String(doc._id)] ?? doc}/>}</div>
                                                 </div>
                                             ))}
                                             {documents.length === 0 && <EmptyBox text="No documents found."/>}
