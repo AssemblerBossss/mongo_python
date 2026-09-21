@@ -4,36 +4,48 @@ from pydantic import BaseModel, RootModel, field_validator, model_validator
 
 from app.utils.serialization import stringify_big_ints
 
-# Опечатки ключей во входных файлах -> корректное имя поля.
-FIELD_TYPO_ALIASES = {"instanse": "instance"}
+
+DEFAULT_INSTANSE = "Unknown Service"
+DEFAULT_DATA_TYPE = "Unknown data_type"
 
 
 class ScanRecord(BaseModel):
     """Один результат сканирования домена."""
 
-    instance: str
+    instanse: str = DEFAULT_INSTANSE
     result: bool
-    data_type: str
-    data: dict[str, Any] = {}
+    data_type: str = DEFAULT_DATA_TYPE
+    data: Any = None
     error: str | None = None
 
     @model_validator(mode="before")
     @classmethod
-    def _fix_key_typos(cls, values: Any) -> Any:
-        """Исправляет известные опечатки в ключах (instanse -> instance)."""
+    def _normalize_keys(cls, values: Any) -> Any:
+        """Чинит опечатки в ключах и подставляет значения по умолчанию.
+
+        Отсутствующие или null instance/data_type
+        заменяются на DEFAULT_* (иначе null дал бы None вместо значения по умолчанию).
+        """
         if not isinstance(values, dict):
             return values
         fixed = dict(values)
-        for typo, correct in FIELD_TYPO_ALIASES.items():
-            if typo in fixed:
-                value = fixed.pop(typo)
-                fixed.setdefault(correct, value)
+
+        value = fixed.get("instanse")
+        if value is None or value == "":
+            fixed["instanse"] = DEFAULT_INSTANSE
+
+        value = fixed.get("data_type")
+        if value is None or value == "":
+            fixed["data_type"] = DEFAULT_DATA_TYPE
         return fixed
 
     @field_validator("data", mode="after")
     @classmethod
-    def _bson_safe_ints(cls, data: dict[str, Any]) -> dict[str, Any]:
+    def _bson_safe_ints(cls, data: Any) -> Any:
         """Целые вне int64 (например simhash) -> строки, иначе MongoDB не запишет."""
+        if isinstance(data, str) or data is None:
+            return {}
+
         return stringify_big_ints(data)
 
 

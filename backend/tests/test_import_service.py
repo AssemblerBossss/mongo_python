@@ -229,3 +229,28 @@ def test_parse_file_stringifies_ints_beyond_int64(service: ImportService) -> Non
     assert inner["simhash"] == str(big)
     assert inner["small"] == 5
     assert inner["list"] == [str(-(2**63) - 1), 1]
+
+
+def test_parse_file_uses_defaults_for_missing_or_null_fields(
+    service: ImportService,
+) -> None:
+    payload = service.parse_file(
+        "a.json",
+        b'{"example.com": ['
+        b'{"result": true, "data": {"x": 1}},'
+        b'{"instance": null, "data_type": null, "result": true, "data": {"x": 1}}'
+        b"]}",
+    )
+
+    for record in payload.root["example.com"]:
+        assert record.instance == "Unknown Service"
+        assert record.data_type == "Unknown data_type"
+
+
+def test_parse_file_typo_wins_over_default(service: ImportService) -> None:
+    payload = service.parse_file(
+        "a.json",
+        b'{"example.com": [{"instanse": "a", "result": true, "data": {"x": 1}}]}',
+    )
+
+    assert payload.root["example.com"][0].instance == "a"
