@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from app.errors import EmptyImportPayloadError, InvalidImportFileError
 from app.repositories.mongo_repository import MongoRepository
-from app.services.address_classifier import classify_address
+from app.services.address_classifier import classify_address, normalize_address
 from app.schemas.imports import (
     AddressImportStats,
     ImportPayload,
@@ -23,6 +23,7 @@ SCAN_COLLECTIONS = {
     "ip": "ip_addresses",
     "domain": "domains",
     "mac": "mac_addresses",
+    "base_station": "base_stations",
 }
 
 
@@ -70,13 +71,14 @@ class ImportService:
         return await self.import_records(payload)
 
     async def import_records(self, payload: ImportPayload) -> ImportSummary:
-        """Фильтрует записи и раскладывает их по ip_addresses/domains/mac_addresses."""
+        """Фильтрует записи и раскладывает их по ip_addresses/domains/mac_addresses/base_stations."""
         stats: list[AddressImportStats] = []
 
         # collection -> address -> results
         pending: dict[str, dict[str, list[dict]]] = {}
 
-        for address, records in payload.root.items():
+        for raw_address, records in payload.root.items():
+            address = normalize_address(raw_address)
             valid_records = [
                 record.model_dump() for record in records if self._is_valid(record)
             ]
@@ -91,7 +93,9 @@ class ImportService:
                 )
             )
             if valid_records:
-                pending.setdefault(collection, {})[address] = valid_records
+                pending.setdefault(collection, {}).setdefault(address, []).extend(
+                    valid_records
+                )
         if not pending:
             raise EmptyImportPayloadError(
                 "После фильтрации не осталось ни одной записи для импорта"

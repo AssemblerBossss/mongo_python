@@ -7,7 +7,7 @@ from fastapi import APIRouter, Query
 from app.config import get_settings
 from app.dependencies import MongoServiceDep
 from app.schemas.common import DocumentsPage, DocumentsPagination
-from app.services.address_classifier import classify_address
+from app.services.address_classifier import classify_address, normalize_address
 from app.services.import_service import ADDRESS_FIELD
 from app.services.query_safety import parse_json_object
 
@@ -27,7 +27,7 @@ async def get_documents(
 ) -> DocumentsPage:
     address_type: str | None = None
     if address is not None and address.strip():
-        address = address.strip()
+        address = normalize_address(address)
         address_type = classify_address(address)
         query = {ADDRESS_FIELD: {"$regex": re.escape(address), "$options": "i"}}
     else:

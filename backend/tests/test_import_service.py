@@ -179,22 +179,36 @@ async def test_routes_different_address_types_to_different_collections(
                     "data": {"z": 3},
                 }
             ],
+            "260 2 13459 26540": [
+                {
+                    "instance": "d",
+                    "result": True,
+                    "data_type": "base_station",
+                    "data": {"w": 4},
+                }
+            ],
         }
     )
 
     summary = await service.import_records(payload)
 
-    assert summary.total_imported == 3
+    assert summary.total_imported == 4
     by_address = {s.address: s.collection for s in summary.addresses}
     assert by_address == {
         "example.com": "domains",
         "1.2.3.4": "ip_addresses",
         "aa:bb:cc:dd:ee:ff": "mac_addresses",
+        "260 2 13459 26540": "base_stations",
     }
 
     created_indexes = {call.args[0] for call in repo_mock.create_index.call_args_list}
-    assert created_indexes == {"domains", "ip_addresses", "mac_addresses"}
-    assert repo_mock.upsert_results_bulk.call_count == 3
+    assert created_indexes == {
+        "domains",
+        "ip_addresses",
+        "mac_addresses",
+        "base_stations",
+    }
+    assert repo_mock.upsert_results_bulk.call_count == 4
 
 
 def test_parse_file_accepts_instanse_typo(service: ImportService) -> None:
