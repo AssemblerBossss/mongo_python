@@ -136,13 +136,11 @@ class MongoService:
         query = query or {}
         projection = projection or {}
         sort_list = list((sort or {}).items())
-        total = await self.repo.count_documents(collection, query)
-        documents = [
-            serialize_document(doc)
-            for doc in await self.repo.find(
-                collection, query, projection, sort_list, skip, limit
-            )
-        ]
+        total, raw_docs = await asyncio.gather(
+            self.repo.count_documents(collection, query),
+            self.repo.find(collection, query, projection, sort_list, skip, limit)
+        )
+        documents = [serialize_document(d) for d in raw_docs]
         return documents, total
 
     async def get(self, collection: str, doc_id: str) -> dict[str, Any]:
