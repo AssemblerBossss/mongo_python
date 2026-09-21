@@ -50,7 +50,7 @@ class ImportPayload(RootModel[dict[str, list[ScanRecord]]]):
 
 
 class AddressImportStats(BaseModel):
-    """Статистика импорта по одному адресу (ipv4/ipv6/домен/MAC)."""
+    """Статистика импорта по одному адресу (ipv4/ipv6/домен/MAC/базовая станция)."""
 
     address: str
     collection: str
